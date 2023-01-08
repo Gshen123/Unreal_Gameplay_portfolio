@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SPMediaWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Gameplay_Portfolio/Widget/SPTextButton.h"
 #include "SPLobbyWidget.generated.h"
@@ -22,27 +21,30 @@ public:
 	
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	TSoftObjectPtr<USPMediaWidget> MediaWidget;
+	virtual void NativeDestruct() override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋")
+	USPTextButton* StartButton;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	TSoftObjectPtr<USPTextButton> StartButton;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋")
+	USPTextButton* LoadButton;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	TSoftObjectPtr<USPTextButton> LoadButton;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋")
+	USPTextButton* OptionButton;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	TSoftObjectPtr<USPTextButton> OptionButton;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋")
+	USPTextButton* ExitButton;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	TSoftObjectPtr<USPTextButton> ExitButton;
-
+	UFUNCTION()
 	void GameStart();
-
+	
+	UFUNCTION()
 	void LoadGame();
-
-	void CreateOptionWidget();
-
+	
+	UFUNCTION()
+	void LoadOptionWidget();
+	
+	UFUNCTION()
 	void ExitGame();
 	
 };

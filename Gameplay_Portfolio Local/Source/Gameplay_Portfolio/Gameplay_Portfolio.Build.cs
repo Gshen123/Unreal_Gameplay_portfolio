@@ -8,6 +8,6 @@ public class Gameplay_Portfolio : ModuleRules {
 		PrivateDependencyModuleNames.AddRange(new string[] {});
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput", "MediaAssets", "UMG", "SlateCore"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput", "MediaAssets", "UMG","SlateCore"});
 	}
 }

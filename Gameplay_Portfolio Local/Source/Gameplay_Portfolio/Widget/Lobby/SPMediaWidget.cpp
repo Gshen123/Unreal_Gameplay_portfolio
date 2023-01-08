@@ -6,6 +6,6 @@
 void USPMediaWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-
+	
 	if(MediaPlayer && MediaSource) MediaPlayer->OpenSource(MediaSource);
 }

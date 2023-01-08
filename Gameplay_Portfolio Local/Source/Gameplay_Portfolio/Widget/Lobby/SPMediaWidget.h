@@ -19,13 +19,13 @@ class GAMEPLAY_PORTFOLIO_API USPMediaWidget : public UUserWidget
 public:
 
 	virtual void NativePreConstruct() override;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "기본|에셋", meta = (DisplayPriority = 0))
+	UImage* Image;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere , Category = "기본|에셋", meta = (DisplayPriority = 1))
 	UMediaPlayer* MediaPlayer;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere , Category = "기본|에셋", meta = (DisplayPriority = 2))
 	UMediaSource* MediaSource;
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta =(BindWidget))
-	UImage* Image;
 };

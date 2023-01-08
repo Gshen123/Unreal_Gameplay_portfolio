@@ -6,18 +6,7 @@
 void USPTextButton::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-}
-
-void USPTextButton::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	MainButton->OnClicked.AddUniqueDynamic(this, &ThisClass::OnButtonClicked);
-	MainButton->OnHovered.AddUniqueDynamic(this, &ThisClass::OnButtonHoverd);
-	MainButton->OnPressed.AddUniqueDynamic(this, &ThisClass::OnButtonUnHoverd);
-	MainButton->OnReleased.AddUniqueDynamic(this, &ThisClass::OnButtonPressd);
-	MainButton->OnUnhovered.AddUniqueDynamic(this, &ThisClass::OnButtonReleased);
-
+	
 	if(TextBlock)
 	{
 		if(!text.IsEmpty())
@@ -27,18 +16,25 @@ void USPTextButton::NativeConstruct()
 	}
 }
 
-void USPTextButton::TextColorChange(FColor color) const
+// 인게임에서 델리게이트 바인딩을 적용합니다. 
+void USPTextButton::NativeConstruct()
 {
-	if(TextBlock)
+	Super::NativeConstruct();
+
+	if(MainButton)
 	{
-		TextBlock->SetColorAndOpacity(color);
+		MainButton->OnClicked.AddUniqueDynamic(this, &ThisClass::OnButtonClicked);
+		MainButton->OnHovered.AddUniqueDynamic(this, &ThisClass::OnButtonHoverd);
+		MainButton->OnPressed.AddUniqueDynamic(this, &ThisClass::OnButtonPressed);
+		MainButton->OnReleased.AddUniqueDynamic(this, &ThisClass::OnButtonReleased);
+		MainButton->OnUnhovered.AddUniqueDynamic(this, &ThisClass::OnButtonUnHoverd);
 	}
 }
 
-
-void USPTextButton::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent)
+#if WITH_EDITOR
+void USPTextButton::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
-	if(PropertyChangedEvent.GetPropertyName()==TEXT("Content Text"))
+	if(PropertyChangedEvent.GetPropertyName() == TEXT("text"))
 	{
 		if(TextBlock)
 		{
@@ -48,46 +44,62 @@ void USPTextButton::PostEditChangeChainProperty(FPropertyChangedChainEvent& Prop
 			}
 		}
 	}
-	else if(PropertyChangedEvent.GetPropertyName()==TEXT("Text"))
-	{
-		if(TextBlock)
-		{
-			text = TextBlock->GetText();
-			TextBlock->SetText(text);
-		}
-	}
 	
-	Super::PostEditChangeChainProperty(PropertyChangedEvent);
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+}
+#endif
+
+void USPTextButton::TextColorChange(FColor color) const
+{
+	if(TextBlock)
+	{
+		TextBlock->SetColorAndOpacity(color);
+	}
+}
+
+void USPTextButton::TextSizeChange(int size) const
+{
+	if(TextBlock)
+	{
+		FSlateFontInfo FontInfo = TextBlock->GetFont();
+		FontInfo.Size = size;
+		TextBlock->SetFont(FontInfo);
+	}
 }
 
 void USPTextButton::OnButtonClicked()
 {
-	ScopeOnClicked.Broadcast(this);
+	ScopeOnClicked.Broadcast();
 	TextColorChange(ClickColor);
+	TextSizeChange(ClickSize);
 }
 
 void USPTextButton::OnButtonHoverd()
 {
-	ScopeOnHoverd.Broadcast(this);
+	ScopeOnHoverd.Broadcast();
 	TextColorChange(HoverColor);
+	TextSizeChange(HoverSize);
 }
 
 void USPTextButton::OnButtonUnHoverd()
 {
-	ScopeOnUnHoverd.Broadcast(this);
+	ScopeOnUnHoverd.Broadcast();
 	TextColorChange(UnHoverColor);
+	TextSizeChange(UnHoverSize);
 }
 
-void USPTextButton::OnButtonPressd()
+void USPTextButton::OnButtonPressed()
 {
-	ScopeOnPressed.Broadcast(this);
+	ScopeOnPressed.Broadcast();
 	TextColorChange(PressColor);
+	TextSizeChange(PressSize);
 }
 
 void USPTextButton::OnButtonReleased()
 {
-	ScopeOnReleased.Broadcast(this);
+	ScopeOnReleased.Broadcast();
 	TextColorChange(ReleaseColor);
+	TextSizeChange(ReleaseSize);
 }
 
 

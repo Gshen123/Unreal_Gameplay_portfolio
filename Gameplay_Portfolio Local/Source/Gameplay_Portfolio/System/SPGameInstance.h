@@ -12,4 +12,6 @@ UCLASS()
 class GAMEPLAY_PORTFOLIO_API USPGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
+
+	USPGameInstance(const FObjectInitializer& ObjectInitializer);
 };
