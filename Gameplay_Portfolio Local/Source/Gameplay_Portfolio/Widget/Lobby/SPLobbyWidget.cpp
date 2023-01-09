@@ -12,10 +12,10 @@ void USPLobbyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if(StartButton) StartButton->ScopeOnClicked.AddUniqueDynamic(this, &USPLobbyWidget::GameStart);
-	if(LoadButton) LoadButton->ScopeOnClicked.AddUniqueDynamic(this, &USPLobbyWidget::LoadGame);
-	if(OptionButton) OptionButton->ScopeOnClicked.AddUniqueDynamic(this, &USPLobbyWidget::LoadOptionWidget);
-	if(ExitButton) ExitButton->ScopeOnClicked.AddUniqueDynamic(this, &USPLobbyWidget::ExitGame);
+	if(StartButton) StartButton->MainButton->OnClicked.AddUniqueDynamic(this, &USPLobbyWidget::GameStart);
+	if(LoadButton) LoadButton->MainButton->OnClicked.AddUniqueDynamic(this, &USPLobbyWidget::LoadGame);
+	if(OptionButton) OptionButton->MainButton->OnClicked.AddUniqueDynamic(this, &USPLobbyWidget::LoadOptionWidget);
+	if(ExitButton) ExitButton->MainButton->OnClicked.AddUniqueDynamic(this, &USPLobbyWidget::ExitGame);
 }
 
 void USPLobbyWidget::NativeDestruct()

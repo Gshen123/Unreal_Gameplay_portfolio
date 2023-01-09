@@ -13,11 +13,11 @@
 // 자체 버튼 클래스를 통해 이를 개선했으며, 텍스트의 잦은 수정을 고려해 상위 클래스에서의 접근성을 향상시켰습니다.
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FScopeOnClicked);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FScopeOnHoverd);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FScopeOnUnHoverd);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FScopeOnPressed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FScopeOnReleased);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnClicked, class USPTextButton*, btn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnHoverd, class USPTextButton*, btn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnUnHoverd, class USPTextButton*, btn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnPressed, class USPTextButton*, btn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnReleased, class USPTextButton*, btn);
 
 UCLASS(Blueprintable, BlueprintType)
 class GAMEPLAY_PORTFOLIO_API USPTextButton : public UUserWidget
@@ -44,38 +44,41 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|기본",  meta = (DisplayPriority = 1))
 	class UTextBlock* TextBlock;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Content Text", Category = "버튼|기본",  meta = (DisplayPriority = 2, BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Content Text", Category = "버튼|콘텐츠",  meta = (DisplayPriority = 2, BindWidget))
 	FText text;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|클릭", meta = (DisplayPriority = 3))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Content Text", Category = "버튼|콘텐츠",  meta = (DisplayPriority = 3))
+	int FontSize = 15;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|클릭", meta = (DisplayPriority = 4))
 	FColor ClickColor = FColor(255,255,255,255);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|클릭", meta = (DisplayPriority = 4))
-	int ClickSize;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|클릭", meta = (DisplayPriority = 5))
+	int ClickSize = 15;
 	 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|호버", meta = (DisplayPriority = 5))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|호버", meta = (DisplayPriority = 6))
 	FColor HoverColor = FColor(255,255,255,255);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|호버", meta = (DisplayPriority = 6))
-	int HoverSize;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|호버", meta = (DisplayPriority = 7))
+	int HoverSize = 15;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|언호버", meta = (DisplayPriority = 7))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|언호버", meta = (DisplayPriority = 8))
 	FColor UnHoverColor = FColor(255,255,255,255);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|언호버", meta = (DisplayPriority = 8))
-	int UnHoverSize;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|언호버", meta = (DisplayPriority = 9))
+	int UnHoverSize = 15;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|눌림", meta = (DisplayPriority = 9))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|눌림", meta = (DisplayPriority = 10))
 	FColor PressColor = FColor(255,255,255,255);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|눌림", meta = (DisplayPriority = 10))
-	int PressSize;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|눌림", meta = (DisplayPriority = 11))
+	int PressSize = 15;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|떼기", meta = (DisplayPriority = 11))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|떼기", meta = (DisplayPriority = 12))
 	FColor ReleaseColor = FColor(255,255,255,255);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|떼기", meta = (DisplayPriority = 12))
-	int ReleaseSize;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|떼기", meta = (DisplayPriority = 13))
+	int ReleaseSize = 15;
 	
 	FScopeOnClicked ScopeOnClicked;
 	FScopeOnHoverd ScopeOnHoverd;
@@ -85,7 +88,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void OnButtonClicked();
-
+	
 	UFUNCTION(BlueprintCallable)
 	void OnButtonHoverd();
 	

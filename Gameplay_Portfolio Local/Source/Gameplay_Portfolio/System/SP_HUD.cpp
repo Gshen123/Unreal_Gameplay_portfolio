@@ -15,9 +15,7 @@ void ASP_HUD::ShowMainMenu()
 
 	auto LobbyMenu = Cast<USPLobbyWidget>(MainMenu);
 	LobbyMenu->StartButton->SetFocus();
-	//LobbyMenu->StartButton->ScopeOnClicked.AddUniqueDynamic(this, ASP_HUD::ShowOptionMenu);
-	//LobbyMenu->LoadButton->ScopeOnClicked.AddUniqueDynamic(this, ASP_HUD::ShowOptionMenu);
-	LobbyMenu->OptionButton->ScopeOnClicked.AddUniqueDynamic(this, &ASP_HUD::ShowOptionMenu);
+	LobbyMenu->OptionButton->MainButton->OnClicked.AddUniqueDynamic(this, &ASP_HUD::ShowOptionMenu);
 	
 	SetInputModeUIOnly(PC);
 }
@@ -37,6 +35,9 @@ void ASP_HUD::ShowOptionMenu()
 	OptionMenu = CreateWidget<UUserWidget>( PC, OptionMenuClass );
 	OptionMenu->AddToViewport();
 
+	auto OptionWidget = Cast<USPLobbyOptionWidget>(OptionMenu);
+	OptionWidget->ExitBtn->OnClicked.AddUniqueDynamic(this, &ASP_HUD::HideOptionMenu);
+	
 	SetInputModeUIOnly(PC);
 	//auto OptionWidget = Cast<USPLobbyOptionWidget>(MainMenu);
 	//OptionWidget->SetFocus();

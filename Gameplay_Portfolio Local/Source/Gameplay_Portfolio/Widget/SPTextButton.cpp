@@ -12,6 +12,7 @@ void USPTextButton::NativePreConstruct()
 		if(!text.IsEmpty())
 		{
 			TextBlock->SetText(text);
+			TextSizeChange(FontSize);
 		}
 	}
 }
@@ -41,6 +42,7 @@ void USPTextButton::PostEditChangeProperty(FPropertyChangedEvent& PropertyChange
 			if(!text.IsEmpty())
 			{
 				TextBlock->SetText(text);
+				TextSizeChange(FontSize);
 			}
 		}
 	}
@@ -69,35 +71,35 @@ void USPTextButton::TextSizeChange(int size) const
 
 void USPTextButton::OnButtonClicked()
 {
-	ScopeOnClicked.Broadcast();
+	ScopeOnClicked.Broadcast(this);
 	TextColorChange(ClickColor);
 	TextSizeChange(ClickSize);
 }
 
 void USPTextButton::OnButtonHoverd()
 {
-	ScopeOnHoverd.Broadcast();
+	ScopeOnHoverd.Broadcast(this);
 	TextColorChange(HoverColor);
 	TextSizeChange(HoverSize);
 }
 
 void USPTextButton::OnButtonUnHoverd()
 {
-	ScopeOnUnHoverd.Broadcast();
+	ScopeOnUnHoverd.Broadcast(this);
 	TextColorChange(UnHoverColor);
 	TextSizeChange(UnHoverSize);
 }
 
 void USPTextButton::OnButtonPressed()
 {
-	ScopeOnPressed.Broadcast();
+	ScopeOnPressed.Broadcast(this);
 	TextColorChange(PressColor);
 	TextSizeChange(PressSize);
 }
 
 void USPTextButton::OnButtonReleased()
 {
-	ScopeOnReleased.Broadcast();
+	ScopeOnReleased.Broadcast(this);
 	TextColorChange(ReleaseColor);
 	TextSizeChange(ReleaseSize);
 }
