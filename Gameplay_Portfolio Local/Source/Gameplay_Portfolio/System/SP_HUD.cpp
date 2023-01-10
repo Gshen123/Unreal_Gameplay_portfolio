@@ -4,6 +4,7 @@
 #include "SP_HUD.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Gameplay_Portfolio/Widget/SP_ExitModal.h"
 #include "Gameplay_Portfolio/Widget/Lobby/SPLobbyOptionWidget.h"
 #include "Gameplay_Portfolio/Widget/Lobby/SPLobbyWidget.h"
 
@@ -16,6 +17,7 @@ void ASP_HUD::ShowMainMenu()
 	auto LobbyMenu = Cast<USPLobbyWidget>(MainMenu);
 	LobbyMenu->StartButton->SetFocus();
 	LobbyMenu->OptionButton->MainButton->OnClicked.AddUniqueDynamic(this, &ASP_HUD::ShowOptionMenu);
+	LobbyMenu->ExitButton->MainButton->OnClicked.AddUniqueDynamic(this, &ASP_HUD::ShowExitModal);
 	
 	SetInputModeUIOnly(PC);
 }
@@ -36,8 +38,8 @@ void ASP_HUD::ShowOptionMenu()
 	OptionMenu->AddToViewport();
 
 	auto OptionWidget = Cast<USPLobbyOptionWidget>(OptionMenu);
+	OptionWidget->GraphicTabBtn->SetFocus();
 	OptionWidget->ExitBtn->OnClicked.AddUniqueDynamic(this, &ASP_HUD::HideOptionMenu);
-	
 	SetInputModeUIOnly(PC);
 	//auto OptionWidget = Cast<USPLobbyOptionWidget>(MainMenu);
 	//OptionWidget->SetFocus();
@@ -50,6 +52,68 @@ void ASP_HUD::HideOptionMenu()
 		OptionMenu->RemoveFromParent();
 		OptionMenu = nullptr;
 	}
+}
+
+void ASP_HUD::ShowExitModal()
+{
+	APlayerController* PC = Cast<APlayerController>(GetOwner());
+	ExitModal = CreateWidget<UUserWidget>( PC, ExitModalClass );
+	ExitModal->AddToViewport();
+
+	auto ExitModalWidget = Cast<USP_ExitModal>(ExitModal);
+	ExitModalWidget->NoButton->SetFocus();
+	ExitModalWidget->YesButton->MainButton->OnClicked.AddUniqueDynamic(this, &ASP_HUD::ExitGame);
+	ExitModalWidget->NoButton->MainButton->OnClicked.AddUniqueDynamic(this, &ASP_HUD::HideExitModal);
+	SetInputModeUIOnly(PC);
+}
+
+void ASP_HUD::HideExitModal()
+{
+	if (ExitModal)
+	{
+		ExitModal->RemoveFromParent();
+		ExitModal = nullptr;
+	}
+}
+
+bool ASP_HUD::IsActiveExitModal() const
+{
+	if(ExitModal)
+	{
+		return true;
+	}
+	return false;
+}
+
+void ASP_HUD::ExitGame()
+{
+	auto PC = GetOwningPlayerController();
+	PC->ConsoleCommand("quit");
+}
+
+void ASP_HUD::ShowPauseMenu()
+{
+	APlayerController* PC = Cast<APlayerController>(GetOwner());
+	PauseMenu = CreateWidget<UUserWidget>( PC, PauseMenuClass );
+	PauseMenu->AddToViewport();
+}
+
+void ASP_HUD::HidePauseMenu()
+{
+	if (PauseMenu)
+	{
+		PauseMenu->RemoveFromParent();
+		PauseMenu = nullptr;
+	}
+}
+
+bool ASP_HUD::IsActivePauseMenu() const
+{
+	if (PauseMenu)
+	{
+		return true;
+	}
+	return false;
 }
 
 void ASP_HUD::SetInputModeUIOnly(APlayerController* PC)

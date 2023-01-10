@@ -5,5 +5,5 @@
 
 USPGameInstance::USPGameInstance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	//static ConstructorHelpers::
+	
 }

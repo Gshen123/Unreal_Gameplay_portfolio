@@ -24,6 +24,8 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|위젯")
 	USPTextButton* GraphicTabBtn;
 	
@@ -80,6 +82,9 @@ public:
 
 	UFUNCTION()
 	void ToggleVSyn();
+
+	UFUNCTION()
+	void SetDynamicResolution();
 
 	static const FString SCREENMODE_FULL;
 	static const FString SCREENMODE_WINDOW;

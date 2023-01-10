@@ -38,47 +38,69 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|기본",  meta = (DisplayPriority =0))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋",  meta = (DisplayPriority =0))
 	class UButton* MainButton;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|기본",  meta = (DisplayPriority = 1))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋",  meta = (DisplayPriority = 1))
 	class UTextBlock* TextBlock;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Content Text", Category = "버튼|콘텐츠",  meta = (DisplayPriority = 2, BindWidget))
-	FText text;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트")
+	FText Text_Context;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Content Text", Category = "버튼|콘텐츠",  meta = (DisplayPriority = 3))
-	int FontSize = 15;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트")
+	int Text_FontSize = 15;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|클릭", meta = (DisplayPriority = 4))
-	FColor ClickColor = FColor(255,255,255,255);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트")
+	FColor Text_Color = FColor(0,0,0,255);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|외곽선")
+	int Text_OutlineTextSize = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|클릭", meta = (DisplayPriority = 5))
-	int ClickSize = 15;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|외곽선")
+	FColor Text_OutlineTextColor = FColor(0,0,0,255);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|클릭")
+	FColor Text_ClickColor = FColor(255,255,255,255);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|클릭")
+	int Text_ClickSize = 15;
 	 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|호버", meta = (DisplayPriority = 6))
-	FColor HoverColor = FColor(255,255,255,255);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|호버")
+	FColor Text_HoverColor = FColor(255,255,255,255);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|호버", meta = (DisplayPriority = 7))
-	int HoverSize = 15;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|호버")
+	int Text_HoverSize = 15;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|언호버", meta = (DisplayPriority = 8))
-	FColor UnHoverColor = FColor(255,255,255,255);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|언호버")
+	FColor Text_UnHoverColor = FColor(255,255,255,255);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|언호버", meta = (DisplayPriority = 9))
-	int UnHoverSize = 15;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|언호버")
+	int Text_UnHoverSize = 15;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|눌림", meta = (DisplayPriority = 10))
-	FColor PressColor = FColor(255,255,255,255);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|눌림")
+	FColor Text_PressColor = FColor(255,255,255,255);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|눌림", meta = (DisplayPriority = 11))
-	int PressSize = 15;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|눌림")
+	int Text_PressSize = 15;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|떼기", meta = (DisplayPriority = 12))
-	FColor ReleaseColor = FColor(255,255,255,255);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|떼기")
+	FColor Text_ReleaseColor = FColor(255,255,255,255);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|상호작용|떼기", meta = (DisplayPriority = 13))
-	int ReleaseSize = 15;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트|떼기")
+	int Text_ReleaseSize = 15;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
+	FColor Btn_NormalColor = FColor(255,255,255,0);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
+	FColor Btn_HoverColor = FColor(255,255,255,255);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
+	FColor TBtn_PressColor = FColor(255,255,255,255);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
+	FColor Btn_DisabledColor = FColor(255,255,255,255);
+
 	
 	FScopeOnClicked ScopeOnClicked;
 	FScopeOnHoverd ScopeOnHoverd;
@@ -105,5 +127,8 @@ private:
 	void TextColorChange(FColor color) const;
 
 	void TextSizeChange(int size) const;
-	
+
+	void SetButtonColor() const;
+
+	void ChangeOutlineTextProperty() const;
 };

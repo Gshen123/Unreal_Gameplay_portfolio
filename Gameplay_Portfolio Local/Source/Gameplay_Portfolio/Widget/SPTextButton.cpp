@@ -9,10 +9,13 @@ void USPTextButton::NativePreConstruct()
 	
 	if(TextBlock)
 	{
-		if(!text.IsEmpty())
+		if(!Text_Context.IsEmpty())
 		{
-			TextBlock->SetText(text);
-			TextSizeChange(FontSize);
+			TextBlock->SetText(Text_Context);
+			TextSizeChange(Text_FontSize);
+			SetButtonColor();
+			ChangeOutlineTextProperty();
+			TextColorChange(Text_Color);
 		}
 	}
 }
@@ -35,16 +38,24 @@ void USPTextButton::NativeConstruct()
 #if WITH_EDITOR
 void USPTextButton::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
-	if(PropertyChangedEvent.GetPropertyName() == TEXT("text"))
+	FName changeProperty = PropertyChangedEvent.GetPropertyName();
+	if(changeProperty == TEXT("Text_Context") || changeProperty == ("Text_FontSize") || changeProperty == ("Text_OutlineTextSize") || changeProperty == ("Text_OutlineTextColor")
+		|| changeProperty == TEXT("Text_Color"))
 	{
 		if(TextBlock)
 		{
-			if(!text.IsEmpty())
+			if(!Text_Context.IsEmpty())
 			{
-				TextBlock->SetText(text);
-				TextSizeChange(FontSize);
+				TextBlock->SetText(Text_Context);
+				TextSizeChange(Text_FontSize);
+				ChangeOutlineTextProperty();
+				TextColorChange(Text_Color);
 			}
 		}
+	}
+	else
+	{
+		SetButtonColor();
 	}
 	
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -69,39 +80,62 @@ void USPTextButton::TextSizeChange(int size) const
 	}
 }
 
+inline void USPTextButton::SetButtonColor() const
+{
+	if(MainButton)
+	{
+		MainButton->WidgetStyle.Normal.TintColor = Btn_NormalColor;
+		MainButton->WidgetStyle.Hovered.TintColor = Btn_HoverColor;
+		MainButton->WidgetStyle.Pressed.TintColor = TBtn_PressColor;
+		MainButton->WidgetStyle.Disabled.TintColor = Btn_DisabledColor;
+	}
+}
+
+void USPTextButton::ChangeOutlineTextProperty() const
+{
+	if(TextBlock)
+	{
+		FSlateFontInfo FontInfo = TextBlock->GetFont();
+		FontInfo.OutlineSettings.OutlineColor = Text_OutlineTextColor;
+		FontInfo.OutlineSettings.OutlineSize = Text_OutlineTextSize;
+		TextBlock->SetFont(FontInfo);
+	}
+}
+
+
 void USPTextButton::OnButtonClicked()
 {
 	ScopeOnClicked.Broadcast(this);
-	TextColorChange(ClickColor);
-	TextSizeChange(ClickSize);
+	TextColorChange(Text_ClickColor);
+	TextSizeChange(Text_ClickSize);
 }
 
 void USPTextButton::OnButtonHoverd()
 {
 	ScopeOnHoverd.Broadcast(this);
-	TextColorChange(HoverColor);
-	TextSizeChange(HoverSize);
+	TextColorChange(Text_HoverColor);
+	TextSizeChange(Text_HoverSize);
 }
 
 void USPTextButton::OnButtonUnHoverd()
 {
 	ScopeOnUnHoverd.Broadcast(this);
-	TextColorChange(UnHoverColor);
-	TextSizeChange(UnHoverSize);
+	TextColorChange(Text_UnHoverColor);
+	TextSizeChange(Text_UnHoverSize);
 }
 
 void USPTextButton::OnButtonPressed()
 {
 	ScopeOnPressed.Broadcast(this);
-	TextColorChange(PressColor);
-	TextSizeChange(PressSize);
+	TextColorChange(Text_PressColor);
+	TextSizeChange(Text_PressSize);
 }
 
 void USPTextButton::OnButtonReleased()
 {
 	ScopeOnReleased.Broadcast(this);
-	TextColorChange(ReleaseColor);
-	TextSizeChange(ReleaseSize);
+	TextColorChange(Text_ReleaseColor);
+	TextSizeChange(Text_ReleaseSize);
 }
 
 

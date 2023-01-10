@@ -44,7 +44,5 @@ public:
 	UFUNCTION()
 	void LoadOptionWidget();
 	
-	UFUNCTION()
-	void ExitGame();
-	
+
 };

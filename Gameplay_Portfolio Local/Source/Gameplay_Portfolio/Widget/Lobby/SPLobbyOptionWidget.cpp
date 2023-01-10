@@ -39,9 +39,63 @@ void USPLobbyOptionWidget::NativeConstruct()
 	if(FPSSetupBoxString) FPSSetupBoxString->OnSelectionChanged.AddUniqueDynamic(this, &USPLobbyOptionWidget::ChangeFPS);
 
 	if(VerticalSyncBtn) VerticalSyncBtn->OnClicked.AddUniqueDynamic(this, &USPLobbyOptionWidget::ToggleVSyn);
-
+	
 	Settings = GEngine->GetGameUserSettings();
-	Settings->SetDynamicResolutionEnabled(true);
+
+	if(ScreenModeBoxString) 
+	{
+		if(Settings->GetFullscreenMode() == EWindowMode::Fullscreen || EWindowMode::WindowedFullscreen) { ScreenModeBoxString->SetSelectedOption(SCREENMODE_FULL);}
+		if(Settings->GetFullscreenMode() == EWindowMode::Windowed || EWindowMode::NumWindowModes) { ScreenModeBoxString->SetSelectedOption(SCREENMODE_WINDOW);}
+	}
+
+	if(ScreenResolutionBoxString)
+	{
+		if(Settings->GetScreenResolution() == FIntPoint(720, 480)) {ScreenResolutionBoxString->SetSelectedOption(RESOLUTION_SD);}
+		if(Settings->GetScreenResolution() == FIntPoint(1280, 720)) {ScreenResolutionBoxString->SetSelectedOption(RESOLUTION_HD);}
+		if(Settings->GetScreenResolution() == FIntPoint(1920, 1080)) {ScreenResolutionBoxString->SetSelectedOption(RESOLUTION_FHD);}
+		if(Settings->GetScreenResolution() == FIntPoint(2560, 1440)) {ScreenResolutionBoxString->SetSelectedOption(RESOLUTION_QHD);}
+		if(Settings->GetScreenResolution() == FIntPoint(3840, 2160)) {ScreenResolutionBoxString->SetSelectedOption(RESOLUTION_UHD);}
+	}
+
+	if(ViewDistanceBoxString)
+	{
+		if(Settings->GetViewDistanceQuality() == 100) {ViewDistanceBoxString->SetSelectedOption(VIEWDISTANCE_LOW);}
+		if(Settings->GetViewDistanceQuality() == 200) {ViewDistanceBoxString->SetSelectedOption(VIEWDISTANCE_MID);}
+		if(Settings->GetViewDistanceQuality() == 300) {ViewDistanceBoxString->SetSelectedOption(VIEWDISTANCE_HIGH);}
+		if(Settings->GetViewDistanceQuality() == 400) {ViewDistanceBoxString->SetSelectedOption(VIEWDISTANCE_EPIC);}
+	}
+
+	if(FPSSetupBoxString)
+	{
+		if(Settings->GetFrameRateLimit() == 30) {FPSSetupBoxString->SetSelectedOption(FPS_SETTING_30);}
+		if(Settings->GetFrameRateLimit() == 60) {FPSSetupBoxString->SetSelectedOption(FPS_SETTING_60);}
+		if(Settings->GetFrameRateLimit() == 144) {FPSSetupBoxString->SetSelectedOption(FPS_SETTING_144);}
+		if(Settings->GetFrameRateLimit() == 1000) {FPSSetupBoxString->SetSelectedOption(FPS_SETTING_EPIC);}
+	}
+
+	if(VerticalSyncBtn)
+	{
+		if(Settings->IsVSyncEnabled())
+		{
+			VerticalSyncBtn->WidgetStyle.Normal.TintColor = FLinearColor(0.496933,0.194618,0.356400,1.000000);
+			auto box = Cast<UTextBlock>(VerticalSyncBtn->GetChildAt(0));
+			FText content = FText::FromString("  On  ");
+			box->SetText(content);
+		}
+		else
+		{
+			VerticalSyncBtn->WidgetStyle.Normal.TintColor = FLinearColor(0.260417,0.245917,0.240668,1.000000);
+			auto box = Cast<UTextBlock>(VerticalSyncBtn->GetChildAt(0));
+			FText content = FText::FromString("  Off  ");
+			box->SetText(content);
+		}
+	}
+
+}
+
+void USPLobbyOptionWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
 }
 
 void USPLobbyOptionWidget::VisibleGraphicsOption()
@@ -63,42 +117,38 @@ void USPLobbyOptionWidget::ChangeScreenMode(FString string, ESelectInfo::Type ty
 {
 	if(string == SCREENMODE_FULL)
 	{
-		Settings->SetFullscreenMode(EWindowMode::Fullscreen);
+		Settings->SetFullscreenMode(Settings->GetPreferredFullscreenMode());
 	}
 	else if(string == SCREENMODE_WINDOW)
 	{
 		Settings->SetFullscreenMode(EWindowMode::WindowedFullscreen);
+		Settings->ApplyResolutionSettings(false);
+		Settings->SetFullscreenMode(EWindowMode::Windowed);
 	}
 
-	Settings->ApplyResolutionSettings(true);
+	if(Settings->IsFullscreenModeDirty())
+	{
+		Settings->ApplyResolutionSettings(false);
+		Settings->SaveSettings();
+	}
+
 }
 
 void USPLobbyOptionWidget::ChangeScreenResolution(FString string, ESelectInfo::Type type)
 {
 	FIntPoint ip;
-	if(string == RESOLUTION_SD)
-	{
-		ip = (720, 480); //3:2
-	}
-	else if(string == RESOLUTION_HD)
-	{
-		ip = (1280, 720); //16:9
-	}
-	else if(string == RESOLUTION_FHD)
-	{
-		ip = (1920, 1080); //4:3
-	}
-	else if(string == RESOLUTION_QHD)
-	{
-		ip = (2560, 1440); //16:9
-	}
-	else
-	{
-		ip = (3840, 2160); //16:9
-	}
-	
+	if(string == RESOLUTION_SD) { ip = (720, 480); }
+	else if(string == RESOLUTION_HD) { ip = (1280, 720); }
+	else if(string == RESOLUTION_FHD) { ip = (1920, 1080); }
+	else if(string == RESOLUTION_QHD) { ip = (2560, 1440); }
+	else { ip = (3840, 2160); }
 	Settings->SetScreenResolution(ip);
-	Settings->ApplyResolutionSettings(true);
+	
+	if(Settings->IsScreenResolutionDirty())
+	{
+		Settings->ApplyResolutionSettings(false);
+		Settings->SaveSettings();
+	}
 }
 
 
@@ -109,7 +159,7 @@ void USPLobbyOptionWidget::ChangeViewDistance(FString string, ESelectInfo::Type 
 	if(string == VIEWDISTANCE_HIGH) Settings->SetViewDistanceQuality(300);
 	if(string == VIEWDISTANCE_EPIC) Settings->SetViewDistanceQuality(400);
 
-	Settings->ApplySettings(true);
+	Settings->ApplySettings(false);
 }
 
 
@@ -120,7 +170,7 @@ void USPLobbyOptionWidget::ChangeFPS(FString string, ESelectInfo::Type type)
 	if(string == FPS_SETTING_144) Settings->SetFrameRateLimit(144);
 	if(string == FPS_SETTING_EPIC) Settings->SetFrameRateLimit(1000);
 
-	Settings->ApplySettings(true);
+	Settings->ApplySettings(false);
 }
 
 void USPLobbyOptionWidget::ToggleVSyn()
@@ -142,5 +192,11 @@ void USPLobbyOptionWidget::ToggleVSyn()
 		box->SetText(content);
 	}
 
-	Settings->ApplySettings(true);
+	Settings->ApplySettings(false);
+}
+
+void USPLobbyOptionWidget::SetDynamicResolution()
+{
+	Settings->SetDynamicResolutionEnabled(true);
+	Settings->ApplyNonResolutionSettings();
 }
