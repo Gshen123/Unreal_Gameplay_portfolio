@@ -6,7 +6,9 @@
 #include "GameFramework/GameUserSettings.h"
 #include "SP_GameUserSettings.generated.h"
 
-class USP_GameSettings;
+class USP_GameSetting;
+
+DECLARE_MULTICAST_DELEGATE(FOnSettingsUpdateDelegate);
 
 /**
  * 
@@ -22,8 +24,13 @@ public:
 
 	static USP_GameUserSettings* Get();
 
-	const TArray<USP_GameSettings*>& GetVideoSettings() const;
+	const TArray<USP_GameSetting*>& GetVideoSettings() const;
 
+	void RunBenchmark();
+
+	FOnSettingsUpdateDelegate OnVideoSettingsUpdatedelegate;
+	
 private:
-	TArray<USP_GameSettings*> VideoSettings;
+	UPROPERTY()
+	TArray<USP_GameSetting*> VideoSettings;
 };

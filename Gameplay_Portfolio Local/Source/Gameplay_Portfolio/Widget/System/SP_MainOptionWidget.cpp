@@ -1,31 +1,31 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SPLobbyOptionWidget.h"
+#include "SP_MainOptionWidget.h"
 #include "GameFramework/GameUserSettings.h"
 
-const FString USPLobbyOptionWidget::SCREENMODE_FULL = TEXT("  Full Screen  ");
-const FString USPLobbyOptionWidget::SCREENMODE_WINDOW = TEXT(" Window Mode ");
-const FString USPLobbyOptionWidget::RESOLUTION_SD = TEXT(" 720 X 480 ");
-const FString USPLobbyOptionWidget::RESOLUTION_HD = TEXT(" 1280 X 720 ");
-const FString USPLobbyOptionWidget::RESOLUTION_FHD = TEXT(" 1920 X 1080 ");
-const FString USPLobbyOptionWidget::RESOLUTION_QHD = TEXT(" 2560 X 1440 ");
-const FString USPLobbyOptionWidget::RESOLUTION_UHD = TEXT(" 3840 X 2160 ");
-const FString USPLobbyOptionWidget::VIEWDISTANCE_LOW = TEXT("     낮음     ");
-const FString USPLobbyOptionWidget::VIEWDISTANCE_MID = TEXT("     보통     ");
-const FString USPLobbyOptionWidget::VIEWDISTANCE_HIGH = TEXT("     높음     ");
-const FString USPLobbyOptionWidget::VIEWDISTANCE_EPIC = TEXT("     최대     ");
-const FString USPLobbyOptionWidget::FPS_SETTING_30 = TEXT(" 30 FPS ");
-const FString USPLobbyOptionWidget::FPS_SETTING_60 = TEXT(" 60 FPS ");
-const FString USPLobbyOptionWidget::FPS_SETTING_144 = TEXT(" 144 FPS ");
-const FString USPLobbyOptionWidget::FPS_SETTING_EPIC = TEXT(" 제한 없음  ");
+const FString USP_MainOptionWidget::SCREENMODE_FULL = TEXT("  Full Screen  ");
+const FString USP_MainOptionWidget::SCREENMODE_WINDOW = TEXT(" Window Mode ");
+const FString USP_MainOptionWidget::RESOLUTION_SD = TEXT(" 720 X 480 ");
+const FString USP_MainOptionWidget::RESOLUTION_HD = TEXT(" 1280 X 720 ");
+const FString USP_MainOptionWidget::RESOLUTION_FHD = TEXT(" 1920 X 1080 ");
+const FString USP_MainOptionWidget::RESOLUTION_QHD = TEXT(" 2560 X 1440 ");
+const FString USP_MainOptionWidget::RESOLUTION_UHD = TEXT(" 3840 X 2160 ");
+const FString USP_MainOptionWidget::VIEWDISTANCE_LOW = TEXT("     낮음     ");
+const FString USP_MainOptionWidget::VIEWDISTANCE_MID = TEXT("     보통     ");
+const FString USP_MainOptionWidget::VIEWDISTANCE_HIGH = TEXT("     높음     ");
+const FString USP_MainOptionWidget::VIEWDISTANCE_EPIC = TEXT("     최대     ");
+const FString USP_MainOptionWidget::FPS_SETTING_30 = TEXT(" 30 FPS ");
+const FString USP_MainOptionWidget::FPS_SETTING_60 = TEXT(" 60 FPS ");
+const FString USP_MainOptionWidget::FPS_SETTING_144 = TEXT(" 144 FPS ");
+const FString USP_MainOptionWidget::FPS_SETTING_EPIC = TEXT(" 제한 없음  ");
 
-void USPLobbyOptionWidget::NativePreConstruct()
+void USP_MainOptionWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 }
 
-void USPLobbyOptionWidget::NativeConstruct()
+void USP_MainOptionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
@@ -33,12 +33,12 @@ void USPLobbyOptionWidget::NativeConstruct()
 	if(AudioTabBtn)  AudioTabBtn->MainButton->OnClicked.AddUniqueDynamic(this, &ThisClass::VisibleAudioOption);
 	if(GameTabBtn) GameTabBtn->MainButton->OnClicked.AddUniqueDynamic(this, &ThisClass::VisibleGameOption);
 
-	if(ScreenModeBoxString) ScreenModeBoxString->OnSelectionChanged.AddUniqueDynamic(this, &USPLobbyOptionWidget::ChangeScreenMode);
-	if(ScreenResolutionBoxString) ScreenResolutionBoxString->OnSelectionChanged.AddUniqueDynamic(this, &USPLobbyOptionWidget::ChangeScreenResolution);
-	if(ViewDistanceBoxString) ViewDistanceBoxString->OnSelectionChanged.AddUniqueDynamic(this, &USPLobbyOptionWidget::ChangeViewDistance);
-	if(FPSSetupBoxString) FPSSetupBoxString->OnSelectionChanged.AddUniqueDynamic(this, &USPLobbyOptionWidget::ChangeFPS);
+	if(ScreenModeBoxString) ScreenModeBoxString->OnSelectionChanged.AddUniqueDynamic(this, &USP_MainOptionWidget::ChangeScreenMode);
+	if(ScreenResolutionBoxString) ScreenResolutionBoxString->OnSelectionChanged.AddUniqueDynamic(this, &USP_MainOptionWidget::ChangeScreenResolution);
+	if(ViewDistanceBoxString) ViewDistanceBoxString->OnSelectionChanged.AddUniqueDynamic(this, &USP_MainOptionWidget::ChangeViewDistance);
+	if(FPSSetupBoxString) FPSSetupBoxString->OnSelectionChanged.AddUniqueDynamic(this, &USP_MainOptionWidget::ChangeFPS);
 
-	if(VerticalSyncBtn) VerticalSyncBtn->OnClicked.AddUniqueDynamic(this, &USPLobbyOptionWidget::ToggleVSyn);
+	if(VerticalSyncBtn) VerticalSyncBtn->OnClicked.AddUniqueDynamic(this, &USP_MainOptionWidget::ToggleVSyn);
 	
 	Settings = GEngine->GetGameUserSettings();
 
@@ -93,27 +93,27 @@ void USPLobbyOptionWidget::NativeConstruct()
 
 }
 
-void USPLobbyOptionWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+void USP_MainOptionWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
 }
 
-void USPLobbyOptionWidget::VisibleGraphicsOption()
+void USP_MainOptionWidget::VisibleGraphicsOption()
 {
-	Switcher->SetActiveWidgetIndex(0);
+	WidgetSwitcher->SetActiveWidgetIndex(0);
 }
 
-void USPLobbyOptionWidget::VisibleAudioOption()
+void USP_MainOptionWidget::VisibleAudioOption()
 {
-	Switcher->SetActiveWidgetIndex(1);
+	WidgetSwitcher->SetActiveWidgetIndex(1);
 }
 
-void USPLobbyOptionWidget::VisibleGameOption()
+void USP_MainOptionWidget::VisibleGameOption()
 {
-	Switcher->SetActiveWidgetIndex(2);
+	WidgetSwitcher->SetActiveWidgetIndex(2);
 }
 
-void USPLobbyOptionWidget::ChangeScreenMode(FString string, ESelectInfo::Type type)
+void USP_MainOptionWidget::ChangeScreenMode(FString string, ESelectInfo::Type type)
 {
 	if(string == SCREENMODE_FULL)
 	{
@@ -134,7 +134,7 @@ void USPLobbyOptionWidget::ChangeScreenMode(FString string, ESelectInfo::Type ty
 
 }
 
-void USPLobbyOptionWidget::ChangeScreenResolution(FString string, ESelectInfo::Type type)
+void USP_MainOptionWidget::ChangeScreenResolution(FString string, ESelectInfo::Type type)
 {
 	FIntPoint ip;
 	if(string == RESOLUTION_SD) { ip = (720, 480); }
@@ -152,7 +152,7 @@ void USPLobbyOptionWidget::ChangeScreenResolution(FString string, ESelectInfo::T
 }
 
 
-void USPLobbyOptionWidget::ChangeViewDistance(FString string, ESelectInfo::Type type)
+void USP_MainOptionWidget::ChangeViewDistance(FString string, ESelectInfo::Type type)
 {
 	if(string == VIEWDISTANCE_LOW) 	Settings->SetViewDistanceQuality(100);
 	if(string == VIEWDISTANCE_MID) 	Settings->SetViewDistanceQuality(200);
@@ -163,7 +163,7 @@ void USPLobbyOptionWidget::ChangeViewDistance(FString string, ESelectInfo::Type 
 }
 
 
-void USPLobbyOptionWidget::ChangeFPS(FString string, ESelectInfo::Type type)
+void USP_MainOptionWidget::ChangeFPS(FString string, ESelectInfo::Type type)
 {
 	if(string == FPS_SETTING_30) Settings->SetFrameRateLimit(30);
 	if(string == FPS_SETTING_60) Settings->SetFrameRateLimit(60);
@@ -173,7 +173,7 @@ void USPLobbyOptionWidget::ChangeFPS(FString string, ESelectInfo::Type type)
 	Settings->ApplySettings(false);
 }
 
-void USPLobbyOptionWidget::ToggleVSyn()
+void USP_MainOptionWidget::ToggleVSyn()
 {
 	if(Settings->IsVSyncEnabled())
 	{
@@ -195,7 +195,7 @@ void USPLobbyOptionWidget::ToggleVSyn()
 	Settings->ApplySettings(false);
 }
 
-void USPLobbyOptionWidget::SetDynamicResolution()
+void USP_MainOptionWidget::SetDynamicResolution()
 {
 	Settings->SetDynamicResolutionEnabled(true);
 	Settings->ApplyNonResolutionSettings();

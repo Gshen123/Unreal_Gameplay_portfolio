@@ -1,13 +1,13 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SPTextButton.h"
+#include "SP_TextButton.h"
 
-void USPTextButton::NativePreConstruct()
+void USP_TextButton::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 	
-	if(TextBlock)
+	if(TextBlock && MainButton)
 	{
 		if(!Text_Context.IsEmpty())
 		{
@@ -21,7 +21,7 @@ void USPTextButton::NativePreConstruct()
 }
 
 // 인게임에서 델리게이트 바인딩을 적용합니다. 
-void USPTextButton::NativeConstruct()
+void USP_TextButton::NativeConstruct()
 {
 	Super::NativeConstruct();
 
@@ -36,7 +36,7 @@ void USPTextButton::NativeConstruct()
 }
 
 #if WITH_EDITOR
-void USPTextButton::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+void USP_TextButton::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	FName changeProperty = PropertyChangedEvent.GetPropertyName();
 	if(changeProperty == TEXT("Text_Context") || changeProperty == ("Text_FontSize") || changeProperty == ("Text_OutlineTextSize") || changeProperty == ("Text_OutlineTextColor")
@@ -62,7 +62,7 @@ void USPTextButton::PostEditChangeProperty(FPropertyChangedEvent& PropertyChange
 }
 #endif
 
-void USPTextButton::TextColorChange(FColor color) const
+void USP_TextButton::TextColorChange(FColor color) const
 {
 	if(TextBlock)
 	{
@@ -70,7 +70,7 @@ void USPTextButton::TextColorChange(FColor color) const
 	}
 }
 
-void USPTextButton::TextSizeChange(int size) const
+void USP_TextButton::TextSizeChange(int size) const
 {
 	if(TextBlock)
 	{
@@ -80,18 +80,40 @@ void USPTextButton::TextSizeChange(int size) const
 	}
 }
 
-inline void USPTextButton::SetButtonColor() const
+inline void USP_TextButton::SetButtonColor() const
 {
 	if(MainButton)
 	{
 		MainButton->WidgetStyle.Normal.TintColor = Btn_NormalColor;
 		MainButton->WidgetStyle.Hovered.TintColor = Btn_HoverColor;
-		MainButton->WidgetStyle.Pressed.TintColor = TBtn_PressColor;
+		MainButton->WidgetStyle.Pressed.TintColor = Btn_PressColor;
 		MainButton->WidgetStyle.Disabled.TintColor = Btn_DisabledColor;
+
+		if(Btn_OutlineRound)
+		{
+			FButtonStyle Style = MainButton->WidgetStyle;
+			
+			Style.Normal.DrawAs = ESlateBrushDrawType::Type::Box;
+			Style.Normal.OutlineSettings.RoundingType = ESlateBrushRoundingType::Type::FixedRadius;
+			Style.Normal.OutlineSettings.CornerRadii = Btn_OutlineConerRad;
+			
+			Style.Hovered.DrawAs = ESlateBrushDrawType::Type::Box;
+			Style.Hovered.OutlineSettings.RoundingType = ESlateBrushRoundingType::Type::FixedRadius;
+			Style.Hovered.OutlineSettings.CornerRadii = Btn_OutlineConerRad;
+
+			Style.Pressed.DrawAs = ESlateBrushDrawType::Type::Box;
+			Style.Pressed.OutlineSettings.RoundingType = ESlateBrushRoundingType::Type::FixedRadius;
+			Style.Pressed.OutlineSettings.CornerRadii = Btn_OutlineConerRad;
+
+			Style.Disabled.DrawAs = ESlateBrushDrawType::Type::Box;
+			Style.Disabled.OutlineSettings.RoundingType = ESlateBrushRoundingType::Type::FixedRadius;
+			Style.Disabled.OutlineSettings.CornerRadii = Btn_OutlineConerRad;
+			MainButton->SetStyle(Style);
+		}
 	}
 }
 
-void USPTextButton::ChangeOutlineTextProperty() const
+void USP_TextButton::ChangeOutlineTextProperty() const
 {
 	if(TextBlock)
 	{
@@ -102,36 +124,45 @@ void USPTextButton::ChangeOutlineTextProperty() const
 	}
 }
 
+void USP_TextButton::SetText(FText Content)
+{
+	Text_Context = Content;
+	
+	if(TextBlock)
+	{
+		TextBlock->SetText(Text_Context);
+	}
+}
 
-void USPTextButton::OnButtonClicked()
+void USP_TextButton::OnButtonClicked()
 {
 	ScopeOnClicked.Broadcast(this);
 	TextColorChange(Text_ClickColor);
 	TextSizeChange(Text_ClickSize);
 }
 
-void USPTextButton::OnButtonHoverd()
+void USP_TextButton::OnButtonHoverd()
 {
 	ScopeOnHoverd.Broadcast(this);
 	TextColorChange(Text_HoverColor);
 	TextSizeChange(Text_HoverSize);
 }
 
-void USPTextButton::OnButtonUnHoverd()
+void USP_TextButton::OnButtonUnHoverd()
 {
 	ScopeOnUnHoverd.Broadcast(this);
 	TextColorChange(Text_UnHoverColor);
 	TextSizeChange(Text_UnHoverSize);
 }
 
-void USPTextButton::OnButtonPressed()
+void USP_TextButton::OnButtonPressed()
 {
 	ScopeOnPressed.Broadcast(this);
 	TextColorChange(Text_PressColor);
 	TextSizeChange(Text_PressSize);
 }
 
-void USPTextButton::OnButtonReleased()
+void USP_TextButton::OnButtonReleased()
 {
 	ScopeOnReleased.Broadcast(this);
 	TextColorChange(Text_ReleaseColor);

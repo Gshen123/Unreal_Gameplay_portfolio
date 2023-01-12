@@ -4,9 +4,9 @@
 #include "SP_HUD.h"
 
 #include "Blueprint/UserWidget.h"
-#include "Gameplay_Portfolio/Widget/SP_ExitModal.h"
-#include "Gameplay_Portfolio/Widget/Lobby/SPLobbyOptionWidget.h"
 #include "Gameplay_Portfolio/Widget/Lobby/SPLobbyWidget.h"
+#include "Gameplay_Portfolio/Widget/System/SP_ExitModal.h"
+#include "Gameplay_Portfolio/Widget/System/SP_MainOptionWidget.h"
 
 void ASP_HUD::ShowMainMenu()
 {
@@ -19,7 +19,7 @@ void ASP_HUD::ShowMainMenu()
 	LobbyMenu->OptionButton->MainButton->OnClicked.AddUniqueDynamic(this, &ASP_HUD::ShowOptionMenu);
 	LobbyMenu->ExitButton->MainButton->OnClicked.AddUniqueDynamic(this, &ASP_HUD::ShowExitModal);
 	
-	SetInputModeUIOnly(PC);
+	SetInputModeGameAndUI(PC);
 }
 
 void ASP_HUD::HideMainMenu()
@@ -31,16 +31,25 @@ void ASP_HUD::HideMainMenu()
 	}
 }
 
+bool ASP_HUD::IsActiveMainMenu() const
+{
+	if (MainMenu)
+	{
+		return true;
+	}
+	return false;
+}
+
 void ASP_HUD::ShowOptionMenu()
 {
 	APlayerController* PC = Cast<APlayerController>(GetOwner());
 	OptionMenu = CreateWidget<UUserWidget>( PC, OptionMenuClass );
 	OptionMenu->AddToViewport();
 
-	auto OptionWidget = Cast<USPLobbyOptionWidget>(OptionMenu);
+	auto OptionWidget = Cast<USP_MainOptionWidget>(OptionMenu);
 	OptionWidget->GraphicTabBtn->SetFocus();
 	OptionWidget->ExitBtn->OnClicked.AddUniqueDynamic(this, &ASP_HUD::HideOptionMenu);
-	SetInputModeUIOnly(PC);
+	SetInputModeGameAndUI(PC);
 	//auto OptionWidget = Cast<USPLobbyOptionWidget>(MainMenu);
 	//OptionWidget->SetFocus();
 }
@@ -64,7 +73,7 @@ void ASP_HUD::ShowExitModal()
 	ExitModalWidget->NoButton->SetFocus();
 	ExitModalWidget->YesButton->MainButton->OnClicked.AddUniqueDynamic(this, &ASP_HUD::ExitGame);
 	ExitModalWidget->NoButton->MainButton->OnClicked.AddUniqueDynamic(this, &ASP_HUD::HideExitModal);
-	SetInputModeUIOnly(PC);
+	SetInputModeGameAndUI(PC);
 }
 
 void ASP_HUD::HideExitModal()

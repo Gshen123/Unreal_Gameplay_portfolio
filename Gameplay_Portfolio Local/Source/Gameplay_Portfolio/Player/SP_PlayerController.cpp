@@ -2,6 +2,8 @@
 
 
 #include "SP_PlayerController.h"
+
+#include "Gameplay_Portfolio/System/SPGameModeBase.h"
 #include "Gameplay_Portfolio/System/SP_HUD.h"
 
 void ASP_PlayerController::OnPossess(APawn* InPawn)
@@ -21,7 +23,7 @@ void ASP_PlayerController::SetupInputComponent()
 
 	//bExecutedWhenPaused는 플레이어 컨트롤의 틱을 중단시킵니다. 일시정지 기능을 보완합니다.
 	InputComponent->BindAction("ToggleGamePause", IE_Pressed, this, &ThisClass::ToggleGamePause).bExecuteWhenPaused = true;
-	InputComponent->BindAction("Exit", IE_Pressed, this, &ThisClass::ToggleGamePause);
+	InputComponent->BindAction("Exit", IE_Pressed, this, &ThisClass::VisibleExitModal);
 }
 
 void ASP_PlayerController::BeginPlay()
@@ -39,8 +41,13 @@ void ASP_PlayerController::ToggleGamePause()
 	bShowMouseCursor = IsPaused();
 	IsPaused()
 		? SetInputMode(FInputModeGameAndUI().SetHideCursorDuringCapture(false))
-		: SetInputMode(FInputModeGameOnly());
+		: SetInputMode(FInputModeGameAndUI());
 
+	IsPaused()
+		? nullptr
+		: SP_HUD->IsActiveMainMenu()
+			? SetShowMouseCursor(true) : nullptr;
+	
 	IsPaused()
 	?  SP_HUD->IsActivePauseMenu()
 			? nullptr : SP_HUD->ShowPauseMenu()

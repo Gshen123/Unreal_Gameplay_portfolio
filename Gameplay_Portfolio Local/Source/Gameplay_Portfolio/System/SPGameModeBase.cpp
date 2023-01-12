@@ -13,24 +13,3 @@ ASPGameModeBase::ASPGameModeBase()
 		DefaultPawnClass = BP_SPCharacter.Class;
 	}
 }
-
-bool ASPGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate)
-{
-	const bool Succeed = Super::SetPause(PC, CanUnpauseDelegate);
-	if(Succeed)
-	{
-		OnGamePause.Broadcast(true);
-	}
-	
-	return Succeed;
-}
-
-bool ASPGameModeBase::ClearPause()
-{
-	const bool Succeed = Super::ClearPause();
-	if(Succeed)
-	{
-		OnGamePause.Broadcast(false);
-	}
-	return false;
-}

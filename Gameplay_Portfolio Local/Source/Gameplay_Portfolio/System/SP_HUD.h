@@ -23,6 +23,9 @@ public:
 	void HideMainMenu();
 
 	UFUNCTION(BlueprintCallable)
+	bool IsActiveMainMenu() const;
+	
+	UFUNCTION(BlueprintCallable)
 	void ShowOptionMenu();
 	
 	UFUNCTION(BlueprintCallable)

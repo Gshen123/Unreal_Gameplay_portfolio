@@ -6,21 +6,21 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "SPTextButton.generated.h"
+#include "SP_TextButton.generated.h"
 
 
 // 기존 UMG의 버튼은 블루프린트에선 함수 바인딩을 잘 지원하지만, C++을 통해 접근하면 SButton의 델리게이트는 추가적인 인자를 제공하지 않기 때문에 불편합니다.
 // 자체 버튼 클래스를 통해 이를 개선했으며, 텍스트의 잦은 수정을 고려해 상위 클래스에서의 접근성을 향상시켰습니다.
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnClicked, class USPTextButton*, btn);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnHoverd, class USPTextButton*, btn);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnUnHoverd, class USPTextButton*, btn);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnPressed, class USPTextButton*, btn);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnReleased, class USPTextButton*, btn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnClicked, class USP_TextButton*, btn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnHoverd, class USP_TextButton*, btn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnUnHoverd, class USP_TextButton*, btn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnPressed, class USP_TextButton*, btn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FScopeOnReleased, class USP_TextButton*, btn);
 
 UCLASS(Blueprintable, BlueprintType)
-class GAMEPLAY_PORTFOLIO_API USPTextButton : public UUserWidget
+class GAMEPLAY_PORTFOLIO_API USP_TextButton : public UUserWidget
 {
 
 private:
@@ -93,20 +93,28 @@ public:
 	FColor Btn_NormalColor = FColor(255,255,255,0);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
-	FColor Btn_HoverColor = FColor(255,255,255,255);
+	FColor Btn_HoverColor = FColor(255,255,255,0);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
-	FColor TBtn_PressColor = FColor(255,255,255,255);
+	FColor Btn_PressColor = FColor(255,255,255,0);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
-	FColor Btn_DisabledColor = FColor(255,255,255,255);
+	FColor Btn_DisabledColor = FColor(255,255,255,0);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
+	bool Btn_OutlineRound = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
+	FVector4 Btn_OutlineConerRad = FVector4(0,0,0,0);
 	
 	FScopeOnClicked ScopeOnClicked;
 	FScopeOnHoverd ScopeOnHoverd;
 	FScopeOnUnHoverd ScopeOnUnHoverd;
 	FScopeOnPressed ScopeOnPressed;
 	FScopeOnReleased ScopeOnReleased;
+
+	UFUNCTION(BlueprintCallable)
+	void SetText(FText Content);
 	
 	UFUNCTION(BlueprintCallable)
 	void OnButtonClicked();

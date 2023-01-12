@@ -7,14 +7,14 @@
 #include "Components/BackgroundBlur.h"
 #include "Components/ComboBoxString.h"
 #include "Components/WidgetSwitcher.h"
-#include "Gameplay_Portfolio/Widget/SPTextButton.h"
-#include "SPLobbyOptionWidget.generated.h"
+#include "Gameplay_Portfolio/Widget/SP_TextButton.h"
+#include "SP_MainOptionWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GAMEPLAY_PORTFOLIO_API USPLobbyOptionWidget : public UUserWidget
+class GAMEPLAY_PORTFOLIO_API USP_MainOptionWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -26,22 +26,19 @@ public:
 
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|위젯")
-	USPTextButton* GraphicTabBtn;
+	UPROPERTY(meta = (BindWidget))
+	USP_TextButton* GraphicTabBtn;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|위젯")
-	USPTextButton* AudioTabBtn;
+	UPROPERTY(meta = (BindWidget))
+	USP_TextButton* AudioTabBtn;
     	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|위젯")
-	USPTextButton* GameTabBtn;
+	UPROPERTY(meta = (BindWidget))
+	USP_TextButton* GameTabBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|위젯")
-	UBackgroundBlur* Blur;
+	UPROPERTY(meta = (BindWidget))
+	UWidgetSwitcher* WidgetSwitcher;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|위젯")
-	UWidgetSwitcher* Switcher;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|위젯")
+	UPROPERTY(meta = (BindWidget))
 	UButton* ExitBtn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|위젯|그래픽")

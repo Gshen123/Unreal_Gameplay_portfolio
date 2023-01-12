@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Gameplay_Portfolio/Widget/SPTextButton.h"
+#include "Gameplay_Portfolio/Widget/SP_TextButton.h"
 #include "SPLobbyWidget.generated.h"
 
 /**
@@ -24,16 +24,16 @@ public:
 	virtual void NativeDestruct() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋")
-	USPTextButton* StartButton;
+	USP_TextButton* StartButton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋")
-	USPTextButton* LoadButton;
+	USP_TextButton* LoadButton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋")
-	USPTextButton* OptionButton;
+	USP_TextButton* OptionButton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋")
-	USPTextButton* ExitButton;
+	USP_TextButton* ExitButton;
 
 	UFUNCTION()
 	void GameStart();

@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SPTextButton.h"
 #include "Blueprint/UserWidget.h"
 #include "SP_ExitModal.generated.h"
 
+class USP_TextButton;
 /**
  * 
  */
@@ -21,9 +21,9 @@ public:
 	
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|기본",  meta = (DisplayPriority = 1))
-	USPTextButton* YesButton;
+	UPROPERTY(meta = (BindWidget))
+	USP_TextButton* YesButton;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "버튼|기본",  meta = (DisplayPriority = 2))
-	USPTextButton* NoButton;
+	UPROPERTY(meta = (BindWidget))
+	USP_TextButton* NoButton;
 };
