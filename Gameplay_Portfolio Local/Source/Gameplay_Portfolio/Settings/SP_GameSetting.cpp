@@ -3,7 +3,7 @@
 
 #include "SP_GameSetting.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogSPGameSetting, All, All);
+DEFINE_LOG_CATEGORY_STATIC(LogGameSetting, All, All);
 
 void USP_GameSetting::SetName(const FText& InName)
 {
@@ -21,7 +21,7 @@ FSettingOption USP_GameSetting::GetCurrentOption() const
 	const auto Option = Options.FindByPredicate([&](const auto& Opt) {return CurrentValue == Opt.Value;});
 	if(!Option)
 	{
-		UE_LOG(LogSPGameSetting, Error, TEXT("Option doesn't exist"), *Name.ToString());
+		UE_LOG(LogGameSetting, Error, TEXT("Option doesn't exist"), *Name.ToString());
 		return FSettingOption{};
 	}
 	
@@ -65,7 +65,7 @@ int32 USP_GameSetting::GetCurrentValue() const
 {
 	if(!Getter)
 	{
-		UE_LOG(LogSPGameSetting, Error, TEXT("Getter func is not set for %s"), *Name.ToString());
+		UE_LOG(LogGameSetting, Error, TEXT("Getter func is not set for %s"), *Name.ToString());
 		return INDEX_NONE;
 	}
 	return Getter();
@@ -75,7 +75,7 @@ void USP_GameSetting::SetCurrentValue(int32 Value)
 {
 	if(!Setter)
 	{
-		UE_LOG(LogSPGameSetting, Error, TEXT("Setter func is not set for %s"), *Name.ToString());
+		UE_LOG(LogGameSetting, Error, TEXT("Setter func is not set for %s"), *Name.ToString());
 		return;
 	}
 

@@ -3,67 +3,70 @@
 
 #include "SP_PlayerController.h"
 
-#include "Gameplay_Portfolio/System/SPGameModeBase.h"
-#include "Gameplay_Portfolio/System/SP_HUD.h"
+#include "SP_GameHUD.h"
+#include "Gameplay_Portfolio/System/SP_GameModeBase.h"
+
+DEFINE_LOG_CATEGORY_STATIC(Log_SPPlayerController, All, All);
 
 void ASP_PlayerController::OnPossess(APawn* InPawn)
 {
-	Super::OnPossess(InPawn);
+    Super::OnPossess(InPawn);
 }
 
 void ASP_PlayerController::OnUnPossess()
 {
-	Super::OnUnPossess();
+    Super::OnUnPossess();
 }
 
 void ASP_PlayerController::SetupInputComponent()
 {
-	Super::SetupInputComponent();
-	check(InputComponent);
+    Super::SetupInputComponent();
+    check(InputComponent);
 
-	//bExecutedWhenPaused는 플레이어 컨트롤의 틱을 중단시킵니다. 일시정지 기능을 보완합니다.
-	InputComponent->BindAction("ToggleGamePause", IE_Pressed, this, &ThisClass::ToggleGamePause).bExecuteWhenPaused = true;
-	InputComponent->BindAction("Exit", IE_Pressed, this, &ThisClass::VisibleExitModal);
+    //bExecutedWhenPaused는 플레이어 컨트롤의 틱을 중단시킵니다. 일시정지 기능을 보완합니다.
+    InputComponent->BindAction("GamePause", IE_Pressed, this, &ThisClass::OnPauseGame).bExecuteWhenPaused = true;
 }
 
 void ASP_PlayerController::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
-	SP_HUD = Cast<ASP_HUD>(MyHUD);
-	check(SP_HUD);
-	SP_HUD->ShowMainMenu();
+    if(GetWorld())
+    {
+        if(const auto GameMode = Cast<ASP_GameModeBase>(GetWorld()->GetAuthGameMode()))
+        {
+            GameMode->OnGameModeStateChanged.AddUObject(this, &ThisClass::OnGameModeTypeChanged);
+        }
+    }
 }
 
-void ASP_PlayerController::ToggleGamePause()
+void ASP_PlayerController::OnPauseGame()
 {
-	SetPause(!IsPaused());
-	bShowMouseCursor = IsPaused();
-	IsPaused()
-		? SetInputMode(FInputModeGameAndUI().SetHideCursorDuringCapture(false))
-		: SetInputMode(FInputModeGameAndUI());
+    const auto GameMode = GetWorld()->GetAuthGameMode();
+    if(!GetWorld() || !GameMode) return;
 
-	IsPaused()
-		? nullptr
-		: SP_HUD->IsActiveMainMenu()
-			? SetShowMouseCursor(true) : nullptr;
-	
-	IsPaused()
-	?  SP_HUD->IsActivePauseMenu()
-			? nullptr : SP_HUD->ShowPauseMenu()
-	:  SP_HUD->IsActivePauseMenu()
-			? SP_HUD->HidePauseMenu() : nullptr;
+    IsPaused()
+        ? GameMode->ClearPause()
+        : GameMode->SetPause(this);;
 
+    UE_LOG(Log_SPPlayerController, Display, TEXT("OnPauseGame !"));
 }
 
-void ASP_PlayerController::VisibleExitModal()
+void ASP_PlayerController::OnGameModeTypeChanged(EGameModeType Type)
 {
-	if(SP_HUD->IsActiveExitModal())
-	{
-		SP_HUD->HideExitModal();
-	}
-	else
-	{
-		SP_HUD->ShowExitModal();
-	}
+    if(Type == EGameModeType::InProgress)
+    {
+        SetInputMode(FInputModeGameOnly());
+        bShowMouseCursor = false;
+    }
+    else if(Type == EGameModeType::MainMenu)
+    {
+        SetInputMode(FInputModeGameAndUI());
+        bShowMouseCursor = true;
+    }
+    else
+    {
+        SetInputMode(FInputModeUIOnly());
+        bShowMouseCursor = true;
+    }
 }
