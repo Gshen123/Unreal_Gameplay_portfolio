@@ -15,7 +15,7 @@ class GAMEPLAY_PORTFOLIO_API USP_GameInstance : public UGameInstance
 	GENERATED_BODY()
 public:
     FLevelData GetStartupLevelData() const { return StartupLevelData; }
-    void SetStartupLevelData(const FLevelData& Data) { StartupLevelData = Data; }
+    void SetStartupLevelData(const FLevelData& Data) { StartupLevelData = Data;}
 
     TArray<FLevelData> GetLevelsData() const { return LevelsData; }
 
@@ -23,12 +23,13 @@ public:
 
     
 protected:
-    UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ToolTip = "Level names must be unique!"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game", meta = (ToolTip = "Level names must be unique!"))
     TArray<FLevelData> LevelsData;
     
     UPROPERTY(EditDefaultsOnly, Category = "Sound")
     USoundClass* MasterSoundClass;
 
 private:
+    UPROPERTY()
     FLevelData StartupLevelData;
 };

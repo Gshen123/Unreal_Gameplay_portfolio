@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "SP_PauseWidget.generated.h"
 
+class USP_GameInstance;
 class USP_TextButton;
 /**
  * 
@@ -53,4 +54,6 @@ private:
 
     UFUNCTION()
     void ShowOptionWidget();
+
+    USP_GameInstance* GetSP_GameInstance() const;
 };

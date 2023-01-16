@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/HUD.h"
+#include "SP_HUDBase.h"
 #include "SP_MenuHUD.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GAMEPLAY_PORTFOLIO_API ASP_MenuHUD : public AHUD
+class GAMEPLAY_PORTFOLIO_API ASP_MenuHUD : public ASP_HUDBase
 {
     GENERATED_BODY()
 

@@ -6,7 +6,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 
 void USP_MergeUtil::ToMergeParams(const TArray<FSkelMeshMergeSectionMapping_BP>& InSectionMappings,
-                                   TArray<FSkelMeshMergeSectionMappingOroa>& OutSectionMappings)
+                                   TArray<FSkelMeshMergeSectionMappingScope>& OutSectionMappings)
 {
 	if (InSectionMappings.Num() > 0)
 	{
@@ -18,8 +18,8 @@ void USP_MergeUtil::ToMergeParams(const TArray<FSkelMeshMergeSectionMapping_BP>&
 	}
 }
 
-void USP_MergeUtil::ToMergeParams(const TArray<FSkelMeshMergeUVTransformMappingOroa>& InUVTransformsPerMesh,
-	TArray<FSkelMeshMergeMeshUVTransformsOroa>& OutUVTransformsPerMesh)
+void USP_MergeUtil::ToMergeParams(const TArray<FSkelMeshMergeUVTransformMappingScope>& InUVTransformsPerMesh,
+	TArray<FSkelMeshMergeMeshUVTransformsScope>& OutUVTransformsPerMesh)
 {
 	if (InUVTransformsPerMesh.Num() > 0)
 	{
@@ -28,7 +28,7 @@ void USP_MergeUtil::ToMergeParams(const TArray<FSkelMeshMergeUVTransformMappingO
 		for (int32 i = 0; i < InUVTransformsPerMesh.Num(); ++i)
 		{
 			TArray<FTransform>& OutUVTransforms = OutUVTransformsPerMesh[i].UVTransforms;
-			const TArray<FSkelMeshMergeMeshUVTransformsOroa>& InUVTransforms = InUVTransformsPerMesh[i].UVTransformsPerMesh;
+			const TArray<FSkelMeshMergeMeshUVTransformsScope>& InUVTransforms = InUVTransformsPerMesh[i].UVTransformsPerMesh;
 			if (InUVTransforms.Num() > 0)
 			{
 				OutUVTransforms.Empty();
@@ -42,7 +42,7 @@ void USP_MergeUtil::ToMergeParams(const TArray<FSkelMeshMergeUVTransformMappingO
 	}
 }
 
-USkeletalMesh* USP_MergeUtil::MergeMeshes(const FSkeletalMeshMergeParamsOroa& Params)
+USkeletalMesh* USP_MergeUtil::MergeMeshes(const FSkeletalMeshMergeParamsScope& Params)
 {
 	
 	TArray<USkeletalMesh*> MeshesToMergeCopy = Params.MeshesToMerge;
@@ -56,8 +56,8 @@ USkeletalMesh* USP_MergeUtil::MergeMeshes(const FSkeletalMeshMergeParamsOroa& Pa
 		return nullptr;
 	}
 	EMeshBufferAccess BufferAccess = Params.bNeedsCpuAccess ? EMeshBufferAccess::ForceCPUAndGPU : EMeshBufferAccess::Default;
-	TArray<FSkelMeshMergeSectionMappingOroa> SectionMappings;
-	TArray<FSkelMeshMergeMeshUVTransformsOroa> UvTransforms;
+	TArray<FSkelMeshMergeSectionMappingScope> SectionMappings;
+	TArray<FSkelMeshMergeMeshUVTransformsScope> UvTransforms;
 	ToMergeParams(Params.MeshSectionMappings, SectionMappings);
 	ToMergeParams(Params.UVTransformsPerMesh, UvTransforms);
 	bool bRunDuplicateCheck = false;

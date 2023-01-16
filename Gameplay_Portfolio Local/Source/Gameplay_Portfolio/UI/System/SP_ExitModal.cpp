@@ -4,9 +4,12 @@
 #include "SP_ExitModal.h"
 
 #include "SP_GameInstance.h"
+#include "SP_HUDBase.h"
 #include "Components/Button.h"
 #include "Gameplay_Portfolio/UI/SP_TextButton.h"
 #include "Kismet/GameplayStatics.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogExitModal, All, All);
 
 void USP_ExitModal::NativeConstruct()
 {
@@ -31,26 +34,32 @@ void USP_ExitModal::NativeConstruct()
 
 void USP_ExitModal::OnGoToMenu()
 {
-    if(!GetWorld()) return;
-
-    const auto GameInstance = GetWorld()->GetGameInstance<USP_GameInstance>();
+    const auto GameInstance = GetSP_GameInstance();
     if(!GameInstance) return;
-
-    if(GameInstance->GetStartupLevelData().LevelName == NAME_None)
-    {
-        return;
-    }
     
-    //const FName StartupLevelName = "Map_CharacterSettingLevel";
     UGameplayStatics::OpenLevel(this, GameInstance->GetStartupLevelData().LevelName);
 }
 
 void USP_ExitModal::HideWidget()
 {
-    SetVisibility(ESlateVisibility::Hidden);
+    GetSP_HUD()->RemoveWidgetInStack(this);
 }
 
 void USP_ExitModal::GameExit()
 {
     UKismetSystemLibrary::QuitGame(this, GetOwningPlayer(), EQuitPreference::Quit, true);
+}
+
+USP_GameInstance* USP_ExitModal::GetSP_GameInstance() const
+{
+    if(!GetWorld()) return nullptr;
+    return GetWorld()->GetGameInstance<USP_GameInstance>();
+}
+
+ASP_HUDBase* USP_ExitModal::GetSP_HUD() const
+{
+    const auto HUD = Cast<ASP_HUDBase>(GetOwningPlayer()->GetHUD());
+
+    if(!HUD) return nullptr;
+    return HUD;
 }

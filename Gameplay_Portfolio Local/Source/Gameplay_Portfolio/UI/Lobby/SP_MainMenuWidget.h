@@ -3,7 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SP_GameInstance.h"
+#include "SP_LevelItemBox.h"
+#include "SP_LevelItemWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "Core/SP_MenuHUD.h"
 #include "Gameplay_Portfolio/UI/SP_TextButton.h"
 #include "SP_MainMenuWidget.generated.h"
 
@@ -33,9 +37,9 @@ public:
     UPROPERTY(meta = (BindWidget))
     USP_TextButton* ExitButton;
 
-    UFUNCTION()
-    void GameStart();
-	
+    UPROPERTY(meta = (BindWidget))
+    USP_LevelItemBox* LevelItemBox;
+    
     UFUNCTION()
     void LoadGame();
 	
@@ -45,14 +49,31 @@ public:
     UFUNCTION()
     void ShowExitModal();
 
+    UFUNCTION()
+    void ShowSelectedLevel();
+
     UPROPERTY()
     FMainMenuOption MainMenuOptionDelegate;
     
 protected:
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<class UUserWidget> ExitModalClass;
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<class UUserWidget> LevelItemWidgetClass;
     
 private:
     UPROPERTY()
     UUserWidget* ExitModal;
+
+    UPROPERTY()
+    TArray<USP_LevelItemWidget*> LevelItemWidgets;
+
+    void InitLevelItems();
+    void OnLevelSelected(const FLevelData& Data);
+    
+    USP_GameInstance* GetSP_GameInstance() const;
+    ASP_MenuHUD* GetSP_MenuHUD() const;
+
+    bool SelectedLevel = false;
 };

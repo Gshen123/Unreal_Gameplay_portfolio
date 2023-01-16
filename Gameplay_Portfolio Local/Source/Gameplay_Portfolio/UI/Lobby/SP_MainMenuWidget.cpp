@@ -12,31 +12,69 @@ void USP_MainMenuWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    if(StartButton) StartButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::GameStart);
+    if(StartButton) StartButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::ShowSelectedLevel);
     if(LoadButton) LoadButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::LoadGame);
     if(OptionButton) OptionButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::ShowOptionWidget);
     if(ExitButton) ExitButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::ShowExitModal);
+
+
+    InitLevelItems();
 }
 
-void USP_MainMenuWidget::GameStart()
+void USP_MainMenuWidget::InitLevelItems()
 {
-    if(!GetWorld()) return;
-
-    const auto GameInstance = GetWorld()->GetGameInstance<USP_GameInstance>();
+    const auto GameInstance = GetSP_GameInstance();
     if(!GameInstance) return;
 
-    if(GameInstance->GetStartupLevelData().LevelName == NAME_None)
+    checkf(GameInstance->GetLevelsData().Num() != 0, TEXT("Levels data must not be empty!"));
+
+    if(!LevelItemBox) return;
+    LevelItemBox->GetLevelItemBox()->ClearChildren();
+
+    for(auto LevelData: GameInstance->GetLevelsData())
     {
-        return;
+        const auto LevelItemWidget = CreateWidget<USP_LevelItemWidget>(GetWorld(), LevelItemWidgetClass);
+        const auto LevelItemWidgetCasted = Cast<USP_LevelItemWidget>(LevelItemWidget);
+        if(!LevelItemWidgetCasted) return;
+
+        LevelItemWidgetCasted->SetLevelData(LevelData);
+        LevelItemWidgetCasted->OnLevelSelected.AddUObject(this, &ThisClass::OnLevelSelected);
+        LevelItemWidgetCasted->SetPadding(FMargin(15,15,15,15));
+
+        LevelItemBox->GetLevelItemBox()->AddChild(LevelItemWidget);
+        LevelItemWidgets.Add(LevelItemWidget);
     }
-    
-    //const FName StartupLevelName = "Map_CharacterSettingLevel";
-    UGameplayStatics::OpenLevel(this, GameInstance->GetStartupLevelData().LevelName);
+
+    if(GameInstance->GetStartupLevelData().LevelName.IsNone())
+    {
+        OnLevelSelected(GameInstance->GetLevelsData()[0]);
+    }
+    else
+    {
+        OnLevelSelected(GameInstance->GetStartupLevelData());
+    }
+}
+
+void USP_MainMenuWidget::OnLevelSelected(const FLevelData& Data)
+{
+    const auto GameInstance = GetSP_GameInstance();
+    if(!GameInstance) return;
+
+    GameInstance->SetStartupLevelData(Data);
+
+    for(const auto LevelItemWidget : LevelItemWidgets)
+    {
+        if(LevelItemWidget)
+        {
+            const auto IsSelected = Data.LevelName == LevelItemWidget->GetLevelData().LevelName;
+            LevelItemWidget->SetSelected(IsSelected);
+        }
+    }
 }
 
 void USP_MainMenuWidget::LoadGame()
 {
-	
+    
 }
 
 void USP_MainMenuWidget::ShowOptionWidget()
@@ -51,7 +89,31 @@ void USP_MainMenuWidget::ShowExitModal()
         APlayerController* PC = Cast<APlayerController>(GetOwningPlayer());
         ExitModal = CreateWidget<UUserWidget>( PC, ExitModalClass );
         ExitModal->AddToViewport();
+        GetSP_MenuHUD()->PushWidgetStack(ExitModal);
     }
     
-    ExitButton->SetVisibility(ESlateVisibility::Visible);
+    GetSP_MenuHUD()->PushWidgetStack(ExitModal);
+}
+
+void USP_MainMenuWidget::ShowSelectedLevel()
+{
+    if(!LevelItemBox) return;
+    if(LevelItemBox->GetVisibility() == ESlateVisibility::Visible) return;
+
+    UE_LOG(LogMainMenuWidget, Display, TEXT("Selected Level Please"));
+    GetSP_MenuHUD()->PushWidgetStack(LevelItemBox);
+}
+
+USP_GameInstance* USP_MainMenuWidget::GetSP_GameInstance() const
+{
+    if(!GetWorld()) return nullptr;
+    return GetWorld()->GetGameInstance<USP_GameInstance>();
+}
+
+ASP_MenuHUD* USP_MainMenuWidget::GetSP_MenuHUD() const
+{
+    const auto HUD = Cast<ASP_MenuHUD>(GetOwningPlayer()->GetHUD());
+    if(!HUD) return nullptr;
+
+    return HUD;
 }

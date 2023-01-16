@@ -1,10 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "SP_GameModeBase.h"
-
-#include "SP_GameHUD.h"
 #include "SP_PlayerController.h"
 #include "Gameplay_Portfolio/Character/SP_BaseCharacter.h"
+#include "Gameplay_Portfolio/UI/Game/SP_GameHUD.h"
 
 DEFINE_LOG_CATEGORY_STATIC(Log_SPGameModeBase, All, All);
 

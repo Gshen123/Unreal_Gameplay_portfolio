@@ -25,7 +25,7 @@ struct GAMEPLAY_PORTFOLIO_API FSkelMeshMergeSectionMapping_BP
 };
 
 USTRUCT(BlueprintType)
-struct GAMEPLAY_PORTFOLIO_API FSkelMeshMergeSectionMappingOroa
+struct GAMEPLAY_PORTFOLIO_API FSkelMeshMergeSectionMappingScope
 {
 	GENERATED_USTRUCT_BODY()
 	
@@ -35,7 +35,7 @@ struct GAMEPLAY_PORTFOLIO_API FSkelMeshMergeSectionMappingOroa
 };
 
 USTRUCT(BlueprintType)
-struct GAMEPLAY_PORTFOLIO_API FSkelMeshMergeMeshUVTransformsOroa
+struct GAMEPLAY_PORTFOLIO_API FSkelMeshMergeMeshUVTransformsScope
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -45,20 +45,20 @@ struct GAMEPLAY_PORTFOLIO_API FSkelMeshMergeMeshUVTransformsOroa
 };
 
 USTRUCT(BlueprintType)
-struct GAMEPLAY_PORTFOLIO_API FSkelMeshMergeUVTransformMappingOroa
+struct GAMEPLAY_PORTFOLIO_API FSkelMeshMergeUVTransformMappingScope
 {
 	GENERATED_USTRUCT_BODY()
 	
 	/** UV coordinates transform datam one entry for each Skeletal Mesh. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh Merge Parameters")
-	TArray<FSkelMeshMergeMeshUVTransformsOroa> UVTransformsPerMesh;
+	TArray<FSkelMeshMergeMeshUVTransformsScope> UVTransformsPerMesh;
 };
 
 USTRUCT(BlueprintType)
-struct GAMEPLAY_PORTFOLIO_API FSkeletalMeshMergeParamsOroa
+struct GAMEPLAY_PORTFOLIO_API FSkeletalMeshMergeParamsScope
 {
 	GENERATED_BODY()
-	FSkeletalMeshMergeParamsOroa()
+	FSkeletalMeshMergeParamsScope()
 	{
 		StripTopLODS = 0;
 		bNeedsCpuAccess = false;
@@ -70,7 +70,7 @@ struct GAMEPLAY_PORTFOLIO_API FSkeletalMeshMergeParamsOroa
 	TArray < FSkelMeshMergeSectionMapping_BP > MeshSectionMappings;
 	// An optional array to transform the UVs in each mesh
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray < FSkelMeshMergeUVTransformMappingOroa > UVTransformsPerMesh;
+	TArray < FSkelMeshMergeUVTransformMappingScope> UVTransformsPerMesh;
 	// The list of skeletal meshes to merge.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray < USkeletalMesh* > MeshesToMerge;

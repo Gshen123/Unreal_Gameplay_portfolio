@@ -9,21 +9,6 @@
  */
 
 
-USTRUCT(BlueprintType)
-struct FLevelData
-{
-    GENERATED_USTRUCT_BODY()
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
-    FName LevelName = NAME_None;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
-    FName LevelDisplayName = NAME_None;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
-    UTexture2D* LevelThumb;
-};
-
 UENUM()
 enum class EGameModeType : uint8
 {
@@ -34,3 +19,30 @@ enum class EGameModeType : uint8
     Pause = 4,
     GameOver = 5,
 };
+
+UENUM()
+enum class ELevelType : uint8
+{
+    Startup = 0,
+    MainMenu = 0,
+    CharacterSetup = 1,
+    InGame = 2,
+    None = 3
+};
+
+USTRUCT(BlueprintType)
+struct FLevelData
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    FName LevelName = NAME_None;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    FName LevelDisplayName = NAME_None;
+    
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    UTexture2D* LevelThumb;
+};
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelSelectedSignature, const FLevelData&);

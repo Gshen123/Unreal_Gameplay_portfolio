@@ -9,6 +9,8 @@
 #include "Gameplay_Portfolio/UI/SP_TextButton.h"
 #include "Kismet/GameplayStatics.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogPauseWidget, All, All);
+
 void USP_PauseWidget::NativeConstruct()
 {
     Super::NativeConstruct();
@@ -49,17 +51,9 @@ void USP_PauseWidget::OnClearPause()
 
 void USP_PauseWidget::OnGoToMenu()
 {
-    if(!GetWorld()) return;
-
-    const auto GameInstance = GetWorld()->GetGameInstance<USP_GameInstance>();
+    const auto GameInstance = GetSP_GameInstance();
     if(!GameInstance) return;
-
-    if(GameInstance->GetStartupLevelData().LevelName == NAME_None)
-    {
-        return;
-    }
     
-    //const FName StartupLevelName = "Map_CharacterSettingLevel";
     UGameplayStatics::OpenLevel(this, GameInstance->GetStartupLevelData().LevelName);
 }
 
@@ -71,5 +65,11 @@ void USP_PauseWidget::ExitGame()
 void USP_PauseWidget::ShowOptionWidget()
 {
     PauseWidgetOptionDelegate.Broadcast();
+}
+
+USP_GameInstance* USP_PauseWidget::GetSP_GameInstance() const
+{
+    if(!GetWorld()) return nullptr;
+    return GetWorld()->GetGameInstance<USP_GameInstance>();
 }
 
