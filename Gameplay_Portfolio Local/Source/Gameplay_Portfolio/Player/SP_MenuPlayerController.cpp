@@ -2,8 +2,7 @@
 
 
 #include "SP_MenuPlayerController.h"
-
-#include "SP_MenuHUD.h"
+#include "Gameplay_Portfolio/UI/Lobby/SP_MenuHUD.h"
 
 
 void ASP_MenuPlayerController::BeginPlay()

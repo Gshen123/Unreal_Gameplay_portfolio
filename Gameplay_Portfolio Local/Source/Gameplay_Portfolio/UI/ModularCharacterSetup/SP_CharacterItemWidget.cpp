@@ -7,12 +7,14 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogCharacterItemWidget, All, All);
 
-void USP_CharacterItemWidget::NativeOnInitialized()
+void USP_CharacterItemWidget::NativeConstruct()
 {
-    Super::NativeOnInitialized();
+    Super::NativeConstruct();
 
     if(NextItemButton) NextItemButton->OnClicked.AddDynamic(this, &ThisClass::OnNextItem);
-    if(PrevItemButton) NextItemButton->OnClicked.AddDynamic(this, &ThisClass::OnNextItem);
+    if(PrevItemButton) PrevItemButton->OnClicked.AddDynamic(this, &ThisClass::OnPrevItem);
+
+    InitAssets();
 }
 
 void USP_CharacterItemWidget::InitAssets()
@@ -26,22 +28,28 @@ void USP_CharacterItemWidget::InitAssets()
     {
         FAssetData AssetDataToParse;
         AssetManager.GetPrimaryAssetData(ID, AssetDataToParse);
-        const USP_ModularItemBase* Asset = CastChecked<USP_ModularItemBase>(AssetDataToParse.GetAsset());
-        Assets.AddUnique(Asset);
+
+        FString nameFilter = AssetDataToParse.GetAsset()->GetFName().ToString();
+        if(!nameFilter.Contains("Default"))
+        {
+            const USP_ModularItemBase* Asset = CastChecked<USP_ModularItemBase>(AssetDataToParse.GetAsset());
+            Assets.Add(Asset);
+        }
     }
 
-    if(Assets.Num() > 1)
+    if(Assets.Num() < 1)
     {
-        UE_LOG(LogCharacterItemWidget, Error, TEXT("%s is Empty Or Not Setting"), AssetType.GetName());
+        UE_LOG(LogCharacterItemWidget, Error, TEXT("%s is Empty Or Not Setting"), *AssetType.GetName().ToString());
+        return;
     }
-
+    
     if(Assets[0].Get() == nullptr)
     {
         CurrentItem = AssetManager.GetAsset(Assets[0]);
     }
     else
     {
-        CurrentItem = Assets[0].Get();
+        SetItem();
     }
 }
 
@@ -49,16 +57,40 @@ void USP_CharacterItemWidget::UpdateTexts() const
 {
     if(CurrentItem)
     {
-       TextBlock->SetText( CurrentItem->GetDisplayName());
+        TextBlock->SetText( CurrentItem->GetDisplayName());
+        TypeTextBlock->SetText(FText::FromString(AssetType.ToString()));
     }
 }
 
 void USP_CharacterItemWidget::OnNextItem()
 {
-    
+    if(index >= Assets.Max()) index++;
+    else index = 0;
+
+    SetItem();
+    ItemOnChanged.Broadcast();
 }
 
 void USP_CharacterItemWidget::OnPrevItem()
 {
+    if(index > 0) index--;
+    else index = Assets.Max();
+
+    SetItem();
+    ItemOnChanged.Broadcast();
+}
+
+void USP_CharacterItemWidget::SetItem()
+{
+    if(Assets[index].Get() == nullptr)
+    {
+        USP_AssetManager& AssetManager = USP_AssetManager::Get();
+        CurrentItem = AssetManager.GetAsset(Assets[index]);
+    }
+    else
+    {
+        CurrentItem = Assets[index].Get();
+    }
     
+    UpdateTexts();
 }

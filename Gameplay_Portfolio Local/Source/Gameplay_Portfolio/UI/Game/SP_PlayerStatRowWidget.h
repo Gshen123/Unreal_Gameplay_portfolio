@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "SP_PlayerStatRowWidget.generated.h"
 

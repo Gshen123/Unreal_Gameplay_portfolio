@@ -6,8 +6,8 @@
 #include "SP_GameInstance.h"
 #include "SP_LevelItemBox.h"
 #include "SP_LevelItemWidget.h"
+#include "SP_MenuHUD.h"
 #include "Blueprint/UserWidget.h"
-#include "Core/SP_MenuHUD.h"
 #include "Gameplay_Portfolio/UI/SP_TextButton.h"
 #include "SP_MainMenuWidget.generated.h"
 

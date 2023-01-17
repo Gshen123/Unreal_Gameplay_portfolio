@@ -4,22 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/BackgroundBlur.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Gameplay_Portfolio/Items/ModularCharacter/SP_ModularItemBase.h"
+#include "Gameplay_Portfolio/UI/SP_TextButton.h"
 #include "SP_CharacterItemWidget.generated.h"
 
 /**
  * 
  */
+DECLARE_MULTICAST_DELEGATE(FCharacterItemOnChanged);
+
 UCLASS()
 class GAMEPLAY_PORTFOLIO_API USP_CharacterItemWidget : public UUserWidget
 {
     GENERATED_BODY()
 
 public:
-
+    FCharacterItemOnChanged ItemOnChanged;
 
 protected:
     UPROPERTY(meta = (BindWidget))
@@ -32,12 +34,12 @@ protected:
     UTextBlock* TextBlock;
 
     UPROPERTY(meta = (BindWidget))
-    UBackgroundBlur* Blur;
+    USP_TextButton* TypeTextBlock;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FPrimaryAssetType AssetType;
     
-    virtual void NativeOnInitialized() override; 
+    virtual void NativeConstruct() override; 
     
 private:
     UFUNCTION()
@@ -51,10 +53,16 @@ private:
 
     UFUNCTION()
     void OnPrevItem();
+
+    UFUNCTION()
+    void SetItem();
     
     UPROPERTY()
     TArray<TSoftObjectPtr<USP_ModularItemBase>> Assets;
 
     UPROPERTY()
     USP_ModularItemBase* CurrentItem = nullptr;
+
+    UPROPERTY()
+    int index= 0;
 };

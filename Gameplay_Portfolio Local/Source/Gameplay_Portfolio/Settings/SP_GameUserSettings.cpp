@@ -11,6 +11,7 @@
 		ApplySettings(false);	\
 	}							\
 
+//FTEXT 기반 현지화 적용
 #define LOCTEXT_NAMESPACE "GameUserSettings"
 
 USP_GameUserSettings::USP_GameUserSettings()
@@ -124,4 +125,4 @@ void USP_GameUserSettings::RunBenchmark()
 	OnVideoSettingsUpdatedelegate.Broadcast();
 }
 
-#define LOCTEXT_NAMESPACE
+#undef LOCTEXT_NAMESPACE

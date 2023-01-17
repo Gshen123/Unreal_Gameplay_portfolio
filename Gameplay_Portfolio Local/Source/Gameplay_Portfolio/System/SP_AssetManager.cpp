@@ -22,6 +22,20 @@ void USP_AssetManager::StartInitialLoading()
     //GamePlayTagManager Init
 }
 
+TArray<FPrimaryAssetType> USP_AssetManager::GetModularAsset()
+{
+    TArray<FPrimaryAssetType> Types;
+
+    Types.Add(Module_HeadType);
+    Types.Add(Module_FeetAndLegsType);
+    Types.Add(Module_BottomType);
+    Types.Add(Module_SuitType);
+    Types.Add(Module_TopType);
+    Types.Add(Module_HandAndArmType);
+
+    return Types;
+}
+
 UObject* USP_AssetManager::SynchronousLoadAsset(const FSoftObjectPath& AssetPath)
 {
     if (AssetPath.IsValid())
@@ -57,3 +71,10 @@ void USP_AssetManager::AddLoadedAsset(const UObject* Asset)
         LoadedAssets.Add(Asset);
     }
 }
+
+const FPrimaryAssetType USP_AssetManager::Module_HeadType = TEXT("Head");
+const FPrimaryAssetType USP_AssetManager::Module_TopType = TEXT("Top");
+const FPrimaryAssetType USP_AssetManager::Module_BottomType = TEXT("Bottom");
+const FPrimaryAssetType USP_AssetManager::Module_FeetAndLegsType = TEXT("FeetAndLeg");
+const FPrimaryAssetType USP_AssetManager::Module_HandAndArmType = TEXT("HandAndArm");
+const FPrimaryAssetType USP_AssetManager::Module_SuitType = TEXT("Suit");

@@ -24,6 +24,8 @@ public:
     template<typename AssetType>
     static AssetType* GetAsset(const TSoftObjectPtr<AssetType>& AssetPointer, bool bKeepInMemory = true);
 
+    static TArray<FPrimaryAssetType> GetModularAsset();
+
 protected:
 	
     static UObject* SynchronousLoadAsset(const FSoftObjectPath& AssetPath);
@@ -42,6 +44,13 @@ private:
     // Used for a scope lock when modifying the list of load assets.
     FCriticalSection LoadedAssetsCritical;
 
+public:
+    static const FPrimaryAssetType Module_HeadType;
+    static const FPrimaryAssetType Module_TopType;
+    static const FPrimaryAssetType Module_FeetAndLegsType;
+    static const FPrimaryAssetType Module_BottomType;
+    static const FPrimaryAssetType Module_SuitType;
+    static const FPrimaryAssetType Module_HandAndArmType;
 };
 
 template <typename AssetType>

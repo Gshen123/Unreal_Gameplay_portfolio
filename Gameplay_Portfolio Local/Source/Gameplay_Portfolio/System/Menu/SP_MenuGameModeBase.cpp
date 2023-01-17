@@ -2,9 +2,8 @@
 
 
 #include "SP_MenuGameModeBase.h"
-
 #include "SP_MenuPlayerController.h"
-#include "SP_MenuHUD.h"
+#include "Gameplay_Portfolio/UI/Lobby/SP_MenuHUD.h"
 
 ASP_MenuGameModeBase::ASP_MenuGameModeBase()
 {
