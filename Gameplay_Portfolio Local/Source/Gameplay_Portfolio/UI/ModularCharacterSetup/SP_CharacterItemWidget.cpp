@@ -23,17 +23,21 @@ void USP_CharacterItemWidget::InitAssets()
 
     TArray<FPrimaryAssetId> AssetIDs;
     AssetManager.GetPrimaryAssetIdList(AssetType, AssetIDs);
-
+    
     for(const FPrimaryAssetId ID : AssetIDs)
     {
         FAssetData AssetDataToParse;
         AssetManager.GetPrimaryAssetData(ID, AssetDataToParse);
 
         FString nameFilter = AssetDataToParse.GetAsset()->GetFName().ToString();
+        const USP_ModularItemBase* Asset = CastChecked<USP_ModularItemBase>(AssetDataToParse.GetAsset());
         if(!nameFilter.Contains("Default"))
         {
-            const USP_ModularItemBase* Asset = CastChecked<USP_ModularItemBase>(AssetDataToParse.GetAsset());
             Assets.Add(Asset);
+        }
+        else
+        {
+            Assets.Insert(Asset,0);
         }
     }
 
@@ -47,10 +51,14 @@ void USP_CharacterItemWidget::InitAssets()
     {
         CurrentItem = AssetManager.GetAsset(Assets[0]);
     }
-    else
+    
+    SetItem();
+
+    for(auto Asset : Assets)
     {
-        SetItem();
+        UE_LOG(LogCharacterItemWidget, Display, TEXT("%s : %s"), *AssetType.GetName().ToString(), *Asset.Get()->Data.DisplayName.ToString());
     }
+
 }
 
 void USP_CharacterItemWidget::UpdateTexts() const
@@ -64,20 +72,18 @@ void USP_CharacterItemWidget::UpdateTexts() const
 
 void USP_CharacterItemWidget::OnNextItem()
 {
-    if(index >= Assets.Max()) index++;
+    if(index < Assets.Num() - 1) index++;
     else index = 0;
 
     SetItem();
-    ItemOnChanged.Broadcast();
 }
 
 void USP_CharacterItemWidget::OnPrevItem()
 {
     if(index > 0) index--;
-    else index = Assets.Max();
+    else index = Assets.Num() - 1;
 
     SetItem();
-    ItemOnChanged.Broadcast();
 }
 
 void USP_CharacterItemWidget::SetItem()

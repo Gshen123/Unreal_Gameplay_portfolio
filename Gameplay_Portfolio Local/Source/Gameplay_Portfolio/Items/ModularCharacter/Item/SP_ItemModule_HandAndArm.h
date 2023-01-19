@@ -19,6 +19,6 @@ public:
     USP_ItemModule_HandAndArm()
     {
         Data.ItemType = USP_AssetManager::Module_HandAndArmType;
-        Data.OccupiedParts = static_cast<int8>(EOccupiedParts::hasHandAndArm);
+        Data.WearStatus = static_cast<int32>(EWearStatus::hasHandAndArm);
     }
 };

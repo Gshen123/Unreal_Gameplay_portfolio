@@ -19,7 +19,7 @@ public:
     USP_ItemModule_FeetAndLegs()
     {
         Data.ItemType = USP_AssetManager::Module_FeetAndLegsType;
-        Data.OccupiedParts = static_cast<int8>(EOccupiedParts::hasFeetAndLeg);
+        Data.WearStatus = static_cast<int32>(EWearStatus::hasFeetAndLeg);
     }
     
 };

@@ -20,8 +20,8 @@ public:
     {
         Data.ItemType = USP_AssetManager::Module_SuitType;
         Data.OverlapBody = true;
-        Data.OccupiedParts = static_cast<int8>(EOccupiedParts::hasTop) | static_cast<int8>(EOccupiedParts::hasBottom) |
-                             static_cast<int8>(EOccupiedParts::hasFeetAndLeg) | static_cast<int8>(EOccupiedParts::hasHandAndArm);
+        Data.WearStatus = static_cast<int32>(EWearStatus::hasTop) | static_cast<int32>(EWearStatus::hasBottom) |
+                             static_cast<int32>(EWearStatus::hasFeetAndLeg) | static_cast<int32>(EWearStatus::hasHandAndArm);
     }
     
 };

@@ -19,7 +19,7 @@ public:
     USP_ItemModule_Top()
     {
         Data.ItemType = USP_AssetManager::Module_TopType;
-        Data.OccupiedParts = static_cast<int8>(EOccupiedParts::hasTop);
+        Data.WearStatus = static_cast<int32>(EWearStatus::hasTop);
     }
     
 };

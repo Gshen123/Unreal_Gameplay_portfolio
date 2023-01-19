@@ -33,7 +33,7 @@ public:
     FModularItemConditions ItemConditions;
 
     UPROPERTY()
-    int32 OccupiedParts;
+    int32 WearStatus;
 };
 
 UCLASS(Abstract, Blueprintable)
@@ -42,8 +42,6 @@ class GAMEPLAY_PORTFOLIO_API USP_ModularItemBase : public UPrimaryDataAsset
     GENERATED_BODY()
 public:
 
-    USP_ModularItemBase(){};
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FSP_ModularItemData Data;
 
@@ -51,7 +49,6 @@ public:
 
     FText GetDisplayName() const;
 };
-
 
 inline FPrimaryAssetId USP_ModularItemBase::GetPrimaryAssetId() const
 {

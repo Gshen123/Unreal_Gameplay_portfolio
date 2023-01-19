@@ -2,7 +2,8 @@
 
 
 #include "SP_PlayerController.h"
-#include "Gameplay_Portfolio/System/SP_GameModeBase.h"
+
+#include "Game/SP_PlayGameModeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(Log_SPPlayerController, All, All);
 
@@ -31,7 +32,7 @@ void ASP_PlayerController::BeginPlay()
 
     if(GetWorld())
     {
-        if(const auto GameMode = Cast<ASP_GameModeBase>(GetWorld()->GetAuthGameMode()))
+        if(const auto GameMode = Cast<ASP_PlayGameModeBase>(GetWorld()->GetAuthGameMode()))
         {
             GameMode->OnGameModeStateChanged.AddUObject(this, &ThisClass::OnGameModeTypeChanged);
         }

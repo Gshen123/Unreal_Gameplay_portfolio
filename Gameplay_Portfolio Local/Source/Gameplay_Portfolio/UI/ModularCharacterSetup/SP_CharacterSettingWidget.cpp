@@ -40,7 +40,7 @@ void USP_CharacterSettingWidget::OnGoToMenu()
     const auto GameInstance = GetSP_GameInstance();
     if(!GameInstance) return;
     
-    UGameplayStatics::OpenLevel(this, GameInstance->GetLevelsData()[0].LevelName);
+    UGameplayStatics::OpenLevel(this, GameInstance->GetMenuLevelData().LevelName);
 }
 
 void USP_CharacterSettingWidget::ShowOptionWidget()

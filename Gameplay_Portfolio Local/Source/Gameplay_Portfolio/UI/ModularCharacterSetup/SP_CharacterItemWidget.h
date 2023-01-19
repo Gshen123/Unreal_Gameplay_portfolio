@@ -13,15 +13,11 @@
 /**
  * 
  */
-DECLARE_MULTICAST_DELEGATE(FCharacterItemOnChanged);
 
 UCLASS()
 class GAMEPLAY_PORTFOLIO_API USP_CharacterItemWidget : public UUserWidget
 {
     GENERATED_BODY()
-
-public:
-    FCharacterItemOnChanged ItemOnChanged;
 
 protected:
     UPROPERTY(meta = (BindWidget))

@@ -2,7 +2,6 @@
 
 
 #include "SP_ExitModal.h"
-
 #include "SP_GameInstance.h"
 #include "SP_HUDBase.h"
 #include "Components/Button.h"
@@ -37,7 +36,7 @@ void USP_ExitModal::OnGoToMenu()
     const auto GameInstance = GetSP_GameInstance();
     if(!GameInstance) return;
     
-    UGameplayStatics::OpenLevel(this, GameInstance->GetStartupLevelData().LevelName);
+    UGameplayStatics::OpenLevel(this, GameInstance->GetMenuLevelData().LevelName);
 }
 
 void USP_ExitModal::HideWidget()

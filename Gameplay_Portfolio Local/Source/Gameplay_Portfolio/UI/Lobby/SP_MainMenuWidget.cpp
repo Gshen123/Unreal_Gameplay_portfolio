@@ -2,7 +2,6 @@
 
 
 #include "SP_MainMenuWidget.h"
-
 #include "SP_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -47,11 +46,11 @@ void USP_MainMenuWidget::InitLevelItems()
 
     if(GameInstance->GetStartupLevelData().LevelName.IsNone())
     {
-        OnLevelSelected(GameInstance->GetLevelsData()[0]);
+        //OnLevelSelected(GameInstance->GetLevelsData()[0]);
     }
     else
     {
-        OnLevelSelected(GameInstance->GetStartupLevelData());
+        //OnLevelSelected(GameInstance->GetStartupLevelData());
     }
 }
 

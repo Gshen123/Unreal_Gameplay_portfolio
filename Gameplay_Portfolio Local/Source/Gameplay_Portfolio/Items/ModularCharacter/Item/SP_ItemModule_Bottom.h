@@ -19,7 +19,7 @@ public:
     USP_ItemModule_Bottom()
     {
         Data.ItemType = USP_AssetManager::Module_BottomType;
-        Data.OccupiedParts = static_cast<int8>(EOccupiedParts::hasBottom);
+        Data.WearStatus = static_cast<int32>(EWearStatus::hasBottom);
     }
     
 };

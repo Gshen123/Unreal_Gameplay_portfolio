@@ -2,9 +2,8 @@
 
 
 #include "SP_GameHUD.h"
-
-#include "SP_GameModeBase.h"
 #include "Blueprint/UserWidget.h"
+#include "Game/SP_PlayGameModeBase.h"
 #include "Gameplay_Portfolio/UI/System/SP_PauseWidget.h"
 
 DEFINE_LOG_CATEGORY_STATIC(Log_SPHUD, All, All);
@@ -31,7 +30,7 @@ void ASP_GameHUD::BeginPlay()
     
     if(GetWorld())
     {
-        if(const auto GameMode = Cast<ASP_GameModeBase>(GetWorld()->GetAuthGameMode()))
+        if(const auto GameMode = Cast<ASP_PlayGameModeBase>(GetWorld()->GetAuthGameMode()))
         {
             GameMode->OnGameModeStateChanged.AddUObject(this, &ThisClass::OnGameModeTypeChanged);
         }

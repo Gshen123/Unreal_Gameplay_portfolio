@@ -38,6 +38,9 @@ struct FSP_DefaultItemData
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "손", Category = "Defaults" )
     TSoftObjectPtr<USkeletalMesh> Hand;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "스켈레톤", Category = "Defaults" )
+    TSoftObjectPtr<USkeleton> Skeleton;
 };
 
 UCLASS(Blueprintable, BlueprintType)
@@ -51,7 +54,7 @@ public:
 
 
 UENUM()
-enum class EOccupiedParts : uint8
+enum class EWearStatus : uint8
 {
     None			 = 0         UMETA(Hidden),
     hasHead	             = (1 << 0)  UMETA(DisplayName = "머리"),
@@ -62,29 +65,45 @@ enum class EOccupiedParts : uint8
     Max		       = (1 << 6)  UMETA(Hidden)
 };
 
-ENUM_CLASS_FLAGS(EOccupiedParts);
+ENUM_CLASS_FLAGS(EWearStatus);
 
 USTRUCT(BlueprintType)
 struct FModularPartsSlotData
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "머리", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
-	TSoftObjectPtr<USP_ModularItemBase> Head = nullptr;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "머리", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
+    TSoftObjectPtr<USP_ModularItemBase> Head = nullptr;
+
+    UPROPERTY()
+    int32 HeadShare = 0;
     
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "상의", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
-	TSoftObjectPtr<USP_ModularItemBase> Top = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "하의", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
-	TSoftObjectPtr<USP_ModularItemBase> Bottom = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "팔", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
-	TSoftObjectPtr<USP_ModularItemBase> Arm = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "다리", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
-	TSoftObjectPtr<USP_ModularItemBase> Leg = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "전신 슈트", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
-	TSoftObjectPtr<USP_ModularItemBase> Suit = nullptr;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "상의", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
+    TSoftObjectPtr<USP_ModularItemBase> Top = nullptr;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "하의", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
+    TSoftObjectPtr<USP_ModularItemBase> Bottom = nullptr;
+
+    UPROPERTY()
+    int32 BodyShare = 0;
+
+    UPROPERTY()
+    int32 BodyCount = 0;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "팔", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
+    TSoftObjectPtr<USP_ModularItemBase> Arm = nullptr;
+
+    UPROPERTY()
+    int32 ArmShare = 0;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "다리", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
+    TSoftObjectPtr<USP_ModularItemBase> Leg = nullptr;
+
+    UPROPERTY()
+    int32 LegShare = 0;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "전신 슈트", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
+    TSoftObjectPtr<USP_ModularItemBase> Suit = nullptr;
+    
 };

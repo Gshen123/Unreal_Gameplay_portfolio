@@ -3,7 +3,19 @@
 
 #include "SP_GameInstance.h"
 
-void USP_GameInstance::ToggleVolume()
+#include "SP_AssetManager.h"
+#include "Kismet/GameplayStatics.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogGameInstance, All, All);
+
+USP_DefaultPartsAsset* USP_GameInstance::GetDefaultMeshParts() const
 {
-    //USP_GameInstance::ToggleSoundClassVolume(MasterSoundClass);
+    check(DefaultPartsAssets);
+    
+    if(DefaultPartsAssets.Get() == nullptr)
+    {
+        return USP_AssetManager::GetAsset(DefaultPartsAssets);
+    }
+
+    return DefaultPartsAssets.Get();
 }

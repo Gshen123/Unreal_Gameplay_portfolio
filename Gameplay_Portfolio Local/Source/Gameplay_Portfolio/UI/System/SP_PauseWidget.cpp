@@ -2,9 +2,8 @@
 
 
 #include "SP_PauseWidget.h"
-
 #include "SP_GameInstance.h"
-#include "SP_GameModeBase.h"
+#include "Game/SP_PlayGameModeBase.h"
 #include "GameFramework/GameModeBase.h"
 #include "Gameplay_Portfolio/UI/SP_TextButton.h"
 #include "Kismet/GameplayStatics.h"
@@ -22,7 +21,7 @@ void USP_PauseWidget::NativeConstruct()
 
     if(GetWorld())
     {
-        const auto GameMode = Cast<ASP_GameModeBase>(GetWorld()->GetAuthGameMode());
+        const auto GameMode = Cast<ASP_PlayGameModeBase>(GetWorld()->GetAuthGameMode());
         if(GameMode)
         {
             GameMode->OnGameModeStateChanged.AddUObject(this, &ThisClass::SetMainMenuButtonVisble);
@@ -54,7 +53,7 @@ void USP_PauseWidget::OnGoToMenu()
     const auto GameInstance = GetSP_GameInstance();
     if(!GameInstance) return;
     
-    UGameplayStatics::OpenLevel(this, GameInstance->GetStartupLevelData().LevelName);
+    UGameplayStatics::OpenLevel(this, GameInstance->GetMenuLevelData().LevelName);
 }
 
 void USP_PauseWidget::ExitGame()

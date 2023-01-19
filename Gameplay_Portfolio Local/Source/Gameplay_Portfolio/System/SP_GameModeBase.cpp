@@ -1,63 +1,24 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Scope Portfolio. All rights reserved
+
 
 #include "SP_GameModeBase.h"
-#include "SP_PlayerController.h"
-#include "Gameplay_Portfolio/Character/SP_BaseCharacter.h"
-#include "Gameplay_Portfolio/UI/Game/SP_GameHUD.h"
 
-DEFINE_LOG_CATEGORY_STATIC(Log_SPGameModeBase, All, All);
+#include "Subsystem/SP_SaveGameSubsystem.h"
 
 ASP_GameModeBase::ASP_GameModeBase()
 {
-    DefaultPawnClass = ASP_BaseCharacter::StaticClass();
-    PlayerControllerClass = ASP_PlayerController::StaticClass();
-    HUDClass = ASP_GameHUD::StaticClass();
 }
 
-void ASP_GameModeBase::StartPlay()
+
+// 플레이어로부터 게임에 참여할 준비가 되었다는 신호를 받으면서 호출됩니다.
+void ASP_GameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-    Super::StartPlay();
+    // Super가 호출되기 전에 게임스테이트의 정보를 갱신합니다.
+    USP_SaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<USP_SaveGameSubsystem>();
+    SG->HandleStartingNewPlayer(NewPlayer);
 
-    SetGameModeType(EGameModeType::MainMenu);
+    Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+    // 지정된 스폰 위치를 검사하고 적용합니다.
+    SG->OverrideSpawnTransform(NewPlayer);
 }
-
-EGameModeType ASP_GameModeBase::GetPrevMode() const
-{
-    return PrevGameMode;
-}
-
-void ASP_GameModeBase::SetGameModeType(EGameModeType Tpye)
-{
-    if(GameModeState == Tpye) return;
-
-    GameModeState = Tpye;
-    if(GameModeState != EGameModeType::None && GameModeState != EGameModeType::Pause) PrevGameMode = GameModeState;
-    OnGameModeStateChanged.Broadcast(Tpye);
-}
-
-bool ASP_GameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate)
-{
-    const auto PauseSet = Super::SetPause(PC, CanUnpauseDelegate);
-
-    if(PauseSet)
-    {
-        SetGameModeType(EGameModeType::Pause);
-    }
-
-    return PauseSet;
-}
-
-bool ASP_GameModeBase::ClearPause()
-{
-    const auto PauseCleared = Super::ClearPause();
-
-    if(PauseCleared)
-    {
-        SetGameModeType(PrevGameMode);
-        UE_LOG(Log_SPGameModeBase, Display, TEXT("PrevGameMode : %s"), *UEnum::GetValueAsString(PrevGameMode));
-    }
-
-    return PauseCleared;
-}
-
-

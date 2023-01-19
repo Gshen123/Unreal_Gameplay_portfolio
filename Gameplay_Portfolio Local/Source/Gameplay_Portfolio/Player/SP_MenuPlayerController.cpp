@@ -9,7 +9,7 @@ void ASP_MenuPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
-    SetInputMode(FInputModeGameAndUI());
+    SetInputMode(FInputModeGameAndUI().SetHideCursorDuringCapture(false));
     bShowMouseCursor = true;
 }
 

@@ -2,11 +2,10 @@
 
 
 #include "SP_GameOverWidget.h"
-
-#include "SP_GameModeBase.h"
 #include "SP_PlayerState.h"
 #include "SP_PlayerStatRowWidget.h"
 #include "SP_Utils.h"
+#include "Game/SP_PlayGameModeBase.h"
 #include "Gameplay_Portfolio/UI/SP_TextButton.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -16,7 +15,7 @@ void USP_GameOverWidget::NativeConstruct()
 
     if(GetWorld())
     {
-        const auto GameMode = Cast<ASP_GameModeBase>(GetWorld()->GetAuthGameMode());
+        const auto GameMode = Cast<ASP_PlayGameModeBase>(GetWorld()->GetAuthGameMode());
         if(GameMode)
         {
             GameMode->OnGameModeStateChanged.AddUObject(this, &ThisClass::OnGameStateTypeChanged);
