@@ -7,49 +7,49 @@
 
 void USP_SettingOptionWidget::NativeOnInitialized()
 {
-	Super::NativeOnInitialized();
+    Super::NativeOnInitialized();
 
-	check(SettingDisplayName);
-	check(SettingCurrentValue);
-	check(PrevSettingButton);
-	check(NextSettingButton);
+    check(SettingDisplayName);
+    check(SettingCurrentValue);
+    check(PrevSettingButton);
+    check(NextSettingButton);
 
-	NextSettingButton->OnClicked.AddDynamic(this, &ThisClass::OnNextSetting);
-	PrevSettingButton->OnClicked.AddDynamic(this, &ThisClass::OnPrevSetting);
+    NextSettingButton->OnClicked.AddDynamic(this, &ThisClass::OnNextSetting);
+    PrevSettingButton->OnClicked.AddDynamic(this, &ThisClass::OnPrevSetting);
 }
 
 void USP_SettingOptionWidget::Init(USP_GameSetting* InSetting)
 {
-	Setting = MakeWeakObjectPtr(InSetting);
-	check(Setting.IsValid());
+    Setting = MakeWeakObjectPtr(InSetting);
+    check(Setting.IsValid());
 
-	UpdateTexts();
+    UpdateTexts();
 }
 
 void USP_SettingOptionWidget::UpdateTexts() const
 {
-	if(Setting.IsValid())
-	{
-		//SettingDisplayName->Text_Context = FText::FromString(Setting->GetName());
-		SettingDisplayName->SetText(Setting->GetName());
-		SettingCurrentValue->SetText(Setting->GetCurrentOption().Name);
-	}
+    if(Setting.IsValid())
+    {
+        //SettingDisplayName->Text_Context = FText::FromString(Setting->GetName());
+        SettingDisplayName->SetText(Setting->GetName());
+        SettingCurrentValue->SetText(Setting->GetCurrentOption().Name);
+    }
 }
 
 void USP_SettingOptionWidget::OnNextSetting()
 {
-	if(Setting.IsValid())
-	{
-		Setting->ApplyNextOption();
-		SettingCurrentValue->SetText(Setting->GetCurrentOption().Name);
-	}
+    if(Setting.IsValid())
+    {
+        Setting->ApplyNextOption();
+        SettingCurrentValue->SetText(Setting->GetCurrentOption().Name);
+    }
 }
 
 void USP_SettingOptionWidget::OnPrevSetting()
 {
-	if(Setting.IsValid())
-	{
-		Setting->ApplyPrevOption();
-		SettingCurrentValue->SetText(Setting->GetCurrentOption().Name);
-	}
+    if(Setting.IsValid())
+    {
+        Setting->ApplyPrevOption();
+        SettingCurrentValue->SetText(Setting->GetCurrentOption().Name);
+    }
 }

@@ -4,12 +4,12 @@
 #include "SP_GameUserSettings.h"
 #include "SP_GameSetting.h"
 
-#define BIND_SETTINGS_FUNC(Func)\
+#define BIND_SETTINGS_FUNC(Func)    \
 	[&](int32 Level)			\
-	{							\
-		Func(Level);			\
+	{					\
+		Func(Level);		\
 		ApplySettings(false);	\
-	}							\
+	}					\
 
 //FTEXT 기반 현지화 적용
 #define LOCTEXT_NAMESPACE "GameUserSettings"

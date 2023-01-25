@@ -10,8 +10,6 @@ DEFINE_LOG_CATEGORY_STATIC(LogGameInstance, All, All);
 
 USP_DefaultPartsAsset* USP_GameInstance::GetDefaultMeshParts() const
 {
-    check(DefaultPartsAssets);
-    
     if(DefaultPartsAssets.Get() == nullptr)
     {
         return USP_AssetManager::GetAsset(DefaultPartsAssets);

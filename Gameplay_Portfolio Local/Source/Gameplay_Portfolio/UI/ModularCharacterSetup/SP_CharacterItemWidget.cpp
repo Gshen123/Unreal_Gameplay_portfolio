@@ -4,6 +4,7 @@
 #include "SP_CharacterItemWidget.h"
 
 #include "SP_AssetManager.h"
+#include "SP_PlayerState.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogCharacterItemWidget, All, All);
 
@@ -13,31 +14,23 @@ void USP_CharacterItemWidget::NativeConstruct()
 
     if(NextItemButton) NextItemButton->OnClicked.AddDynamic(this, &ThisClass::OnNextItem);
     if(PrevItemButton) PrevItemButton->OnClicked.AddDynamic(this, &ThisClass::OnPrevItem);
-
-    InitAssets();
 }
 
-void USP_CharacterItemWidget::InitAssets()
+void USP_CharacterItemWidget::Init()
 {
     USP_AssetManager& AssetManager = USP_AssetManager::Get();
-
-    TArray<FPrimaryAssetId> AssetIDs;
-    AssetManager.GetPrimaryAssetIdList(AssetType, AssetIDs);
     
+    TArray<FPrimaryAssetId> AssetIDs; 
+    AssetManager.GetPrimaryAssetIdList(AssetType, AssetIDs);
+
     for(const FPrimaryAssetId ID : AssetIDs)
     {
         FAssetData AssetDataToParse;
         AssetManager.GetPrimaryAssetData(ID, AssetDataToParse);
-
-        FString nameFilter = AssetDataToParse.GetAsset()->GetFName().ToString();
-        const USP_ModularItemBase* Asset = CastChecked<USP_ModularItemBase>(AssetDataToParse.GetAsset());
-        if(!nameFilter.Contains("Default"))
+        auto NameFilter = AssetDataToParse.AssetName.ToString();
+        if(NameFilter != "Default")
         {
-            Assets.Add(Asset);
-        }
-        else
-        {
-            Assets.Insert(Asset,0);
+            if(const USP_ModularItemBase* Asset = CastChecked<USP_ModularItemBase>(AssetDataToParse.GetAsset())) Assets.Add(Asset);
         }
     }
 
@@ -46,20 +39,24 @@ void USP_CharacterItemWidget::InitAssets()
         UE_LOG(LogCharacterItemWidget, Error, TEXT("%s is Empty Or Not Setting"), *AssetType.GetName().ToString());
         return;
     }
-    
-    if(Assets[0].Get() == nullptr)
+        
+    for(int i = 0; i < Assets.Num(); i++)
     {
-        CurrentItem = AssetManager.GetAsset(Assets[0]);
+        if(Assets[i].Get() == nullptr) AssetManager.GetAsset(Assets[i]);
+        if(Assets[i].Get()->Data.DisplayName.EqualTo(FText::FromString(TEXT("None"))))
+        {
+            CurrentItem = AssetManager.GetAsset(Assets[i]);
+            SetItem();
+            break;
+        }
     }
-    
-    SetItem();
 
     for(auto Asset : Assets)
     {
         UE_LOG(LogCharacterItemWidget, Display, TEXT("%s : %s"), *AssetType.GetName().ToString(), *Asset.Get()->Data.DisplayName.ToString());
     }
-
 }
+
 
 void USP_CharacterItemWidget::UpdateTexts() const
 {
@@ -88,15 +85,14 @@ void USP_CharacterItemWidget::OnPrevItem()
 
 void USP_CharacterItemWidget::SetItem()
 {
-    if(Assets[index].Get() == nullptr)
-    {
-        USP_AssetManager& AssetManager = USP_AssetManager::Get();
-        CurrentItem = AssetManager.GetAsset(Assets[index]);
-    }
-    else
-    {
-        CurrentItem = Assets[index].Get();
-    }
+    CurrentItem = USP_AssetManager::GetAsset(Assets[index]);
     
     UpdateTexts();
+    UpdateMesh();
+}
+
+void USP_CharacterItemWidget::UpdateMesh()
+{
+    const auto PlayerState = GetOwningPlayer()->GetPlayerState<ASP_PlayerState>();
+    PlayerState->ReplaceItemInSlot(CurrentItem);
 }

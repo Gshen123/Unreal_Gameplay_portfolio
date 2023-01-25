@@ -8,6 +8,8 @@
 #include "Save/SP_SaveGame.h"
 #include "SP_PlayerState.generated.h"
 
+
+DECLARE_MULTICAST_DELEGATE(FMergedMeshUpdate)
 /**
  * 
  */
@@ -27,9 +29,19 @@ public:
 
     UFUNCTION()
     void LoadPlayerState(USP_SaveGame* SaveObject);
-
+    
     UFUNCTION()
-    FModularPartsSlotData GetPartsData() const;
+    USkeletalMesh* UpdateMesh();
+
+    void ReplaceItemInSlot(USP_ModularItemBase* Item);
+
+    FModularPartsSlotData* GetPartsSlot();
+
+    bool CheckAndWear(int32 bitmask);
+
+    void SetWear(int32 bitmask, bool Unwear = false);
+
+    FMergedMeshUpdate MeshUpdated;
     
 private:
 
@@ -38,7 +50,18 @@ private:
     int32 CoinCount = 0;
 
     int32 LevelCount = 0;
+    
+    UPROPERTY()
+    TArray<USkeletalMesh*> Meshes;
 
     UPROPERTY()
-    FModularPartsSlotData PartsData;
+    USP_DefaultPartsAsset* DefaultPartAsset;
+
+    UPROPERTY()
+    FModularPartsSlotData ModularPartsSlot;
+    
+    UPROPERTY()
+    int32 WearStatus = 0;
+
+    USP_DefaultPartsAsset* GetDefaultParts() const;
 };

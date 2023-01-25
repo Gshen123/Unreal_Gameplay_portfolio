@@ -28,9 +28,8 @@ TArray<FPrimaryAssetType> USP_AssetManager::GetModularAsset()
 
     Types.Add(Module_HeadType);
     Types.Add(Module_FeetAndLegsType);
-    Types.Add(Module_BottomType);
+    Types.Add(Module_BodyType);
     Types.Add(Module_SuitType);
-    Types.Add(Module_TopType);
     Types.Add(Module_HandAndArmType);
 
     return Types;
@@ -73,8 +72,7 @@ void USP_AssetManager::AddLoadedAsset(const UObject* Asset)
 }
 
 const FPrimaryAssetType USP_AssetManager::Module_HeadType = TEXT("Head");
-const FPrimaryAssetType USP_AssetManager::Module_TopType = TEXT("Top");
-const FPrimaryAssetType USP_AssetManager::Module_BottomType = TEXT("Bottom");
+const FPrimaryAssetType USP_AssetManager::Module_BodyType = TEXT("Body");
 const FPrimaryAssetType USP_AssetManager::Module_FeetAndLegsType = TEXT("FeetAndLeg");
 const FPrimaryAssetType USP_AssetManager::Module_HandAndArmType = TEXT("HandAndArm");
 const FPrimaryAssetType USP_AssetManager::Module_SuitType = TEXT("Suit");

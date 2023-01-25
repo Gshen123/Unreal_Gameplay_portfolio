@@ -17,7 +17,7 @@ class GAMEPLAY_PORTFOLIO_API USP_SaveGameSubsystem : public UGameInstanceSubsyst
     GENERATED_BODY()
 
 public:
-    void Initialize(FSubsystemCollectionBase& Collection) override;
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
     void HandleStartingNewPlayer(const AController* NewPlayer) const;
 

@@ -8,6 +8,7 @@
 #include "SP_BaseCharacter.generated.h"
 
 
+
 UCLASS(config=Game)
 class ASP_BaseCharacter : public ACharacter
 {
@@ -21,9 +22,6 @@ class ASP_BaseCharacter : public ACharacter
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
     class UCameraComponent* FollowCamera;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
-    class USP_MergeComponent* MergeComponent;
-    
     /** MappingContext */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     class UInputMappingContext* DefaultMappingContext;
@@ -40,9 +38,11 @@ class ASP_BaseCharacter : public ACharacter
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     class UInputAction* LookAction;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+    class UMergeComponent* MergeComponent;
+    
 public:
     ASP_BaseCharacter();
-	
 
 protected:
 
@@ -51,19 +51,21 @@ protected:
 
     /** Called for looking input */
     void Look(const FInputActionValue& Value);
-			
 
 protected:
     // APawn interface
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
     // To add mapping context
-    virtual void BeginPlay();
+    virtual void BeginPlay() override;
 
 public:
     /** Returns CameraBoom subobject **/
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+    UFUNCTION()
+    void UpdateMesh(USkeletalMesh* NewMesh);
 };
 

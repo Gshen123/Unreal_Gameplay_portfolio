@@ -11,8 +11,6 @@
 void USP_SaveGameSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
-
-    
 }
 
 void USP_SaveGameSubsystem::HandleStartingNewPlayer(const AController* NewPlayer) const

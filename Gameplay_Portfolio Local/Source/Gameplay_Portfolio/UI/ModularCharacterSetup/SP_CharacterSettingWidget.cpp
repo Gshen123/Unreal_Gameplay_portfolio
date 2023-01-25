@@ -3,6 +3,7 @@
 
 #include "SP_CharacterSettingWidget.h"
 
+#include "SP_AssetManager.h"
 #include "Kismet/GameplayStatics.h"
 
 void USP_CharacterSettingWidget::NativeConstruct()
@@ -18,6 +19,31 @@ void USP_CharacterSettingWidget::NativeConstruct()
 
     if(ReturnButton) ReturnButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::OnGoToMenu);
     if(OptionButton) OptionButton->MainButton->OnClicked.AddDynamic(this,&ThisClass::ShowOptionWidget);
+
+    Init();
+}
+
+void USP_CharacterSettingWidget::Init()
+{
+    ClothContainer->ClearChildren();
+    DressSetContainer->ClearChildren();
+    
+    auto List = USP_AssetManager::GetModularAsset();
+    for(auto Type : List)
+    {
+        auto ItemWidget = CreateWidget<USP_CharacterItemWidget>(this);
+        ItemWidget->Padding = FMargin(0,0,0,10);
+        ItemWidget->AssetType = Type;
+
+        if(Type == USP_AssetManager::Module_SuitType)
+        {
+            DressSetContainer->AddChild(ItemWidget);
+        }
+        else
+        {
+            ClothContainer->AddChild(ItemWidget);
+        }
+    }
 }
 
 void USP_CharacterSettingWidget::OnIndexZero()

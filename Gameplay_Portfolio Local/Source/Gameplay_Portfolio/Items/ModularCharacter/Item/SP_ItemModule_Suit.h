@@ -19,9 +19,8 @@ public:
     USP_ItemModule_Suit()
     {
         Data.ItemType = USP_AssetManager::Module_SuitType;
+        Data.WearStatus = static_cast<int32>(EWearStatus::hasBody) | static_cast<int32>(EWearStatus::hasFeetAndLeg) | static_cast<int32>(EWearStatus::hasHandAndArm);
         Data.OverlapBody = true;
-        Data.WearStatus = static_cast<int32>(EWearStatus::hasTop) | static_cast<int32>(EWearStatus::hasBottom) |
-                             static_cast<int32>(EWearStatus::hasFeetAndLeg) | static_cast<int32>(EWearStatus::hasHandAndArm);
     }
     
 };

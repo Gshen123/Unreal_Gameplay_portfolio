@@ -19,6 +19,13 @@ class GAMEPLAY_PORTFOLIO_API USP_CharacterItemWidget : public UUserWidget
 {
     GENERATED_BODY()
 
+public:
+    UPROPERTY(EditAnywhere)
+    FPrimaryAssetType AssetType;
+
+    UPROPERTY()
+    TArray<TSoftObjectPtr<USP_ModularItemBase>> Assets;
+    
 protected:
     UPROPERTY(meta = (BindWidget))
     UButton* NextItemButton;
@@ -32,15 +39,13 @@ protected:
     UPROPERTY(meta = (BindWidget))
     USP_TextButton* TypeTextBlock;
     
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FPrimaryAssetType AssetType;
-    
     virtual void NativeConstruct() override; 
     
 private:
-    UFUNCTION()
-    void InitAssets();
 
+    UFUNCTION()
+    void Init();
+    
     UFUNCTION()
     void UpdateTexts() const;
     
@@ -52,10 +57,10 @@ private:
 
     UFUNCTION()
     void SetItem();
-    
-    UPROPERTY()
-    TArray<TSoftObjectPtr<USP_ModularItemBase>> Assets;
 
+    UFUNCTION()
+    void UpdateMesh();
+    
     UPROPERTY()
     USP_ModularItemBase* CurrentItem = nullptr;
 

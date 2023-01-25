@@ -46,9 +46,8 @@ private:
 
 public:
     static const FPrimaryAssetType Module_HeadType;
-    static const FPrimaryAssetType Module_TopType;
+    static const FPrimaryAssetType Module_BodyType;
     static const FPrimaryAssetType Module_FeetAndLegsType;
-    static const FPrimaryAssetType Module_BottomType;
     static const FPrimaryAssetType Module_SuitType;
     static const FPrimaryAssetType Module_HandAndArmType;
 };
