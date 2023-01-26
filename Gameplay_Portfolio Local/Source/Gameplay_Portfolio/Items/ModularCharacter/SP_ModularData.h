@@ -43,20 +43,6 @@ public:
     TSoftObjectPtr<USkeleton> Skeleton;
 };
 
-
-UENUM()
-enum class EWearStatus : uint8
-{
-    None			 = 0         UMETA(Hidden),
-    hasHead	             = (1 << 0)  UMETA(DisplayName = "머리"),
-    hasBody              = (1 << 1)  UMETA(DisplayName = "몸통"),
-    hasHandAndArm		 = (1 << 2)  UMETA(DisplayName = "팔"),
-    hasFeetAndLeg	       = (1 << 3)  UMETA(DisplayName = "다리"),
-    Max		       = (1 << 4)  UMETA(Hidden)
-};
-
-ENUM_CLASS_FLAGS(EWearStatus);
-
 USTRUCT(BlueprintType)
 struct FModularPartsSlotData
 {

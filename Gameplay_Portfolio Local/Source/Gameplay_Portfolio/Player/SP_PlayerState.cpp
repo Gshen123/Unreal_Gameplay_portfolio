@@ -4,7 +4,7 @@
 #include "SP_PlayerState.h"
 
 #include "SP_AssetManager.h"
-#include "SP_BaseCharacter.h"
+#include "SP_PlayerCharacter.h"
 #include "SP_GameInstance.h"
 #include "Gameplay_Portfolio/Items/ModularCharacter/SP_ModularItemBase.h"
 #include "ModularCharacterSystem/SP_MergeStruct.h"
@@ -71,112 +71,65 @@ USkeletalMesh* ASP_PlayerState::UpdateMesh()
     Meshes.Reset();
     DefaultPartAsset = GetDefaultParts();
     
-    if(ModularPartsSlot.Head != nullptr)
     {
         USP_ModularItemBase* Item = USP_AssetManager::GetAsset(ModularPartsSlot.Head);    
-
         if(Item == nullptr) return nullptr;
-        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        if(Item->Data.Meshes.Num() > 0)
         {
-            Unwear(Item->Data.WearStatus);
-        }
-        else
-        {
-            if(CheckAndWear(Item->Data.WearStatus))
+            for (auto Mesh : Item->Data.Meshes)
             {
-                for (auto Mesh : Item->Data.Meshes)
+                USkeletalMesh* SKMesh;
+                if((SKMesh = Mesh.Get()) == nullptr)
                 {
-                    USkeletalMesh* SKMesh;
-                    if((SKMesh = Mesh.Get()) == nullptr)
-                    {
-                        SKMesh = USP_AssetManager::GetAsset(Mesh);     
-                    }
-                    Meshes.Add(SKMesh);
+                    SKMesh = USP_AssetManager::GetAsset(Mesh);     
                 }
-
-                if(Item->Data.OverlapBody)
-                {
-                    ModularPartsSlot.HeadShare++;
-                }
+                Meshes.Add(SKMesh);
             }
         }
-
         if(ModularPartsSlot.HeadShare == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Head);  
             Meshes.Add(SKMesh);
         }
     }
-    else return nullptr;
 
-    if(ModularPartsSlot.Body != nullptr)
     {
         USP_ModularItemBase* Item = USP_AssetManager::GetAsset(ModularPartsSlot.Body);    
-
         if(Item == nullptr) return nullptr;
-        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        if(Item->Data.Meshes.Num() > 0)
         {
-            Unwear(Item->Data.WearStatus);
-        }
-        else
-        {
-            if(CheckAndWear(Item->Data.WearStatus))
+            for (auto Mesh : Item->Data.Meshes)
             {
-                for (auto Mesh : Item->Data.Meshes)
+                USkeletalMesh* SKMesh;
+                if((SKMesh = Mesh.Get()) == nullptr)
                 {
-                    USkeletalMesh* SKMesh;
-                    if((SKMesh = Mesh.Get()) == nullptr)
-                    {
-                        SKMesh = USP_AssetManager::GetAsset(Mesh);     
-                    }
-                    Meshes.Add(SKMesh);
+                    SKMesh = USP_AssetManager::GetAsset(Mesh);     
                 }
-
-                if(Item->Data.OverlapBody)
-                {
-                    ModularPartsSlot.BodyShare++;
-                }
+                Meshes.Add(SKMesh);
             }
         }
-
         if(ModularPartsSlot.BodyShare == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Body);  
             Meshes.Add(SKMesh);
         }
     }
-    else return nullptr;
 
-    if(ModularPartsSlot.Arm != nullptr)
     {
         USP_ModularItemBase* Item = USP_AssetManager::GetAsset(ModularPartsSlot.Arm);    
-
         if(Item == nullptr) return nullptr;
-        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        if(Item->Data.Meshes.Num() > 0)
         {
-            Unwear(Item->Data.WearStatus);
-        }
-        else
-        {
-            if(CheckAndWear(Item->Data.WearStatus))
+            for (auto Mesh : Item->Data.Meshes)
             {
-                for (auto Mesh : Item->Data.Meshes)
+                USkeletalMesh* SKMesh;
+                if((SKMesh = Mesh.Get()) == nullptr)
                 {
-                    USkeletalMesh* SKMesh;
-                    if((SKMesh = Mesh.Get()) == nullptr)
-                    {
-                        SKMesh = USP_AssetManager::GetAsset(Mesh);     
-                    }
-                    Meshes.Add(SKMesh);
+                    SKMesh = USP_AssetManager::GetAsset(Mesh);     
                 }
-
-                if(Item->Data.OverlapBody)
-                {
-                    ModularPartsSlot.ArmShare++;
-                }
+                Meshes.Add(SKMesh);
             }
         }
-
         if(ModularPartsSlot.ArmShare == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Arm);  
@@ -185,38 +138,22 @@ USkeletalMesh* ASP_PlayerState::UpdateMesh()
             Meshes.Add(SKMesh);
         }
     }
-    else return nullptr;
 
-    if(ModularPartsSlot.Leg != nullptr)
     {
         USP_ModularItemBase* Item = USP_AssetManager::GetAsset(ModularPartsSlot.Leg);    
-
         if(Item == nullptr) return nullptr;
-        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        if(Item->Data.Meshes.Num() > 0)
         {
-            Unwear(Item->Data.WearStatus);
-        }
-        else
-        {
-            if(CheckAndWear(Item->Data.WearStatus))
+            for (auto Mesh : Item->Data.Meshes)
             {
-                for (auto Mesh : Item->Data.Meshes)
+                USkeletalMesh* SKMesh;
+                if((SKMesh = Mesh.Get()) == nullptr)
                 {
-                    USkeletalMesh* SKMesh;
-                    if((SKMesh = Mesh.Get()) == nullptr)
-                    {
-                        SKMesh = USP_AssetManager::GetAsset(Mesh);     
-                    }
-                    Meshes.Add(SKMesh);
+                    SKMesh = USP_AssetManager::GetAsset(Mesh);     
                 }
-
-                if(Item->Data.OverlapBody)
-                {
-                    ModularPartsSlot.LegShare++;
-                }
+                Meshes.Add(SKMesh);
             }
         }
-
         if(ModularPartsSlot.LegShare == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Leg);  
@@ -225,41 +162,23 @@ USkeletalMesh* ASP_PlayerState::UpdateMesh()
             Meshes.Add(SKMesh);
         }
     }
-    else return nullptr;
-    
-    if(ModularPartsSlot.Suit != nullptr)
+
     {
         USP_ModularItemBase* Item = USP_AssetManager::GetAsset(ModularPartsSlot.Suit);    
-
         if(Item == nullptr) return nullptr;
-        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        if(Item->Data.Meshes.Num() > 0)
         {
-            Unwear(Item->Data.WearStatus);
-        }
-        else
-        {
-            if(CheckAndWear(Item->Data.WearStatus))
+            for (auto Mesh : Item->Data.Meshes)
             {
-                for (auto Mesh : Item->Data.Meshes)
+                USkeletalMesh* SKMesh;
+                if((SKMesh = Mesh.Get()) == nullptr)
                 {
-                    USkeletalMesh* SKMesh;
-                    if((SKMesh = Mesh.Get()) == nullptr)
-                    {
-                        SKMesh = USP_AssetManager::GetAsset(Mesh);     
-                    }
-                    Meshes.Add(SKMesh);
+                    SKMesh = USP_AssetManager::GetAsset(Mesh);     
                 }
-
-                if(Item->Data.OverlapBody)
-                {
-                    ModularPartsSlot.LegShare++;
-                    ModularPartsSlot.BodyShare++;
-                    ModularPartsSlot.ArmShare++;
-                }
+                Meshes.Add(SKMesh);
             }
         }
     }
-    else return nullptr;
     
     USkeleton* Skeleton = USP_AssetManager::GetAsset(DefaultPartAsset->Skeleton);
     FSkeletalMeshMergeParamsScope MeshMergeParams;
@@ -277,30 +196,7 @@ USkeletalMesh* ASP_PlayerState::UpdateMesh()
 
 void ASP_PlayerState::ReplaceItemInSlot(USP_ModularItemBase* Item)
 {
-    if(Item->Data.ItemType == USP_AssetManager::Module_BodyType)
-    {
-        if(Item->Data.OverlapBody)
-        {
-            ModularPartsSlot.BodyShare++;
-        }
-        ModularPartsSlot.Body = Item;
-    }
-    else if(Item->Data.ItemType == USP_AssetManager::Module_HeadType)
-    {
-        ModularPartsSlot.Head = Item;
-    }
-    else if(Item->Data.ItemType == USP_AssetManager::Module_HandAndArmType)
-    {
-        ModularPartsSlot.Arm = Item;
-    }
-    else if(Item->Data.ItemType == USP_AssetManager::Module_FeetAndLegsType)
-    {
-        ModularPartsSlot.Leg = Item;
-    }
-    else if(Item->Data.ItemType == USP_AssetManager::Module_SuitType)
-    {
-        ModularPartsSlot.Suit = Item;
-    }
+    WearItem(Item);
 
     if(ModularPartsSlot.Head == nullptr || ModularPartsSlot.Arm == nullptr || ModularPartsSlot.Body == nullptr ||
        ModularPartsSlot.Leg == nullptr || ModularPartsSlot.Suit == nullptr) return;
@@ -308,7 +204,7 @@ void ASP_PlayerState::ReplaceItemInSlot(USP_ModularItemBase* Item)
     auto SK = UpdateMesh();
     if(SK == nullptr) return;
 
-    auto WS = GetGameInstance()->GetSubsystem<USP_WorldSubsystem>();
+    auto WS = GetWorld()->GetSubsystem<USP_WorldSubsystem>();
     if(WS == nullptr) return;
 
     auto MergeComponents = WS->GetMergeComponents();
@@ -330,45 +226,104 @@ USP_DefaultPartsAsset* ASP_PlayerState::GetDefaultParts() const
     return GI->GetDefaultMeshParts();
 }
 
-bool ASP_PlayerState::CheckAndWear(int32 bitmask)
+void ASP_PlayerState::WearItem(USP_ModularItemBase* Item)
 {
-    if(WearStatus & bitmask)
+    
+    if(Item->Data.ItemType == USP_AssetManager::Module_BodyType)
     {
-        return false;
+        ModularPartsSlot.Body = Item;
+        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        {
+            if(ModularPartsSlot.BodyShare > 0) ModularPartsSlot.BodyShare--;
+        }
+        else
+        {
+            if(Item->Data.OverlapBody) { ModularPartsSlot.BodyShare++;}
+            else if(ModularPartsSlot.BodyShare > 0) ModularPartsSlot.BodyShare--;
+        }
+
+        return;
+    }
+
+    if(Item->Data.ItemType  == USP_AssetManager::Module_HeadType)
+    {
+        ModularPartsSlot.Head = Item;
+        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        {
+            if(ModularPartsSlot.HeadShare > 0) ModularPartsSlot.HeadShare--;
+        }
+        else
+        {
+            if(Item->Data.OverlapBody) { ModularPartsSlot.HeadShare++;}
+            else if(ModularPartsSlot.HeadShare > 0) ModularPartsSlot.HeadShare--;
+        }
+
+        return;
     }
     
-    WearStatus |= bitmask;
-    return true;
+    if(Item->Data.ItemType  == USP_AssetManager::Module_FeetAndLegsType)
+    {
+        ModularPartsSlot.Leg = Item;
+        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        {
+            if(ModularPartsSlot.LegShare > 0) ModularPartsSlot.LegShare--;
+        }
+        else
+        {
+            if(Item->Data.OverlapBody) { ModularPartsSlot.LegShare++;}
+            else if(ModularPartsSlot.LegShare > 0) ModularPartsSlot.LegShare--;
+        }
+
+        return;
+    }
+
+    if(Item->Data.ItemType  == USP_AssetManager::Module_HandAndArmType)
+    {
+        ModularPartsSlot.Arm = Item;
+        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        {
+            if(ModularPartsSlot.ArmShare > 0) ModularPartsSlot.ArmShare--;
+        }
+        else
+        {
+            if(Item->Data.OverlapBody) { ModularPartsSlot.ArmShare++;}
+            else if(ModularPartsSlot.ArmShare > 0) ModularPartsSlot.ArmShare--;
+        }
+
+        return;
+    }
+
+    if(Item->Data.ItemType  == USP_AssetManager::Module_SuitType)
+    {
+        ModularPartsSlot.Suit = Item;
+        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        {
+            if(ModularPartsSlot.BodyShare > 0) ModularPartsSlot.BodyShare--;
+            if(ModularPartsSlot.ArmShare > 0) ModularPartsSlot.ArmShare--;
+            if(ModularPartsSlot.LegShare > 0) ModularPartsSlot.LegShare--;
+        }
+        else
+        {
+            if(Item->Data.OverlapBody)
+            {
+                ModularPartsSlot.BodyShare++;
+                ModularPartsSlot.ArmShare++;
+                ModularPartsSlot.LegShare++;
+                UpdateWidget(USP_AssetManager::Module_BodyType);
+                UpdateWidget(USP_AssetManager::Module_HandAndArmType);
+                UpdateWidget(USP_AssetManager::Module_FeetAndLegsType);
+            }
+            else
+            {
+                if(ModularPartsSlot.BodyShare > 0) ModularPartsSlot.BodyShare--;
+                if(ModularPartsSlot.ArmShare > 0) ModularPartsSlot.ArmShare--;
+                if(ModularPartsSlot.LegShare > 0) ModularPartsSlot.LegShare--;
+            }
+        }
+    }
 }
 
-void ASP_PlayerState::SetWear(int32 bitmask, bool Unwear)
+void ASP_PlayerState::UpdateWidget(FPrimaryAssetType Type) const
 {
-    WearStatus &= ~bitmask;
-    
-    if(static_cast<int32>(EWearStatus::hasHead) == bitmask)
-    {
-        if(ModularPartsSlot.HeadShare > 0) ModularPartsSlot.HeadShare--;
-    }
-
-    if(static_cast<int32>(EWearStatus::hasHandAndArm) == bitmask)
-    {
-        if(ModularPartsSlot.ArmShare > 0) ModularPartsSlot.ArmShare--;
-    }
-    
-    if(static_cast<int32>(EWearStatus::hasFeetAndLeg) == bitmask)
-    {
-        if(ModularPartsSlot.LegShare > 0) ModularPartsSlot.LegShare--;
-    }
-
-    if(static_cast<int32>(EWearStatus::hasBody) == bitmask)
-    {
-        if(ModularPartsSlot.BodyShare > 0) ModularPartsSlot.BodyShare--;
-    }
-
-    if((static_cast<int32>(EWearStatus::hasBody) & static_cast<int32>(EWearStatus::hasHandAndArm) & static_cast<int32>(EWearStatus::hasFeetAndLeg)) == bitmask)
-    {
-        if(ModularPartsSlot.BodyShare > 0) ModularPartsSlot.BodyShare--;
-        if(ModularPartsSlot.ArmShare > 0) ModularPartsSlot.ArmShare--;
-        if(ModularPartsSlot.LegShare > 0) ModularPartsSlot.LegShare--;
-    }
+    WidgetUpdated.Broadcast(Type);
 }

@@ -19,7 +19,6 @@ public:
     USP_ItemModule_Body()
     {
         Data.ItemType = USP_AssetManager::Module_BodyType;
-        Data.WearStatus = static_cast<int32>(EWearStatus::hasBody);
     }
     
 };

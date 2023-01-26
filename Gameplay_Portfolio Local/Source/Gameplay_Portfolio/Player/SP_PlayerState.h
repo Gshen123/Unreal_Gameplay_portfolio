@@ -9,7 +9,8 @@
 #include "SP_PlayerState.generated.h"
 
 
-DECLARE_MULTICAST_DELEGATE(FMergedMeshUpdate)
+DECLARE_MULTICAST_DELEGATE(FMergedMeshUpdated)
+DECLARE_MULTICAST_DELEGATE_OneParam(FMeshWidgetUpdated, FPrimaryAssetType);
 /**
  * 
  */
@@ -37,11 +38,12 @@ public:
 
     FModularPartsSlotData* GetPartsSlot();
 
-    bool CheckAndWear(int32 bitmask);
+    void WearItem(USP_ModularItemBase* Item);
 
-    void SetWear(int32 bitmask, bool Unwear = false);
+    void UpdateWidget(FPrimaryAssetType Type) const;
 
-    FMergedMeshUpdate MeshUpdated;
+    FMergedMeshUpdated MeshUpdated;
+    FMeshWidgetUpdated WidgetUpdated;
     
 private:
 
@@ -59,9 +61,6 @@ private:
 
     UPROPERTY()
     FModularPartsSlotData ModularPartsSlot;
-    
-    UPROPERTY()
-    int32 WearStatus = 0;
 
     USP_DefaultPartsAsset* GetDefaultParts() const;
 };

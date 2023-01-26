@@ -2,14 +2,14 @@
 
 #include "SP_PlayGameModeBase.h"
 #include "SP_PlayerController.h"
-#include "Gameplay_Portfolio/Character/SP_BaseCharacter.h"
+#include "Gameplay_Portfolio/Character/SP_PlayerCharacter.h"
 #include "Gameplay_Portfolio/UI/Game/SP_GameHUD.h"
 
 DEFINE_LOG_CATEGORY_STATIC(Log_SPGameModeBase, All, All);
 
 ASP_PlayGameModeBase::ASP_PlayGameModeBase()
 {
-    DefaultPawnClass = ASP_BaseCharacter::StaticClass();
+    DefaultPawnClass = ASP_PlayerCharacter::StaticClass();
     PlayerControllerClass = ASP_PlayerController::StaticClass();
     HUDClass = ASP_GameHUD::StaticClass();
 }

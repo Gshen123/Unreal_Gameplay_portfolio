@@ -31,9 +31,6 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "복장|착용 조건", DisplayName = "아이템 착용가능 조건")
     FModularItemConditions ItemConditions;
-
-    UPROPERTY()
-    int32 WearStatus;
 };
 
 UCLASS(Abstract, Blueprintable)

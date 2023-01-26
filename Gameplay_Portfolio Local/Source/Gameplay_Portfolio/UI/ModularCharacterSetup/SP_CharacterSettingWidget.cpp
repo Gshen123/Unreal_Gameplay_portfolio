@@ -4,7 +4,46 @@
 #include "SP_CharacterSettingWidget.h"
 
 #include "SP_AssetManager.h"
+#include "SP_PlayerState.h"
 #include "Kismet/GameplayStatics.h"
+
+void USP_CharacterSettingWidget::NativeOnInitialized()
+{
+    Super::NativeOnInitialized();
+
+    check(ClothContainer);
+    check(DressSetContainer);
+    
+    ClothContainer->ClearChildren();
+    DressSetContainer->ClearChildren();
+
+    USP_AssetManager& AssetManager = USP_AssetManager::Get();
+    TArray<FPrimaryAssetType> Types = AssetManager.GetModularAsset();
+    for(int i = 0;  i < Types.Num(); i++)
+    {
+        const auto ItemWidget = CreateWidget<USP_CharacterItemWidget>(this, CharacterItemWidgetClass);
+        check(ItemWidget);
+        ItemWidget->SetPadding(FMargin(0,0,0,10));
+        ItemWidget->AssetType = Types[i];
+        ItemWidget->Init();
+
+        if(Types[i] == USP_AssetManager::Module_SuitType)
+        {
+            DressSetContainer->AddChild(ItemWidget);
+            SuitItemWidget = ItemWidget;
+        }
+        else
+        {
+            ClothContainer->AddChild(ItemWidget);
+
+            if(Types[i] == USP_AssetManager::Module_BodyType) { BodyItemWidget = ItemWidget; continue;}
+            if(Types[i] == USP_AssetManager::Module_HeadType) { HeadItemWidget = ItemWidget; continue;}
+            if(Types[i] == USP_AssetManager::Module_FeetAndLegsType) { LegItemWidget = ItemWidget; continue;}
+            if(Types[i] == USP_AssetManager::Module_HandAndArmType) { ArmItemWidget = ItemWidget;}
+        }
+    }
+}
+
 
 void USP_CharacterSettingWidget::NativeConstruct()
 {
@@ -20,30 +59,16 @@ void USP_CharacterSettingWidget::NativeConstruct()
     if(ReturnButton) ReturnButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::OnGoToMenu);
     if(OptionButton) OptionButton->MainButton->OnClicked.AddDynamic(this,&ThisClass::ShowOptionWidget);
 
-    Init();
+    GetOwningPlayer()->GetPlayerState<ASP_PlayerState>()->WidgetUpdated.AddUObject(this, &ThisClass::UpdateWidget);
 }
 
-void USP_CharacterSettingWidget::Init()
+void USP_CharacterSettingWidget::UpdateWidget(FPrimaryAssetType Type) const
 {
-    ClothContainer->ClearChildren();
-    DressSetContainer->ClearChildren();
-    
-    auto List = USP_AssetManager::GetModularAsset();
-    for(auto Type : List)
-    {
-        auto ItemWidget = CreateWidget<USP_CharacterItemWidget>(this);
-        ItemWidget->Padding = FMargin(0,0,0,10);
-        ItemWidget->AssetType = Type;
-
-        if(Type == USP_AssetManager::Module_SuitType)
-        {
-            DressSetContainer->AddChild(ItemWidget);
-        }
-        else
-        {
-            ClothContainer->AddChild(ItemWidget);
-        }
-    }
+    if(Type == USP_AssetManager::Module_BodyType) { BodyItemWidget->SetNoneItem(); return; }
+    if(Type == USP_AssetManager::Module_HeadType) { HeadItemWidget->SetNoneItem(); return;}
+    if(Type == USP_AssetManager::Module_SuitType) { SuitItemWidget->SetNoneItem(); return;}
+    if(Type == USP_AssetManager::Module_FeetAndLegsType) { LegItemWidget->SetNoneItem(); return;}
+    if(Type == USP_AssetManager::Module_HandAndArmType) { ArmItemWidget->SetNoneItem();}
 }
 
 void USP_CharacterSettingWidget::OnIndexZero()

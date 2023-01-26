@@ -25,6 +25,12 @@ public:
 
     UPROPERTY()
     TArray<TSoftObjectPtr<USP_ModularItemBase>> Assets;
+
+    UFUNCTION()
+    void SetNoneItem();
+
+    UFUNCTION()
+    void Init();
     
 protected:
     UPROPERTY(meta = (BindWidget))
@@ -34,7 +40,7 @@ protected:
     UButton* PrevItemButton;
 
     UPROPERTY(meta = (BindWidget))
-    UTextBlock* TextBlock;
+    USP_TextButton* TextBlock;
 
     UPROPERTY(meta = (BindWidget))
     USP_TextButton* TypeTextBlock;
@@ -42,9 +48,6 @@ protected:
     virtual void NativeConstruct() override; 
     
 private:
-
-    UFUNCTION()
-    void Init();
     
     UFUNCTION()
     void UpdateTexts() const;
@@ -56,14 +59,17 @@ private:
     void OnPrevItem();
 
     UFUNCTION()
-    void SetItem();
+    void UpdateItem(bool NoUpdate = false);
 
     UFUNCTION()
-    void UpdateMesh();
+    void UpdateMesh() const;
     
     UPROPERTY()
     USP_ModularItemBase* CurrentItem = nullptr;
 
+    UPROPERTY()
+    int NoneIndex = 0;
+    
     UPROPERTY()
     int index= 0;
 };

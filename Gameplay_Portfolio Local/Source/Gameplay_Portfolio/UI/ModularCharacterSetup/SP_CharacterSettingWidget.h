@@ -29,19 +29,24 @@ public:
     USP_CharacterItemWidget* HeadItemWidget;
 
     UPROPERTY()
-    USP_CharacterItemWidget* ItemWidget;
+    USP_CharacterItemWidget* BodyItemWidget;
 
     UPROPERTY()
-    USP_CharacterItemWidget* HeadItemWidget;
+    USP_CharacterItemWidget* ArmItemWidget;
 
     UPROPERTY()
-    USP_CharacterItemWidget* HeadItemWidget;
+    USP_CharacterItemWidget* LegItemWidget;
 
     UPROPERTY()
-    USP_CharacterItemWidget* HeadItemWidget;
+    USP_CharacterItemWidget* SuitItemWidget;
+
+    UFUNCTION()
+    void UpdateWidget(FPrimaryAssetType Type) const;
     
 protected:
 
+    virtual void NativeOnInitialized() override;
+    
     virtual void NativeConstruct() override;
 
     UPROPERTY(meta = (BindWidget))
@@ -73,11 +78,11 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
     UVerticalBox* DressSetContainer;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+    TSubclassOf<USP_CharacterItemWidget> CharacterItemWidgetClass;
     
 private:
-    UFUNCTION()
-    void Init();
-    
     UFUNCTION()
     void OnIndexZero();
     

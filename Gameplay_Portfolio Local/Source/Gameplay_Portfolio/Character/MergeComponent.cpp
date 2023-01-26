@@ -3,19 +3,19 @@
 
 #include "MergeComponent.h"
 
-#include "SP_BaseCharacter.h"
+#include "SP_PlayerCharacter.h"
 #include "Subsystem/SP_WorldSubsystem.h"
 
 void UMergeComponent::BeginPlay()
 {
     Super::BeginPlay();
-    auto WS = GetOwner()->GetGameInstance()->GetSubsystem<USP_WorldSubsystem>();
+    const auto WS = GetOwner()->GetWorld()->GetSubsystem<USP_WorldSubsystem>();
     WS->AddMergeComponent(this);
 }
 
-void UMergeComponent::UpdateMesh(USkeletalMesh* NewMesh)
+void UMergeComponent::UpdateMesh(USkeletalMesh* NewMesh) const
 {
-    if(auto Chr = Cast<ASP_BaseCharacter>(GetOwner()))
+    if(auto Chr = Cast<ASP_PlayerCharacter>(GetOwner()))
     {
         Chr->GetMesh()->SetSkeletalMeshAsset(NewMesh);
     }

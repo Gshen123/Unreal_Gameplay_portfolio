@@ -15,7 +15,7 @@ class GAMEPLAY_PORTFOLIO_API USP_WorldSubsystem : public UWorldSubsystem
     GENERATED_BODY()
 
 public:
-    bool AddMergeComponent(UMergeComponent* Component);
+    void AddMergeComponent(UMergeComponent* Component);
     
     UFUNCTION()
     TArray<UMergeComponent*> GetMergeComponents();

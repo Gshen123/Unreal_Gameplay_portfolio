@@ -11,7 +11,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogCharacterItemWidget, All, All);
 void USP_CharacterItemWidget::NativeConstruct()
 {
     Super::NativeConstruct();
-
+    
     if(NextItemButton) NextItemButton->OnClicked.AddDynamic(this, &ThisClass::OnNextItem);
     if(PrevItemButton) PrevItemButton->OnClicked.AddDynamic(this, &ThisClass::OnPrevItem);
 }
@@ -45,8 +45,9 @@ void USP_CharacterItemWidget::Init()
         if(Assets[i].Get() == nullptr) AssetManager.GetAsset(Assets[i]);
         if(Assets[i].Get()->Data.DisplayName.EqualTo(FText::FromString(TEXT("None"))))
         {
-            CurrentItem = AssetManager.GetAsset(Assets[i]);
-            SetItem();
+            NoneIndex = i;
+            index = NoneIndex;
+            UpdateItem();
             break;
         }
     }
@@ -72,7 +73,7 @@ void USP_CharacterItemWidget::OnNextItem()
     if(index < Assets.Num() - 1) index++;
     else index = 0;
 
-    SetItem();
+    UpdateItem();
 }
 
 void USP_CharacterItemWidget::OnPrevItem()
@@ -80,19 +81,26 @@ void USP_CharacterItemWidget::OnPrevItem()
     if(index > 0) index--;
     else index = Assets.Num() - 1;
 
-    SetItem();
+    UpdateItem();
 }
 
-void USP_CharacterItemWidget::SetItem()
+void USP_CharacterItemWidget::UpdateItem(bool NoUpdate)
 {
     CurrentItem = USP_AssetManager::GetAsset(Assets[index]);
     
     UpdateTexts();
-    UpdateMesh();
+
+    if(!NoUpdate) UpdateMesh();
 }
 
-void USP_CharacterItemWidget::UpdateMesh()
+void USP_CharacterItemWidget::UpdateMesh() const
 {
     const auto PlayerState = GetOwningPlayer()->GetPlayerState<ASP_PlayerState>();
     PlayerState->ReplaceItemInSlot(CurrentItem);
+}
+
+void USP_CharacterItemWidget::SetNoneItem()
+{
+    index =  NoneIndex;
+    UpdateItem();
 }

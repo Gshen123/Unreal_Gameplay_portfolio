@@ -8,7 +8,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class GAMEPLAY_PORTFOLIO_API UMergeComponent : public UActorComponent
 {
 
@@ -19,5 +19,5 @@ public:
     virtual void BeginPlay() override;
     
     UFUNCTION()
-    void UpdateMesh(USkeletalMesh* NewMesh);
+    void UpdateMesh(USkeletalMesh* NewMesh) const;
 };

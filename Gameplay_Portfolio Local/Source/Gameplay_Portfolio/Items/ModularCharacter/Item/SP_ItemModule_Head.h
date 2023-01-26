@@ -19,7 +19,6 @@ public:
     USP_ItemModule_Head()
     {
         Data.ItemType = USP_AssetManager::Module_HeadType;
-        Data.WearStatus = static_cast<int32>(EWearStatus::hasHead);
     }
     
 };
