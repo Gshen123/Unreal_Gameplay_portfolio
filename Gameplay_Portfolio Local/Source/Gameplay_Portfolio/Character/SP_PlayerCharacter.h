@@ -9,7 +9,7 @@
 
 
 
-UCLASS(config=Game)
+UCLASS()
 class ASP_PlayerCharacter : public ASP_BaseCharacter
 {
     GENERATED_BODY()

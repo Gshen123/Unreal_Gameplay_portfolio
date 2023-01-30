@@ -15,6 +15,13 @@ ASP_BaseCharacter::ASP_BaseCharacter()
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
     
     MergeComponent = CreateDefaultSubobject<UMergeComponent>(TEXT("MeshComponent"));
+    ClothMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ClothMesh"));
+    ClothMesh->SetupAttachment(GetMesh());
+}
+
+USkeletalMeshComponent* ASP_BaseCharacter::GetClothMesh() const
+{
+    return  ClothMesh;
 }
 
 void ASP_BaseCharacter::BeginPlay()
@@ -23,7 +30,7 @@ void ASP_BaseCharacter::BeginPlay()
     Super::BeginPlay();
 }
 
-void ASP_BaseCharacter::UpdateMesh(USkeletalMesh* NewMesh)
+void ASP_BaseCharacter::UpdateMesh(USkeletalMesh* NewMesh) const
 {
     MergeComponent->UpdateMesh(NewMesh);
 }

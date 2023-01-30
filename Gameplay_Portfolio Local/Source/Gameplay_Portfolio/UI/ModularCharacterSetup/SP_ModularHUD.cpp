@@ -4,6 +4,7 @@
 #include "SP_ModularHUD.h"
 
 #include "SP_CharacterSettingWidget.h"
+#include "SP_PlayerState.h"
 #include "Blueprint/UserWidget.h"
 
 void ASP_ModularHUD::BeginPlay()
@@ -17,6 +18,13 @@ void ASP_ModularHUD::BeginPlay()
             CreateCharacterWidget->AddToViewport();
             const auto ModularMenu = Cast<USP_CharacterSettingWidget>(CreateCharacterWidget);
             ModularMenu->OnOptionWidget.AddUniqueDynamic(this, &ASP_ModularHUD::ShowOptionMenu);
+            ModularMenu->LoadData(GetMeshData());
         }
     }
+}
+
+FPlayerMeshData ASP_ModularHUD::GetMeshData() const
+{
+    auto PS = GetOwningPlayerController()->GetPlayerState<ASP_PlayerState>();
+    return PS->GetMeshData();
 }

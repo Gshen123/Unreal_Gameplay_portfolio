@@ -140,7 +140,7 @@ USkeletalMesh* USP_MergeUtil::MergeMeshes(const FSkeletalMeshMergeParamsScope& P
 		UE_LOG(LogTemp, Warning, TEXT("SkelMeshSocketCount: %d | SkelSocketCount: %d | Combined: %d"), UniqueSkelMeshSockets.Num(), UniqueSkelSockets.Num(), UniqueTotal);
 		UE_LOG(LogTemp, Warning, TEXT("Found Duplicates: %s"), *((Total != UniqueTotal) ? FString("True") : FString("False")));
 	}
-
+    
 	return BaseMesh;
-	
+
 }

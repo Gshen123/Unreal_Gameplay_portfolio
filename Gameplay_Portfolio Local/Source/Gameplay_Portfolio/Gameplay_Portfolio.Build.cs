@@ -10,7 +10,7 @@ public class Gameplay_Portfolio : ModuleRules {
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput", "MediaAssets", 
 																	"UMG","SlateCore", "GameplayTags"});
 		
-		PublicIncludePaths.AddRange(new string[] { "Gameplay_Portfolio/Widget", "Gameplay_Portfolio/System", "Gameplay_Portfolio/Settings", "Gameplay_Portfolio/Player", 
+		PublicIncludePaths.AddRange(new string[] { "Gameplay_Portfolio/UI", "Gameplay_Portfolio/System", "Gameplay_Portfolio/Settings", "Gameplay_Portfolio/Player", 
 															"Gameplay_Portfolio/Character"});
 	}
 }

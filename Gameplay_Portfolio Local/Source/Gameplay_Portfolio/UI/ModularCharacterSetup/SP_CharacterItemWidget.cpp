@@ -4,7 +4,7 @@
 #include "SP_CharacterItemWidget.h"
 
 #include "SP_AssetManager.h"
-#include "SP_PlayerState.h"
+#include "Subsystem/SP_LocalPlayerMeshManager.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogCharacterItemWidget, All, All);
 
@@ -16,7 +16,7 @@ void USP_CharacterItemWidget::NativeConstruct()
     if(PrevItemButton) PrevItemButton->OnClicked.AddDynamic(this, &ThisClass::OnPrevItem);
 }
 
-void USP_CharacterItemWidget::Init()
+void USP_CharacterItemWidget::Init(bool Loaded, FName ItemName)
 {
     USP_AssetManager& AssetManager = USP_AssetManager::Get();
     
@@ -46,7 +46,16 @@ void USP_CharacterItemWidget::Init()
         if(Assets[i].Get()->Data.DisplayName.EqualTo(FText::FromString(TEXT("None"))))
         {
             NoneIndex = i;
-            index = NoneIndex;
+            if(!Loaded)
+            {
+                index = NoneIndex;
+                UpdateItem();
+                break;
+            }
+        }
+        else if(Assets[i].Get()->Data.DisplayName.EqualTo(FText::FromName(ItemName)))
+        {
+            index = i;
             UpdateItem();
             break;
         }
@@ -87,7 +96,7 @@ void USP_CharacterItemWidget::OnPrevItem()
 void USP_CharacterItemWidget::UpdateItem(bool NoUpdate)
 {
     CurrentItem = USP_AssetManager::GetAsset(Assets[index]);
-    
+    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->FindAndAddMeshItemData(AssetType, FName(*CurrentItem->Data.DisplayName.ToString()));
     UpdateTexts();
 
     if(!NoUpdate) UpdateMesh();
@@ -95,8 +104,8 @@ void USP_CharacterItemWidget::UpdateItem(bool NoUpdate)
 
 void USP_CharacterItemWidget::UpdateMesh() const
 {
-    const auto PlayerState = GetOwningPlayer()->GetPlayerState<ASP_PlayerState>();
-    PlayerState->ReplaceItemInSlot(CurrentItem);
+    const auto LPM = GetOwningPlayer()->GetLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
+    LPM->ReplaceItemInSlot(CurrentItem);
 }
 
 void USP_CharacterItemWidget::SetNoneItem()

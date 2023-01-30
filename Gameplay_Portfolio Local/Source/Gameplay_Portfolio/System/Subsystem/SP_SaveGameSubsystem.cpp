@@ -34,7 +34,7 @@ bool USP_SaveGameSubsystem::OverrideSpawnTransform(AController* NewPlayer)
     {
         return false;
     }
-	
+    
     if (APawn* MyPawn = PS->GetPawn())
     {
         FPlayerSaveData* FoundData = CurrentSaveGame->GetPlayerData(PS);
@@ -60,7 +60,7 @@ void USP_SaveGameSubsystem::SetSlotName(FString NewSlotName)
     {
         return;
     }
-	
+    
     CurrentSlotName = NewSlotName;
 }
 
@@ -95,7 +95,6 @@ void USP_SaveGameSubsystem::WriteSaveGame()
         //{
         //    continue;
         //}
-        
         SaveGame.ActorSaver(Actor);
     }
 
@@ -122,14 +121,12 @@ void USP_SaveGameSubsystem::LoadSaveGame(FString InSlotName /* = " "  */)
         }
 
         UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame Data."));
-
         CurrentSaveGame->UObjectsPreloader(GetWorld()->GetGameState());
         CurrentSaveGame->UObjectDataLoader();
     }
     else
     {
         CurrentSaveGame = Cast<USP_SaveGame>(UGameplayStatics::CreateSaveGameObject(USP_SaveGame::StaticClass()));
-
         UE_LOG(LogTemp, Log, TEXT("Created New SaveGame Data."));
     }
 }

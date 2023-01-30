@@ -57,6 +57,19 @@ public:
 };
 
 USTRUCT()
+struct FPlayerMeshData
+{
+    GENERATED_BODY()
+public:
+    UPROPERTY()
+    TArray<USkeletalMesh*> Meshes;
+    
+    TMap<FPrimaryAssetType, FName> MeshItemData;
+    
+    TMap<FName, float> MorphTargetData;
+};
+
+USTRUCT()
 struct  FPlayerSaveData
 {
     GENERATED_BODY ()
@@ -85,4 +98,10 @@ public:
     /* 우리는 항상 위치를 복원하고 싶지는 않으며, 월드의 특정 리스폰 지점에서 플레이어를 재개할 수 있습니다. */
     UPROPERTY()
     bool bResumeAtTransform;
+
+    UPROPERTY()
+    FPlayerMeshData MeshData;
+
+    UPROPERTY()
+    AGameModeBase* Mode;
 };

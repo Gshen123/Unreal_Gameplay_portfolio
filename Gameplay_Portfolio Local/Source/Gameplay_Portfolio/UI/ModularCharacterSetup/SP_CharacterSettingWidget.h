@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "SP_CharacterItemWidget.h"
 #include "SP_GameInstance.h"
+#include "SP_MorphSliderWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/ScrollBox.h"
 #include "Components/VerticalBox.h"
 #include "Components/WidgetSwitcher.h"
 #include "Gameplay_Portfolio/UI/SP_TextButton.h"
@@ -43,6 +45,8 @@ public:
     UFUNCTION()
     void UpdateWidget(FPrimaryAssetType Type) const;
     
+    void LoadData(FPlayerMeshData Data);
+    
 protected:
 
     virtual void NativeOnInitialized() override;
@@ -74,6 +78,9 @@ protected:
     USP_TextButton* OptionButton;
 
     UPROPERTY(meta = (BindWidget))
+    UScrollBox* MorphContainer;
+    
+    UPROPERTY(meta = (BindWidget))
     UVerticalBox* ClothContainer;
 
     UPROPERTY(meta = (BindWidget))
@@ -81,6 +88,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
     TSubclassOf<USP_CharacterItemWidget> CharacterItemWidgetClass;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+    TSubclassOf<USP_MorphSliderWidget> MorphSliderWidgetClass;
     
 private:
     UFUNCTION()
@@ -98,5 +108,15 @@ private:
     UFUNCTION()
     void ShowOptionWidget();
 
+    UFUNCTION()
+    void Reset();
+
+    UFUNCTION()
     USP_GameInstance* GetSP_GameInstance() const;
+
+    UPROPERTY()
+    FPlayerMeshData LoadedData;
+    
+    UPROPERTY()
+    TArray<USP_MorphSliderWidget*> MorphWidgets;
 };

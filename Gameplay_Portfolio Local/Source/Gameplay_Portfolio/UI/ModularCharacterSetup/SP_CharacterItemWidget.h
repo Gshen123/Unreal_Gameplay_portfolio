@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
-#include "Components/TextBlock.h"
 #include "Gameplay_Portfolio/Items/ModularCharacter/SP_ModularItemBase.h"
 #include "Gameplay_Portfolio/UI/SP_TextButton.h"
 #include "SP_CharacterItemWidget.generated.h"
@@ -28,9 +27,8 @@ public:
 
     UFUNCTION()
     void SetNoneItem();
-
-    UFUNCTION()
-    void Init();
+    
+    void Init(bool Loaded = false, FName ItemName = NAME_None);
     
 protected:
     UPROPERTY(meta = (BindWidget))

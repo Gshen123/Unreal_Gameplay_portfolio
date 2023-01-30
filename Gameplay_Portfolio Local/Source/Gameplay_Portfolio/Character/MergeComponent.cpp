@@ -3,26 +3,46 @@
 
 #include "MergeComponent.h"
 
+#include "SP_AssetManager.h"
 #include "SP_PlayerCharacter.h"
-#include "Subsystem/SP_WorldSubsystem.h"
+#include "Subsystem/SP_LocalPlayerMeshManager.h"
 
 void UMergeComponent::BeginPlay()
 {
     Super::BeginPlay();
-    const auto WS = GetOwner()->GetWorld()->GetSubsystem<USP_WorldSubsystem>();
-    WS->AddMergeComponent(this);
+    const auto LPM = GetOwner()->GetNetOwningPlayer()->GetPlayerController(GetWorld())->GetLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
+    LPM->AddMergeComponent(this);
+}
+
+USkeletalMeshComponent* UMergeComponent::GetClothMesh() const
+{
+    const auto Character = Cast<ASP_BaseCharacter>(GetOwner());
+    if(Character) return Character->GetClothMesh();
+    return nullptr;
+}
+
+USkeletalMeshComponent* UMergeComponent::GetOwnerMesh() const
+{
+    return Cast<ACharacter>(GetOwner())->GetMesh();
 }
 
 void UMergeComponent::UpdateMesh(USkeletalMesh* NewMesh) const
 {
-    if(auto Chr = Cast<ASP_PlayerCharacter>(GetOwner()))
+    GetClothMesh()->SetSkeletalMeshAsset(NewMesh);
+}
+
+void UMergeComponent::SetMorphTarget(FName MorphTargetName, float Value, bool RemoveWeight) const
+{
+    if(const auto MeshComp = GetOwnerMesh())
     {
-        Chr->GetMesh()->SetSkeletalMeshAsset(NewMesh);
+        MeshComp->SetMorphTarget(MorphTargetName, Value, RemoveWeight);
     }
-    else if(auto Pawn = Cast<APawn>(GetOwner()))
+}
+
+void UMergeComponent::ClearMorphTarget()
+{
+    if(const auto MeshComp = GetOwnerMesh())
     {
-        auto Comp = Pawn->GetComponentByClass(USkeletalMeshComponent::StaticClass());
-        auto Mesh = Cast<USkeletalMeshComponent>(Comp);
-        Mesh->SetSkeletalMeshAsset(NewMesh);
+        MeshComp->ClearMorphTargets();
     }
 }
