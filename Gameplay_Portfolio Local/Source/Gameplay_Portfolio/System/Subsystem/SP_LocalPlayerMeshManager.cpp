@@ -5,6 +5,7 @@
 
 #include "SP_AssetManager.h"
 #include "SP_GameInstance.h"
+#include "ModularCharacterSetup/SP_CharacterItemWidget.h"
 #include "ModularCharacterSystem/SP_MergeStruct.h"
 #include "ModularCharacterSystem/SP_MergeUtil.h"
 
@@ -15,6 +16,12 @@ void USP_LocalPlayerMeshManager::Initialize(FSubsystemCollectionBase& Collection
     Super::Initialize(Collection);
 
     DefaultPartAsset = GetDefaultParts();
+}
+
+void USP_LocalPlayerMeshManager::Deinitialize()
+{
+    MergeComponents.Reset();
+    Super::Deinitialize();
 }
 
 void USP_LocalPlayerMeshManager::UpdateWidget(FPrimaryAssetType Type) const
@@ -29,20 +36,19 @@ USP_DefaultPartsAsset* USP_LocalPlayerMeshManager::GetDefaultParts() const
     return GI->GetDefaultMeshParts();
 }
 
-void USP_LocalPlayerMeshManager::AddMergeComponent(UMergeComponent* Component)
+void USP_LocalPlayerMeshManager::AddMergeComponent(USP_MergeComponent* Component)
 {
     MergeComponents.AddUnique(Component);
 }
 
-TArray<UMergeComponent*> USP_LocalPlayerMeshManager::GetMergeComponents()
+TArray<USP_MergeComponent*> USP_LocalPlayerMeshManager::GetMergeComponents()
 {
     return MergeComponents;
 }
 
-void USP_LocalPlayerMeshManager::UpdateMesh(UMergeComponent* MergeComponent)
+void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
 {
     Meshes.Reset();
-    
     {
         USP_ModularItemBase* Item = USP_AssetManager::GetAsset(ModularPartsSlot.Body);    
         if(Item == nullptr) return;
@@ -51,14 +57,11 @@ void USP_LocalPlayerMeshManager::UpdateMesh(UMergeComponent* MergeComponent)
             for (auto Mesh : Item->Data.Meshes)
             {
                 USkeletalMesh* SKMesh;
-                if((SKMesh = Mesh.Get()) == nullptr)
-                {
-                    SKMesh = USP_AssetManager::GetAsset(Mesh);     
-                }
+                if((SKMesh = Mesh.Get()) == nullptr) SKMesh = USP_AssetManager::GetAsset(Mesh);     
                 Meshes.Add(SKMesh);
             }
         }
-        if(ModularPartsSlot.BodyShare == 0)
+        if(ModularPartsSlot.BodyShare.Num() == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Body);  
             Meshes.Add(SKMesh);
@@ -73,14 +76,11 @@ void USP_LocalPlayerMeshManager::UpdateMesh(UMergeComponent* MergeComponent)
             for (auto Mesh : Item->Data.Meshes)
             {
                 USkeletalMesh* SKMesh;
-                if((SKMesh = Mesh.Get()) == nullptr)
-                {
-                    SKMesh = USP_AssetManager::GetAsset(Mesh);     
-                }
+                if((SKMesh = Mesh.Get()) == nullptr) SKMesh = USP_AssetManager::GetAsset(Mesh);     
                 Meshes.Add(SKMesh);
             }
         }
-        if(ModularPartsSlot.ArmShare == 0)
+        if(ModularPartsSlot.ArmShare.Num() == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Arm);  
             Meshes.Add(SKMesh);
@@ -97,14 +97,11 @@ void USP_LocalPlayerMeshManager::UpdateMesh(UMergeComponent* MergeComponent)
             for (auto Mesh : Item->Data.Meshes)
             {
                 USkeletalMesh* SKMesh;
-                if((SKMesh = Mesh.Get()) == nullptr)
-                {
-                    SKMesh = USP_AssetManager::GetAsset(Mesh);     
-                }
+                if((SKMesh = Mesh.Get()) == nullptr) SKMesh = USP_AssetManager::GetAsset(Mesh);     
                 Meshes.Add(SKMesh);
             }
         }
-        if(ModularPartsSlot.LegShare == 0)
+        if(ModularPartsSlot.LegShare.Num() == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Leg);  
             Meshes.Add(SKMesh);
@@ -121,10 +118,7 @@ void USP_LocalPlayerMeshManager::UpdateMesh(UMergeComponent* MergeComponent)
             for (auto Mesh : Item->Data.Meshes)
             {
                 USkeletalMesh* SKMesh;
-                if((SKMesh = Mesh.Get()) == nullptr)
-                {
-                    SKMesh = USP_AssetManager::GetAsset(Mesh);     
-                }
+                if((SKMesh = Mesh.Get()) == nullptr) SKMesh = USP_AssetManager::GetAsset(Mesh);     
                 Meshes.Add(SKMesh);
             }
         }
@@ -138,10 +132,7 @@ void USP_LocalPlayerMeshManager::UpdateMesh(UMergeComponent* MergeComponent)
             for (auto Mesh : Item->Data.Meshes)
             {
                 USkeletalMesh* SKMesh;
-                if((SKMesh = Mesh.Get()) == nullptr)
-                {
-                    SKMesh = USP_AssetManager::GetAsset(Mesh);     
-                }
+                if((SKMesh = Mesh.Get()) == nullptr) SKMesh = USP_AssetManager::GetAsset(Mesh);     
                 Meshes.Add(SKMesh);
             }
         }
@@ -151,20 +142,49 @@ void USP_LocalPlayerMeshManager::UpdateMesh(UMergeComponent* MergeComponent)
     FSkeletalMeshMergeParamsScope MeshMergeParams;
     MeshMergeParams.Skeleton = Skeleton;
     MeshMergeParams.MeshesToMerge = Meshes;
+    USkeletalMesh* MergedMesh = nullptr;
+    if(Meshes.Num() > 1) MergedMesh = USP_MergeUtil::MergeMeshes(MeshMergeParams);
 
-    if(auto MergedMesh = USP_MergeUtil::MergeMeshes(MeshMergeParams))
+    if(MergedMesh != nullptr || Meshes.Num() == 1)
     {
-        if(ModularPartsSlot.HeadShare == 0)
+        if(ModularPartsSlot.HeadShare.Num() == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Head);
             MergeComponent->GetOwnerMesh()->SetSkeletalMesh(SKMesh, false);
-            MergeComponent->GetClothMesh()->SetSkeletalMeshAsset(MergedMesh);
+
+            if(MergedMesh != nullptr) MergeComponent->GetClothMesh()->SetSkeletalMeshAsset(MergedMesh);
+            else MergeComponent->GetClothMesh()->SetSkeletalMeshAsset(Meshes[0]);
+            
             MergeComponent->GetClothMesh()->SetLeaderPoseComponent(MergeComponent->GetOwnerMesh());
             AllUpdateMorphTarget();
+            UpdateMaterial(MergeComponent);
         }
         else
         {
-            MergeComponent->GetOwnerMesh()->SetSkeletalMeshAsset(MergedMesh);
+            if(MergedMesh != nullptr) MergeComponent->GetOwnerMesh()->SetSkeletalMeshAsset(MergedMesh);
+            else MergeComponent->GetOwnerMesh()->SetSkeletalMeshAsset(Meshes[0]);
+            MergeComponent->GetClothMesh()->SetSkeletalMeshAsset(nullptr);
+        }
+    }
+}
+
+void USP_LocalPlayerMeshManager::AllUpdateMaterail()
+{
+    for (const auto MergeComponent : MergeComponents)
+    {
+        UpdateMaterial(MergeComponent);
+    }
+}
+
+void USP_LocalPlayerMeshManager::UpdateMaterial(USP_MergeComponent* MergeComponent)
+{
+    for (auto iter = MaterialData.CreateConstIterator(); iter; ++iter)
+    {
+        FMaterialData* Data = MaterialData.Find(iter.Key());
+        UMaterialInstanceDynamic* HeadDynamicMesh =  MergeComponent->GetOwnerMesh()->CreateDynamicMaterialInstance(iter.Key(), Data->MaterialInstance);
+        for (auto it= Data->ParamData.CreateConstIterator(); it; ++it)
+        {
+            HeadDynamicMesh->SetVectorParameterValue(it.Key(), it.Value());
         }
     }
 }
@@ -178,116 +198,115 @@ void USP_LocalPlayerMeshManager::FindAndAddMeshItemData(FPrimaryAssetType Type, 
         MeshItemData.Shrink();
         MeshItemData.Add(Type, Name);
     }
+    else MeshItemData.Add(Type, Name);
+}
+
+void USP_LocalPlayerMeshManager::FindAndAddMaterialData(int32 Index, FName ParamName, FLinearColor Value, UMaterialInstance* MaterialInstance)
+{
+    if(const auto PrevData = MaterialData.Find(Index))
+    {
+        PrevData->ParamData.Add(ParamName, Value);
+    }
     else
     {
-        MeshItemData.Add(Type, Name);
+        FMaterialData NewData;
+        NewData.MaterialInstance = MaterialInstance;
+        NewData.ParamData.Add(ParamName, Value);
+        MaterialData.Add(Index, NewData);
     }
 }
 
 void USP_LocalPlayerMeshManager::WearItem(USP_ModularItemBase* Item)
 {
-        if(Item->Data.ItemType == USP_AssetManager::Module_BodyType)
+    if(Item->Data.ItemType == USP_AssetManager::Module_BodyType)
     {
         ModularPartsSlot.Body = Item;
-        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")) || !Item->Data.OverlapBody)
         {
-            if(ModularPartsSlot.BodyShare > 0) ModularPartsSlot.BodyShare--;
+            if(ModularPartsSlot.BodyShare.Num() > 0)
+            {
+                if(ModularPartsSlot.BodyShare.Contains(USP_AssetManager::Module_BodyType)) ModularPartsSlot.BodyShare.Remove(USP_AssetManager::Module_BodyType);
+            }
         }
         else
         {
-            if(Item->Data.OverlapBody)
-            {
-                ModularPartsSlot.BodyShare++;
-                UpdateWidget(USP_AssetManager::Module_SuitType);
-            }
-            else if(ModularPartsSlot.BodyShare > 0) ModularPartsSlot.BodyShare--;
+            ModularPartsSlot.BodyShare.AddUnique(USP_AssetManager::Module_BodyType);
+            UpdateWidget(USP_AssetManager::Module_SuitType);
         }
-
         return;
     }
 
     if(Item->Data.ItemType  == USP_AssetManager::Module_HeadType)
     {
         ModularPartsSlot.Head = Item;
-        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")) || !Item->Data.OverlapBody)
         {
-            if(ModularPartsSlot.HeadShare > 0) ModularPartsSlot.HeadShare--;
+            if(ModularPartsSlot.HeadShare.Num() > 0)
+            {
+                if(ModularPartsSlot.HeadShare.Contains(USP_AssetManager::Module_HeadType)) ModularPartsSlot.HeadShare.Remove(USP_AssetManager::Module_HeadType);
+            }
         }
         else
         {
-            if(Item->Data.OverlapBody) { ModularPartsSlot.HeadShare++;}
-            else if(ModularPartsSlot.HeadShare > 0) ModularPartsSlot.HeadShare--;
+            ModularPartsSlot.HeadShare.AddUnique(USP_AssetManager::Module_HeadType);
         }
-
         return;
     }
     
     if(Item->Data.ItemType  == USP_AssetManager::Module_FeetAndLegsType)
     {
         ModularPartsSlot.Leg = Item;
-        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")) || !Item->Data.OverlapBody)
         {
-            if(ModularPartsSlot.LegShare > 0) ModularPartsSlot.LegShare--;
+            if(ModularPartsSlot.LegShare.Num() > 0)
+            {
+                if(ModularPartsSlot.LegShare.Contains(USP_AssetManager::Module_FeetAndLegsType)) ModularPartsSlot.LegShare.Remove(USP_AssetManager::Module_FeetAndLegsType);
+            }
         }
         else
         {
-            if(Item->Data.OverlapBody)
-            {
-                ModularPartsSlot.LegShare++;
-                UpdateWidget(USP_AssetManager::Module_SuitType);
-            }
-            else if(ModularPartsSlot.LegShare > 0) ModularPartsSlot.LegShare--;
+            ModularPartsSlot.LegShare.AddUnique(USP_AssetManager::Module_FeetAndLegsType);
         }
-
         return;
     }
 
     if(Item->Data.ItemType  == USP_AssetManager::Module_HandAndArmType)
     {
         ModularPartsSlot.Arm = Item;
-        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")) || !Item->Data.OverlapBody)
         {
-            if(ModularPartsSlot.ArmShare > 0) ModularPartsSlot.ArmShare--;
+            if(ModularPartsSlot.ArmShare.Num() > 0)
+            {
+                if(ModularPartsSlot.ArmShare.Contains(USP_AssetManager::Module_HandAndArmType)) ModularPartsSlot.ArmShare.Remove(USP_AssetManager::Module_HandAndArmType);
+            }
         }
         else
         {
-            if(Item->Data.OverlapBody)
-            {
-                ModularPartsSlot.ArmShare++;
-                UpdateWidget(USP_AssetManager::Module_SuitType);
-            }
-            else if(ModularPartsSlot.ArmShare > 0) ModularPartsSlot.ArmShare--;
+            ModularPartsSlot.ArmShare.AddUnique(USP_AssetManager::Module_HandAndArmType);
+            UpdateWidget(USP_AssetManager::Module_SuitType);
         }
-
         return;
     }
 
     if(Item->Data.ItemType  == USP_AssetManager::Module_SuitType)
     {
         ModularPartsSlot.Suit = Item;
-        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")))
+        if(Item->Data.DisplayName.EqualTo(FText::FromString("None")) || !Item->Data.OverlapBody)
         {
-            if(ModularPartsSlot.BodyShare > 0) ModularPartsSlot.BodyShare--;
-            if(ModularPartsSlot.ArmShare > 0) ModularPartsSlot.ArmShare--;
-            if(ModularPartsSlot.LegShare > 0) ModularPartsSlot.LegShare--;
+            if(ModularPartsSlot.BodyShare.Num() > 0)
+                if(ModularPartsSlot.BodyShare.Contains(USP_AssetManager::Module_SuitType))
+                    ModularPartsSlot.BodyShare.Remove(USP_AssetManager::Module_SuitType);
+            
+            if(ModularPartsSlot.ArmShare.Num() > 0)
+                if(ModularPartsSlot.ArmShare.Contains(USP_AssetManager::Module_SuitType))
+                    ModularPartsSlot.ArmShare.Remove(USP_AssetManager::Module_SuitType);
         }
         else
         {
-            if(Item->Data.OverlapBody)
-            {
-                ModularPartsSlot.BodyShare++;
-                ModularPartsSlot.ArmShare++;
-                ModularPartsSlot.LegShare++;
-                UpdateWidget(USP_AssetManager::Module_BodyType);
-                UpdateWidget(USP_AssetManager::Module_HandAndArmType);
-                UpdateWidget(USP_AssetManager::Module_FeetAndLegsType);
-            }
-            else
-            {
-                if(ModularPartsSlot.BodyShare > 0) ModularPartsSlot.BodyShare--;
-                if(ModularPartsSlot.ArmShare > 0) ModularPartsSlot.ArmShare--;
-                if(ModularPartsSlot.LegShare > 0) ModularPartsSlot.LegShare--;
-            }
+            ModularPartsSlot.BodyShare.AddUnique(USP_AssetManager::Module_SuitType);
+            ModularPartsSlot.ArmShare.AddUnique(USP_AssetManager::Module_SuitType);
+            UpdateWidget(USP_AssetManager::Module_BodyType);
+            UpdateWidget(USP_AssetManager::Module_HandAndArmType);
         }
     }
 }
@@ -299,10 +318,7 @@ void USP_LocalPlayerMeshManager::ReplaceItemInSlot(USP_ModularItemBase* Item)
     if(ModularPartsSlot.Head == nullptr || ModularPartsSlot.Arm == nullptr || ModularPartsSlot.Body == nullptr ||
        ModularPartsSlot.Leg == nullptr || ModularPartsSlot.Suit == nullptr) return;
     
-    for(const auto Component : MergeComponents)
-    {
-        UpdateMesh(Component);
-    }
+    for(const auto Component : MergeComponents) UpdateMesh(Component);
 }
 
 void USP_LocalPlayerMeshManager::SetMorphTarget(FString MorphTargetName, float Value)
@@ -354,6 +370,11 @@ void USP_LocalPlayerMeshManager::ResetMorphTargetData()
     }
     
     MorphTargetData.Empty();
+}
+
+void USP_LocalPlayerMeshManager::UpdateAnimation(UAnimationAsset* Asset)
+{
+    for (const auto Component : MergeComponents) Component->UpdateAnimation(Asset);
 }
 
 FModularPartsSlotData* USP_LocalPlayerMeshManager::GetPartsSlot()

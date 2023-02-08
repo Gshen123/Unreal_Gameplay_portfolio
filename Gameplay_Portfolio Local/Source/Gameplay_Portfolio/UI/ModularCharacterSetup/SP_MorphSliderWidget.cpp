@@ -39,19 +39,20 @@ void USP_MorphSliderWidget::NativeConstruct()
     Super::NativeConstruct();
     
     Slider->OnValueChanged.AddDynamic(this, &ThisClass::UpdateMaterial);
+    if(ResetButton) ResetButton->OnClicked.AddDynamic(this, &ThisClass::Reset);
     UpdateTexts();
 }
 
 void USP_MorphSliderWidget::UpdateTexts() const
 {
     check(TypeTextBlock);
-    TypeTextBlock->SetText(FText::FromString(MorphTargetName));
+    TypeTextBlock->SetText(DisplayName);
 }
 
-void USP_MorphSliderWidget::SetSliderVlaue(float value)
+void USP_MorphSliderWidget::SetSliderVlaue(float Value)
 {
-    Slider->SetValue(value);
-    MaterialInstanceDynamic->SetScalarParameterValue("Value", value);
+    Slider->SetValue(Value);
+    MaterialInstanceDynamic->SetScalarParameterValue("Value", Value);
 }
 
 void USP_MorphSliderWidget::UpdateMaterial(float Value)
@@ -66,8 +67,9 @@ void USP_MorphSliderWidget::UpdateMaterial(float Value)
 
 float USP_MorphSliderWidget::LerpMorphValue(float Value)
 {
-    if(Value > 0.5f) return Value * 2;
-    if(Value == 0.5f) return 0;
-    if(Value == 0.f) return -1;
-    return -(1.f - Value * 2.f);
+    return Value*2-1;
+}
+
+void USP_MorphSliderWidget::Reset()
+{
 }

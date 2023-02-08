@@ -4,14 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "SP_InputConfig.h"
-#include "UObject/Object.h"
+#include "EnhancedInputComponent.h"
+#include "GameplayTagContainer.h"
 #include "SP_InputComponent.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GAMEPLAY_PORTFOLIO_API USP_InputComponent : public UObject
+class GAMEPLAY_PORTFOLIO_API USP_InputComponent : public UEnhancedInputComponent
 {
     GENERATED_BODY()
 
@@ -19,7 +20,6 @@ public:
 	
     template<class UserClass, typename FuncType>
     void BindActionNativeAction(const UInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func);
-	
 };
 
 template<class UserClass, typename FuncType>

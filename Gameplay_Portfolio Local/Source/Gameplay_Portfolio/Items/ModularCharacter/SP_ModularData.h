@@ -51,27 +51,26 @@ struct FModularPartsSlotData
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "머리", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Head"))
     TSoftObjectPtr<USP_ModularItemBase> Head = nullptr;
-
-    UPROPERTY()
-    int32 HeadShare = 0;
+    
+    TArray<FName> HeadShare;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "몸통", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Body"))
     TSoftObjectPtr<USP_ModularItemBase> Body = nullptr;
 
     UPROPERTY()
-    int32 BodyShare = 0;
+    TArray<FName> BodyShare;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "팔", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Arm"))
     TSoftObjectPtr<USP_ModularItemBase> Arm = nullptr;
 
     UPROPERTY()
-    int32 ArmShare = 0;
+    TArray<FName> ArmShare;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "다리", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Leg"))
     TSoftObjectPtr<USP_ModularItemBase> Leg = nullptr;
 
     UPROPERTY()
-    int32 LegShare = 0;
+    TArray<FName> LegShare;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "전신 슈트", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Suit"))
     TSoftObjectPtr<USP_ModularItemBase> Suit = nullptr;

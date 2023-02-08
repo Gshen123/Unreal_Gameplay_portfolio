@@ -16,7 +16,11 @@ public:
     static const FSP_GameplayTags& Get() { return GameplayTags;}
     static void InitializeNativeTags();
 
-    FGameplayTag InputTag_Move;
+    //Input Tags
+    FGameplayTag Input_MouseAndKeyboard_Move;
+    FGameplayTag Input_MouseAndKeyboard_Look;
+    FGameplayTag Input_MouseAndKeyboard_Jump;
+    FGameplayTag Input_MouseAndKeyboard_Zoom;
     
 protected:
 

@@ -24,6 +24,8 @@ public:
 
     UPROPERTY()
     TArray<TSoftObjectPtr<USP_ModularItemBase>> Assets;
+    
+    TShaderRef<int32> test;
 
     UFUNCTION()
     void SetNoneItem();
@@ -37,6 +39,9 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UButton* PrevItemButton;
 
+    UPROPERTY(meta = (BindWidget))
+    UButton* ResetButton;
+    
     UPROPERTY(meta = (BindWidget))
     USP_TextButton* TextBlock;
 
@@ -61,6 +66,9 @@ private:
 
     UFUNCTION()
     void UpdateMesh() const;
+
+    UFUNCTION()
+    void Reset();
     
     UPROPERTY()
     USP_ModularItemBase* CurrentItem = nullptr;

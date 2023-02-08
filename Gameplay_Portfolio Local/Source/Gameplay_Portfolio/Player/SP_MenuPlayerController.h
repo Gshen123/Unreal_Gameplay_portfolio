@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "SP_BasePlayerController.h"
 #include "SP_MenuPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GAMEPLAY_PORTFOLIO_API ASP_MenuPlayerController : public APlayerController
+class GAMEPLAY_PORTFOLIO_API ASP_MenuPlayerController : public ASP_BasePlayerController
 {
     GENERATED_BODY()
 

@@ -14,6 +14,7 @@ void USP_CharacterItemWidget::NativeConstruct()
     
     if(NextItemButton) NextItemButton->OnClicked.AddDynamic(this, &ThisClass::OnNextItem);
     if(PrevItemButton) PrevItemButton->OnClicked.AddDynamic(this, &ThisClass::OnPrevItem);
+    if(ResetButton) ResetButton->OnClicked.AddDynamic(this, &ThisClass::Reset);
 }
 
 void USP_CharacterItemWidget::Init(bool Loaded, FName ItemName)
@@ -42,7 +43,7 @@ void USP_CharacterItemWidget::Init(bool Loaded, FName ItemName)
         
     for(int i = 0; i < Assets.Num(); i++)
     {
-        if(Assets[i].Get() == nullptr) AssetManager.GetAsset(Assets[i]);
+        if(!Assets[i].Get()) AssetManager.GetAsset(Assets[i]);
         if(Assets[i].Get()->Data.DisplayName.EqualTo(FText::FromString(TEXT("None"))))
         {
             NoneIndex = i;
@@ -106,6 +107,11 @@ void USP_CharacterItemWidget::UpdateMesh() const
 {
     const auto LPM = GetOwningPlayer()->GetLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
     LPM->ReplaceItemInSlot(CurrentItem);
+}
+
+void USP_CharacterItemWidget::Reset()
+{
+    
 }
 
 void USP_CharacterItemWidget::SetNoneItem()

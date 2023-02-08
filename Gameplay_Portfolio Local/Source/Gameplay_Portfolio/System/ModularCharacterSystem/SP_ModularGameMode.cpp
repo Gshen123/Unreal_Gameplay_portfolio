@@ -5,10 +5,10 @@
 
 ASP_ModularGameMode::ASP_ModularGameMode()
 {
-    
 }
 
 void ASP_ModularGameMode::StartPlay()
 {
     Super::StartPlay();
+    
 }

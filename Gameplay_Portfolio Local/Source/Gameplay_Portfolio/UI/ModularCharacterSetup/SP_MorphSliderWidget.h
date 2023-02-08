@@ -22,8 +22,11 @@ public:
     UPROPERTY()
     FString MorphTargetName;
 
+    UPROPERTY()
+    FText DisplayName;
+
     UFUNCTION()
-    void SetSliderVlaue(float value);
+    void SetSliderVlaue(float Value);
 
     UFUNCTION()
     void UpdateMaterial(float Value);
@@ -37,6 +40,9 @@ protected:
     
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
     UMaterial* Material;
+
+    UPROPERTY(meta = (BindWidget))
+    UButton* ResetButton;
     
     virtual void NativeOnInitialized() override;
     
@@ -49,6 +55,9 @@ private:
 
     UFUNCTION()
     float LerpMorphValue(float Value);
+
+    UFUNCTION()
+    void Reset();
 
     UPROPERTY()
     UMaterialInstanceDynamic* MaterialInstanceDynamic;

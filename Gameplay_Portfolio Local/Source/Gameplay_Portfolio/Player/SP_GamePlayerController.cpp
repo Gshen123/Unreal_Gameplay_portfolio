@@ -1,23 +1,12 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SP_PlayerController.h"
-
+#include "SP_GamePlayerController.h"
 #include "Game/SP_PlayGameModeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(Log_SPPlayerController, All, All);
 
-void ASP_PlayerController::OnPossess(APawn* InPawn)
-{
-    Super::OnPossess(InPawn);
-}
-
-void ASP_PlayerController::OnUnPossess()
-{
-    Super::OnUnPossess();
-}
-
-void ASP_PlayerController::SetupInputComponent()
+void ASP_GamePlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
     check(InputComponent);
@@ -26,7 +15,7 @@ void ASP_PlayerController::SetupInputComponent()
     InputComponent->BindAction("GamePause", IE_Pressed, this, &ThisClass::OnPauseGame).bExecuteWhenPaused = true;
 }
 
-void ASP_PlayerController::BeginPlay()
+void ASP_GamePlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -39,7 +28,7 @@ void ASP_PlayerController::BeginPlay()
     }
 }
 
-void ASP_PlayerController::OnPauseGame()
+void ASP_GamePlayerController::OnPauseGame()
 {
     const auto GameMode = GetWorld()->GetAuthGameMode();
     if(!GetWorld() || !GameMode) return;
@@ -51,7 +40,7 @@ void ASP_PlayerController::OnPauseGame()
     UE_LOG(Log_SPPlayerController, Display, TEXT("OnPauseGame !"));
 }
 
-void ASP_PlayerController::OnGameModeTypeChanged(EGameModeType Type)
+void ASP_GamePlayerController::OnGameModeTypeChanged(EGameModeType Type)
 {
     if(Type == EGameModeType::InProgress)
     {

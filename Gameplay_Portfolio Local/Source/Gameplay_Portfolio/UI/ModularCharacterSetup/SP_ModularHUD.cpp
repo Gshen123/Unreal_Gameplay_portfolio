@@ -25,6 +25,6 @@ void ASP_ModularHUD::BeginPlay()
 
 FPlayerMeshData ASP_ModularHUD::GetMeshData() const
 {
-    auto PS = GetOwningPlayerController()->GetPlayerState<ASP_PlayerState>();
+    const auto PS = GetOwningPlayerController()->GetPlayerState<ASP_PlayerState>();
     return PS->GetMeshData();
 }

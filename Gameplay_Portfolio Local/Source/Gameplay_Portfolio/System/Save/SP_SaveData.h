@@ -57,6 +57,17 @@ public:
 };
 
 USTRUCT()
+struct FMaterialData
+{
+    GENERATED_BODY()
+public:
+    UPROPERTY()
+    UMaterialInstance* MaterialInstance;
+
+    TMap<FName, FLinearColor> ParamData;
+};
+
+USTRUCT()
 struct FPlayerMeshData
 {
     GENERATED_BODY()
@@ -67,6 +78,8 @@ public:
     TMap<FPrimaryAssetType, FName> MeshItemData;
     
     TMap<FName, float> MorphTargetData;
+
+    TMap<int32, FMaterialData> MaterialData; 
 };
 
 USTRUCT()

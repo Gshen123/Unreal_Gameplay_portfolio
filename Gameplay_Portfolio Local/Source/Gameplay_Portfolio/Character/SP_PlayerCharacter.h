@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
-#include "SP_BaseCharacter.h"
+#include "GameFramework/Character.h"
+#include "Gameplay_Portfolio/Camera/SP_PlayerCameraManager.h"
 #include "SP_PlayerCharacter.generated.h"
 
 
 
 UCLASS()
-class ASP_PlayerCharacter : public ASP_BaseCharacter
+class ASP_PlayerCharacter : public ACharacter
 {
     GENERATED_BODY()
 
@@ -22,44 +23,60 @@ class ASP_PlayerCharacter : public ASP_BaseCharacter
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
     class UCameraComponent* FollowCamera;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    class UInputConfig* InputConfig;
+    
     /** MappingContext */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     class UInputMappingContext* DefaultMappingContext;
-    
-    /** Jump Input Action */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    class UInputAction* JumpAction;
 
-    /** Move Input Action */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    class UInputAction* MoveAction;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+    class USP_MergeComponent* MergeComponent;
 
-    /** Look Input Action */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    class UInputAction* LookAction;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+    class USkeletalMeshComponent* ClothMesh;
     
 public:
     ASP_PlayerCharacter();
-
-protected:
-
-    /** Called for movement input */
-    void Move(const FInputActionValue& Value);
-
-    /** Called for looking input */
-    void Look(const FInputActionValue& Value);
-
-protected:
-    // APawn interface
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-    // To add mapping context
-    virtual void BeginPlay() override;
 
 public:
     /** Returns CameraBoom subobject **/
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-};
 
+    USkeletalMeshComponent* GetClothMesh() const;
+
+    UFUNCTION()
+    void UpdateMesh(USkeletalMesh* NewMesh) const;
+
+    void ToggleCameraMode();
+    
+protected:
+    
+    // APawn interface
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+    // To add mapping context
+    virtual void BeginPlay() override;
+
+protected:
+
+    /** Called for movement input */
+    void Input_Move(const FInputActionValue& Value);
+
+    /** Called for looking input */
+    void Input_Look(const FInputActionValue& Value);
+
+    void Input_Jump(const FInputActionValue& Value);
+
+    void Input_Zoom(const FInputActionValue& Value);
+    
+private:
+
+    UPROPERTY()
+    bool bCanMove = true;
+
+    UPROPERTY()
+    ASP_PlayerCameraManager* CameraManager;
+};

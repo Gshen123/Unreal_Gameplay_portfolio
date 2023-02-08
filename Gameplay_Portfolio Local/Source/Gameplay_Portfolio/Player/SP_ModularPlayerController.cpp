@@ -3,6 +3,7 @@
 
 #include "SP_ModularPlayerController.h"
 
+#include "SP_PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 void ASP_ModularPlayerController::BeginPlay()
@@ -10,14 +11,10 @@ void ASP_ModularPlayerController::BeginPlay()
     Super::BeginPlay();
     SetInputMode(FInputModeGameAndUI());
     bShowMouseCursor = true;
+    Cast<ASP_PlayerCharacter>(GetCharacter())->ToggleCameraMode();
 }
 
-void ASP_ModularPlayerController::SetupInputComponent()
-{
-    Super::SetupInputComponent();
-}
-
-void ASP_ModularPlayerController::GotoOnMenu()
+void ASP_ModularPlayerController::GotoOnMenu() const
 {
     const auto GameInstance = GetSP_GameInstance();
     if(!GameInstance) return;

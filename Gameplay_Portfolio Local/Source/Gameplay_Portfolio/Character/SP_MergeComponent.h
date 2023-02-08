@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MergeComponent.generated.h"
+#include "SP_MergeComponent.generated.h"
 
 /**
  * 
  */
 UCLASS(BlueprintType)
-class GAMEPLAY_PORTFOLIO_API UMergeComponent : public UActorComponent
+class GAMEPLAY_PORTFOLIO_API USP_MergeComponent : public UActorComponent
 {
 
 private:
@@ -29,4 +29,6 @@ public:
 
     UFUNCTION()
     void ClearMorphTarget();
+
+    void UpdateAnimation(UAnimationAsset* Asset);
 };

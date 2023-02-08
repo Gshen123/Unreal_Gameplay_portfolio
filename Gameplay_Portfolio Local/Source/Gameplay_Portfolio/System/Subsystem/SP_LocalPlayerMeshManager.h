@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MergeComponent.h"
+#include "SP_MergeComponent.h"
 #include "Gameplay_Portfolio/Items/ModularCharacter/SP_ModularItemBase.h"
+#include "ModularCharacterSetup/SP_CharacterItemWidget.h"
 #include "Save/SP_SaveData.h"
 #include "SP_LocalPlayerMeshManager.generated.h"
 
@@ -19,25 +20,38 @@ class GAMEPLAY_PORTFOLIO_API USP_LocalPlayerMeshManager : public ULocalPlayerSub
 
 public:
     UFUNCTION(BlueprintCallable)
-    void AddMergeComponent(UMergeComponent* Component);
+    void AddMergeComponent(USP_MergeComponent* Component);
+
+    virtual void Deinitialize() override;
     
     UFUNCTION(BlueprintCallable)
-    TArray<UMergeComponent*> GetMergeComponents();
+    TArray<USP_MergeComponent*> GetMergeComponents();
 
     UFUNCTION(BlueprintCallable)
     void ReplaceItemInSlot(USP_ModularItemBase* Item);
     
     UFUNCTION(BlueprintCallable)
-    void UpdateMesh(UMergeComponent* MergeComponent);
+    void UpdateMesh(USP_MergeComponent* MergeComponent);
 
     UFUNCTION()
+    void AllUpdateMaterail();
+    
+    UFUNCTION()
+    void UpdateMaterial(USP_MergeComponent* MergeComponent);
+    
+    UFUNCTION()
     void FindAndAddMeshItemData(FPrimaryAssetType Type, FName Name);
+
+    UFUNCTION()
+    void FindAndAddMaterialData(int32 Index, FName ParamName, FLinearColor Value, UMaterialInstance* MaterialInstance);
     
     void SetMorphTarget(FString MorphTargetName, float Value);
 
     void AllUpdateMorphTarget();
 
     void ResetMorphTargetData();
+
+    void UpdateAnimation(UAnimationAsset* Asset);
 
     FModularPartsSlotData* GetPartsSlot();
 
@@ -59,7 +73,7 @@ private:
     USP_DefaultPartsAsset* GetDefaultParts() const;
     
     UPROPERTY()
-    TArray<UMergeComponent*> MergeComponents;
+    TArray<USP_MergeComponent*> MergeComponents;
     
     UPROPERTY()
     TArray<USkeletalMesh*> Meshes;
@@ -74,4 +88,6 @@ private:
     TMap<FName, float> MorphTargetData;
 
     TMap<FPrimaryAssetType, FName> MeshItemData;
+
+    TMap<int32, FMaterialData> MaterialData; 
 };

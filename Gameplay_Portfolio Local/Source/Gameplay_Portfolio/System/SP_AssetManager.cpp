@@ -3,6 +3,14 @@
 
 #include "SP_AssetManager.h"
 
+#include "SP_GameplayTags.h"
+
+const FPrimaryAssetType USP_AssetManager::Module_HeadType = TEXT("Head");
+const FPrimaryAssetType USP_AssetManager::Module_BodyType = TEXT("Body");
+const FPrimaryAssetType USP_AssetManager::Module_FeetAndLegsType = TEXT("FeetAndLeg");
+const FPrimaryAssetType USP_AssetManager::Module_HandAndArmType = TEXT("HandAndArm");
+const FPrimaryAssetType USP_AssetManager::Module_SuitType = TEXT("Suit");
+
 USP_AssetManager::USP_AssetManager()
 {
 }
@@ -19,7 +27,7 @@ void USP_AssetManager::StartInitialLoading()
 {
     Super::StartInitialLoading();
 
-    //GamePlayTagManager Init
+    FSP_GameplayTags::InitializeNativeTags();
 }
 
 TArray<FPrimaryAssetType> USP_AssetManager::GetModularAsset()
@@ -71,8 +79,4 @@ void USP_AssetManager::AddLoadedAsset(const UObject* Asset)
     }
 }
 
-const FPrimaryAssetType USP_AssetManager::Module_HeadType = TEXT("Head");
-const FPrimaryAssetType USP_AssetManager::Module_BodyType = TEXT("Body");
-const FPrimaryAssetType USP_AssetManager::Module_FeetAndLegsType = TEXT("FeetAndLeg");
-const FPrimaryAssetType USP_AssetManager::Module_HandAndArmType = TEXT("HandAndArm");
-const FPrimaryAssetType USP_AssetManager::Module_SuitType = TEXT("Suit");
+

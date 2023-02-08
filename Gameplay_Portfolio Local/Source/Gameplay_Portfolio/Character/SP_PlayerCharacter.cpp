@@ -9,6 +9,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "SP_BasePlayerController.h"
+#include "SP_GameplayTags.h"
+#include "SP_MergeComponent.h"
+#include "Gameplay_Portfolio/EnhancedInput/SP_InputComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -48,21 +52,15 @@ ASP_PlayerCharacter::ASP_PlayerCharacter()
     FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
       // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
       // are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+    MergeComponent = CreateDefaultSubobject<USP_MergeComponent>(TEXT("MeshComponent"));
+    ClothMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ClothMesh"));
+    ClothMesh->SetupAttachment(GetMesh());
 }
 
 void ASP_PlayerCharacter::BeginPlay()
 {
     // Call the base class  
     Super::BeginPlay();
-
-    //Add Input Mapping Context
-    if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-    {
-        if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-        {
-            Subsystem->AddMappingContext(DefaultMappingContext, 0);
-        }
-    }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -70,58 +68,93 @@ void ASP_PlayerCharacter::BeginPlay()
 
 void ASP_PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+    const FSP_GameplayTags& GameplayTags = FSP_GameplayTags::Get();
+    const APlayerController* PlayerController = Cast<APlayerController>(GetController());
+    check(PlayerController);
+    
+    //Add Input Mapping Context
+    if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+    {
+        Subsystem->ClearAllMappings();
+        Subsystem->AddMappingContext(DefaultMappingContext, 0);
+    }
+    
+    USP_InputComponent* EnhancedInputComponent = Cast<USP_InputComponent>(PlayerInputComponent);
+    check(EnhancedInputComponent);
+    
     // Set up action bindings
-    if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
-        //Jumping
-        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+    EnhancedInputComponent->BindActionNativeAction(InputConfig, GameplayTags.Input_MouseAndKeyboard_Move, ETriggerEvent::Triggered, this, &ASP_PlayerCharacter::Input_Move);
+    EnhancedInputComponent->BindActionNativeAction(InputConfig, GameplayTags.Input_MouseAndKeyboard_Look, ETriggerEvent::Triggered, this, &ASP_PlayerCharacter::Input_Look);
+    EnhancedInputComponent->BindActionNativeAction(InputConfig, GameplayTags.Input_MouseAndKeyboard_Jump, ETriggerEvent::Triggered, this, &ASP_PlayerCharacter::Input_Jump);
+    EnhancedInputComponent->BindActionNativeAction(InputConfig, GameplayTags.Input_MouseAndKeyboard_Zoom, ETriggerEvent::Triggered, this, &ASP_PlayerCharacter::Input_Zoom);
+}
 
-        //Moving
-        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASP_PlayerCharacter::Move);
+USkeletalMeshComponent* ASP_PlayerCharacter::GetClothMesh() const
+{
+    return  ClothMesh;
+}
 
-        //Looking
-        EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASP_PlayerCharacter::Look);
+void ASP_PlayerCharacter::UpdateMesh(USkeletalMesh* NewMesh) const
+{
+    MergeComponent->UpdateMesh(NewMesh);
+}
+
+void ASP_PlayerCharacter::Input_Move(const FInputActionValue& Value)
+{
+    // input is a Vector2D
+    FVector2D MovementVector = Value.Get<FVector2D>();
+
+    if (Controller != nullptr && bCanMove)
+    {
+        // find out which way is forward
+        const FRotator Rotation = Controller->GetControlRotation();
+        const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+        // get forward vector
+        const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	
+        // get right vector 
+        const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+        // add movement 
+        AddMovementInput(ForwardDirection, MovementVector.Y);
+        AddMovementInput(RightDirection, MovementVector.X);
     }
 }
 
-void ASP_PlayerCharacter::Move(const FInputActionValue& Value)
+void ASP_PlayerCharacter::Input_Look(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
+    // input is a Vector2D
+    FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
-	}
+    if (Controller != nullptr)
+    {
+        // add yaw and pitch input to controller
+        AddControllerYawInput(LookAxisVector.X);
+        if(bCanMove) AddControllerPitchInput(LookAxisVector.Y);
+    }
 }
 
-void ASP_PlayerCharacter::Look(const FInputActionValue& Value)
+void ASP_PlayerCharacter::Input_Jump(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
-	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
-	}
+    if(bCanMove) Jump();
 }
 
+void ASP_PlayerCharacter::Input_Zoom(const FInputActionValue& Value)
+{
+    if(bCanMove)
+    {
+        if(CameraBoom->TargetArmLength > 0 && CameraBoom->TargetArmLength < 300) CameraBoom->TargetArmLength += Value.GetMagnitude();
+    }
+    else
+    {
+        if(!CameraManager) CameraManager = Cast<ASP_BasePlayerController>(GetController())->GetCameraManager();
+    }
+}
 
-
-
-
+void ASP_PlayerCharacter::ToggleCameraMode()
+{
+    bCanMove = !bCanMove;
+}

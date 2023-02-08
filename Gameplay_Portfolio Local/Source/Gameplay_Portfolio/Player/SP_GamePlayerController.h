@@ -2,24 +2,19 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "SP_CoreType.h"
-#include "SP_PlayerController.generated.h"
+#include "SP_BasePlayerController.h"
+#include "SP_GamePlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS(Blueprintable, BlueprintType)
-class GAMEPLAY_PORTFOLIO_API ASP_PlayerController : public APlayerController
+class GAMEPLAY_PORTFOLIO_API ASP_GamePlayerController : public ASP_BasePlayerController
 {
     GENERATED_BODY()
-
-public:
-
+    
 protected:
-    virtual void OnPossess(APawn* InPawn) override;
-
-    virtual void OnUnPossess() override;
 
     virtual void SetupInputComponent() override;
 	
