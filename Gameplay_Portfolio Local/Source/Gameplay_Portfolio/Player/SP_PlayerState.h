@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SP_CoreType.h"
 #include "GameFramework/PlayerState.h"
 #include "Save/SP_SaveGame.h"
 #include "SP_PlayerState.generated.h"
@@ -23,10 +24,10 @@ public:
     int32 GetLevelNum() const;
 
     UFUNCTION()
-    void SavePlayerState(USP_SaveGame* SaveObject) const;
+    void SavePlayerState(USP_SaveGame* SaveObject, EGameModeType Mode) const;
 
     UFUNCTION()
-    void LoadPlayerState(USP_SaveGame* SaveObject);
+    void LoadPlayerState(USP_SaveGame* SaveObject, EGameModeType Mode);
 
     UFUNCTION()
     FPlayerMeshData GetMeshData();

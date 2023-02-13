@@ -42,7 +42,7 @@ void ASP_GamePlayerController::OnPauseGame()
 
 void ASP_GamePlayerController::OnGameModeTypeChanged(EGameModeType Type)
 {
-    if(Type == EGameModeType::InProgress)
+    if(Type == EGameModeType::InGame)
     {
         SetInputMode(FInputModeGameOnly());
         bShowMouseCursor = false;

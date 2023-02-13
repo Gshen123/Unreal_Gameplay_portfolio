@@ -58,7 +58,7 @@ public:
     FPlayerMeshData SaveMeshData() const;
     
     FMeshWidgetUpdated WidgetUpdated;
-    
+
 protected:
 
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;

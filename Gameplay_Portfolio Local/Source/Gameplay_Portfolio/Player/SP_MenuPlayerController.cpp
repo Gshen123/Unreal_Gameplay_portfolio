@@ -22,6 +22,6 @@ void ASP_MenuPlayerController::SetupInputComponent()
 
 void ASP_MenuPlayerController::PopWidgetStack()
 {
-    auto HUD = Cast<ASP_MenuHUD>(GetHUD());
+    const auto HUD = Cast<ASP_MenuHUD>(GetHUD());
     HUD->PopWidgetStack();
 }

@@ -9,6 +9,7 @@
 #include "SP_MenuHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Gameplay_Portfolio/UI/SP_TextButton.h"
+#include "System/SP_SaveSlotBox.h"
 #include "SP_MainMenuWidget.generated.h"
 
 
@@ -24,7 +25,7 @@ class GAMEPLAY_PORTFOLIO_API USP_MainMenuWidget : public UUserWidget
 public:
     
     virtual void NativeConstruct() override;
-	
+    
     UPROPERTY(meta = (BindWidget))
     USP_TextButton* StartButton;
 
@@ -38,7 +39,7 @@ public:
     USP_TextButton* ExitButton;
 
     UPROPERTY(meta = (BindWidget))
-    USP_LevelItemBox* LevelItemBox;
+    USP_TextButton* LinkButton;
     
     UFUNCTION()
     void LoadGame();
@@ -52,6 +53,9 @@ public:
     UFUNCTION()
     void ShowSelectedLevel();
 
+    UFUNCTION()
+    void LaunchURL();
+
     UPROPERTY()
     FMainMenuOption MainMenuOptionDelegate;
     
@@ -61,11 +65,23 @@ protected:
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<class UUserWidget> LevelItemWidgetClass;
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<class UUserWidget> SaveSlotBoxWidgetClass;
+    
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<class UUserWidget> LevelItemBoxWidgetClass;
     
 private:
     UPROPERTY()
+    USP_LevelItemBox* LevelItemBox;
+    
+    UPROPERTY()
     UUserWidget* ExitModal;
 
+    UPROPERTY()
+    USP_SaveSlotBox* SaveSlotBox;
+    
     UPROPERTY()
     TArray<USP_LevelItemWidget*> LevelItemWidgets;
 

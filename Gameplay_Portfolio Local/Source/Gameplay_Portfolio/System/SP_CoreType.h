@@ -8,26 +8,15 @@
  * 
  */
 
-
 UENUM()
 enum class EGameModeType : uint8
 {
     None = 0,
     MainMenu = 1,
     CharacterSetup = 2,
-    InProgress = 3,
+    InGame = 3,
     Pause = 4,
     GameOver = 5,
-};
-
-UENUM()
-enum class ELevelType : uint8
-{
-    Startup = 0,
-    MainMenu = 0,
-    CharacterSetup = 1,
-    InGame = 2,
-    None = 3
 };
 
 USTRUCT(BlueprintType)
@@ -43,6 +32,9 @@ struct FLevelData
     
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
     UTexture2D* LevelThumb;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    EGameModeType Type;
 };
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelSelectedSignature, const FLevelData&);

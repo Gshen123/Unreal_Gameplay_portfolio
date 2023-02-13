@@ -21,6 +21,11 @@ void USP_LocalPlayerMeshManager::Initialize(FSubsystemCollectionBase& Collection
 void USP_LocalPlayerMeshManager::Deinitialize()
 {
     MergeComponents.Reset();
+    WidgetUpdated.Clear();
+    MorphTargetData.Empty();
+    MeshItemData.Empty();
+    MaterialData.Empty();
+    
     Super::Deinitialize();
 }
 
@@ -228,11 +233,8 @@ void USP_LocalPlayerMeshManager::WearItem(USP_ModularItemBase* Item)
                 if(ModularPartsSlot.BodyShare.Contains(USP_AssetManager::Module_BodyType)) ModularPartsSlot.BodyShare.Remove(USP_AssetManager::Module_BodyType);
             }
         }
-        else
-        {
-            ModularPartsSlot.BodyShare.AddUnique(USP_AssetManager::Module_BodyType);
-            UpdateWidget(USP_AssetManager::Module_SuitType);
-        }
+        else ModularPartsSlot.BodyShare.AddUnique(USP_AssetManager::Module_BodyType);
+        if(!Item->Data.DisplayName.EqualTo(FText::FromString("None"))) UpdateWidget(USP_AssetManager::Module_SuitType);
         return;
     }
 
@@ -246,10 +248,7 @@ void USP_LocalPlayerMeshManager::WearItem(USP_ModularItemBase* Item)
                 if(ModularPartsSlot.HeadShare.Contains(USP_AssetManager::Module_HeadType)) ModularPartsSlot.HeadShare.Remove(USP_AssetManager::Module_HeadType);
             }
         }
-        else
-        {
-            ModularPartsSlot.HeadShare.AddUnique(USP_AssetManager::Module_HeadType);
-        }
+        else ModularPartsSlot.HeadShare.AddUnique(USP_AssetManager::Module_HeadType);
         return;
     }
     
@@ -263,10 +262,8 @@ void USP_LocalPlayerMeshManager::WearItem(USP_ModularItemBase* Item)
                 if(ModularPartsSlot.LegShare.Contains(USP_AssetManager::Module_FeetAndLegsType)) ModularPartsSlot.LegShare.Remove(USP_AssetManager::Module_FeetAndLegsType);
             }
         }
-        else
-        {
-            ModularPartsSlot.LegShare.AddUnique(USP_AssetManager::Module_FeetAndLegsType);
-        }
+        else ModularPartsSlot.LegShare.AddUnique(USP_AssetManager::Module_FeetAndLegsType);
+        if(!Item->Data.DisplayName.EqualTo(FText::FromString("None"))) UpdateWidget(USP_AssetManager::Module_SuitType);
         return;
     }
 
@@ -280,11 +277,8 @@ void USP_LocalPlayerMeshManager::WearItem(USP_ModularItemBase* Item)
                 if(ModularPartsSlot.ArmShare.Contains(USP_AssetManager::Module_HandAndArmType)) ModularPartsSlot.ArmShare.Remove(USP_AssetManager::Module_HandAndArmType);
             }
         }
-        else
-        {
-            ModularPartsSlot.ArmShare.AddUnique(USP_AssetManager::Module_HandAndArmType);
-            UpdateWidget(USP_AssetManager::Module_SuitType);
-        }
+        else ModularPartsSlot.ArmShare.AddUnique(USP_AssetManager::Module_HandAndArmType);
+        if(!Item->Data.DisplayName.EqualTo(FText::FromString("None"))) UpdateWidget(USP_AssetManager::Module_SuitType);
         return;
     }
 
@@ -296,17 +290,21 @@ void USP_LocalPlayerMeshManager::WearItem(USP_ModularItemBase* Item)
             if(ModularPartsSlot.BodyShare.Num() > 0)
                 if(ModularPartsSlot.BodyShare.Contains(USP_AssetManager::Module_SuitType))
                     ModularPartsSlot.BodyShare.Remove(USP_AssetManager::Module_SuitType);
-            
             if(ModularPartsSlot.ArmShare.Num() > 0)
                 if(ModularPartsSlot.ArmShare.Contains(USP_AssetManager::Module_SuitType))
                     ModularPartsSlot.ArmShare.Remove(USP_AssetManager::Module_SuitType);
+            if(ModularPartsSlot.LegShare.Num() > 0)
+                if(ModularPartsSlot.LegShare.Contains(USP_AssetManager::Module_SuitType))
+                    ModularPartsSlot.LegShare.Remove(USP_AssetManager::Module_SuitType);
         }
         else
         {
             ModularPartsSlot.BodyShare.AddUnique(USP_AssetManager::Module_SuitType);
             ModularPartsSlot.ArmShare.AddUnique(USP_AssetManager::Module_SuitType);
+            ModularPartsSlot.LegShare.AddUnique(USP_AssetManager::Module_SuitType);
             UpdateWidget(USP_AssetManager::Module_BodyType);
             UpdateWidget(USP_AssetManager::Module_HandAndArmType);
+            UpdateWidget(USP_AssetManager::Module_FeetAndLegsType);
         }
     }
 }
@@ -386,8 +384,9 @@ FPlayerMeshData USP_LocalPlayerMeshManager::SaveMeshData() const
 {
     FPlayerMeshData Data;
     Data.Meshes = Meshes;
-    Data.MorphTargetData = MorphTargetData;
     Data.MeshItemData = MeshItemData;
-
+    Data.MaterialData = MaterialData;
+    Data.MorphTargetData = MorphTargetData;
+    
     return Data;
 }

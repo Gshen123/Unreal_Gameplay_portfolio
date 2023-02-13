@@ -13,6 +13,8 @@
 #include "Components/VerticalBox.h"
 #include "Components/WidgetSwitcher.h"
 #include "Gameplay_Portfolio/UI/SP_TextButton.h"
+#include "System/SP_SaveSlotBox.h"
+#include "SP_HUDBase.h"
 #include "SP_CharacterSettingWidget.generated.h"
 
 
@@ -71,7 +73,7 @@ protected:
     USP_TextButton* SwitcherButton3;
     
     UPROPERTY(meta = (BindWidget))
-    USP_TextButton* CreateCharacterButton;
+    UButton* CreateCharacterButton;
 
     UPROPERTY(meta = (BindWidget))
     USP_TextButton* ResetButton;
@@ -124,6 +126,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
     TSubclassOf<USP_PresetColorPicker> ColorPickerWidgetClass;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+    TSubclassOf<USP_SaveSlotBox> SaveSlotBoxWidgetClass;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Material")
     TSoftObjectPtr<UMaterialInstance> HairMaterial;
 
@@ -171,10 +176,22 @@ private:
     void Reset();
 
     UFUNCTION()
+    void CreateSaveSlotWidget();
+
+    UFUNCTION()
+    void OpenGameLevel();
+
+    UFUNCTION()
     USP_GameInstance* GetSP_GameInstance() const;
+
+    UFUNCTION()
+    ASP_HUDBase* GetSP_HUD() const;
 
     UPROPERTY()
     FPlayerMeshData LoadedData;
+
+    UPROPERTY()
+    USP_SaveSlotBox* SaveSlotBox;
     
     UPROPERTY()
     TArray<USP_MorphSliderWidget*> MorphWidgets;
@@ -184,9 +201,6 @@ private:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
     UAnimationAsset* WalkAnim;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
-    UAnimationAsset* RunAnim;
 
     UPROPERTY()
     int AnimIndex = 0;

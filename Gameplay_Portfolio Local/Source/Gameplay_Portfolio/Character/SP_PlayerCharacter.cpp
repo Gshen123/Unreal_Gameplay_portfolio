@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "MathUtil.h"
 #include "SP_BasePlayerController.h"
 #include "SP_GameplayTags.h"
 #include "SP_MergeComponent.h"
@@ -17,6 +18,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 // AGameplay_PortfolioCharacter
+constexpr float ZOOM_MIN_VALUE = 60.f;
+constexpr float ZOOM_MAX_VALUE = 320.f;
+constexpr float ZOOM_MULTIPLE = 16.f;
 
 ASP_PlayerCharacter::ASP_PlayerCharacter()
 {
@@ -144,14 +148,10 @@ void ASP_PlayerCharacter::Input_Jump(const FInputActionValue& Value)
 
 void ASP_PlayerCharacter::Input_Zoom(const FInputActionValue& Value)
 {
-    if(bCanMove)
-    {
-        if(CameraBoom->TargetArmLength > 0 && CameraBoom->TargetArmLength < 300) CameraBoom->TargetArmLength += Value.GetMagnitude();
-    }
-    else
-    {
-        if(!CameraManager) CameraManager = Cast<ASP_BasePlayerController>(GetController())->GetCameraManager();
-    }
+    const float MultiValue = Value.GetMagnitude() * ZOOM_MULTIPLE;
+    CameraBoom->TargetArmLength += MultiValue;
+    if(CameraBoom->TargetArmLength < ZOOM_MIN_VALUE) CameraBoom->TargetArmLength = ZOOM_MIN_VALUE;
+    if(CameraBoom->TargetArmLength > ZOOM_MAX_VALUE) CameraBoom->TargetArmLength = ZOOM_MAX_VALUE;
 }
 
 void ASP_PlayerCharacter::ToggleCameraMode()

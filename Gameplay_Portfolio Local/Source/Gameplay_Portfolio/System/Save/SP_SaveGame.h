@@ -47,7 +47,7 @@ class GAMEPLAY_PORTFOLIO_API USP_SaveGame : public USaveGame
 public:
 
     UPROPERTY()
-    TArray<FPlayerSaveData> PlayerSaveDatas;
+    TArray<FPlayerSaveData> PlayerSaveData;
     
     // 모든 오브젝트들의 정보를 보관하는 배열
     UPROPERTY()
@@ -61,10 +61,13 @@ public:
     UPROPERTY()
     TArray<UObject*> PersistentOuters;
 
+    UPROPERTY()
+    FDateTime DateTime;
+
 public:
 
     // 플레이어의 고유 ID값을 가져옵니다. (멀티 플레이어용)
-    FPlayerSaveData* GetPlayerData(APlayerState* PlayerState);
+    FPlayerSaveData* GetPlayerData(const APlayerState* PlayerState);
 
     //액터들을 순회하며 직렬화합니다.
     UFUNCTION(BlueprintCallable)

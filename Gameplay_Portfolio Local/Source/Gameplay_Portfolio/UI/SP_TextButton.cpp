@@ -61,10 +61,7 @@ void USP_TextButton::PostEditChangeProperty(FPropertyChangedEvent& PropertyChang
 
 void USP_TextButton::TextColorChange(FColor color) const
 {
-    if(TextBlock)
-    {
-        TextBlock->SetColorAndOpacity(color);
-    }
+    if(TextBlock) TextBlock->SetColorAndOpacity(color);
 }
 
 void USP_TextButton::TextSizeChange(int size) const
@@ -82,9 +79,17 @@ inline void USP_TextButton::SetButtonColor() const
     if(MainButton)
     {
         MainButton->WidgetStyle.Normal.TintColor = Btn_NormalColor;
+        MainButton->WidgetStyle.Normal.OutlineSettings.Color = Btn_OutlineColor;
+        MainButton->WidgetStyle.Normal.OutlineSettings.Width = bBtn_OutlineWidth;
         MainButton->WidgetStyle.Hovered.TintColor = Btn_HoverColor;
+        MainButton->WidgetStyle.Hovered.OutlineSettings.Color = Btn_OutlineColor;
+        MainButton->WidgetStyle.Hovered.OutlineSettings.Width = bBtn_OutlineWidth;
         MainButton->WidgetStyle.Pressed.TintColor = Btn_PressColor;
+        MainButton->WidgetStyle.Pressed.OutlineSettings.Color = Btn_OutlineColor;
+        MainButton->WidgetStyle.Pressed.OutlineSettings.Width = bBtn_OutlineWidth;
         MainButton->WidgetStyle.Disabled.TintColor = Btn_DisabledColor;
+        MainButton->WidgetStyle.Disabled.OutlineSettings.Color = Btn_OutlineColor;
+        MainButton->WidgetStyle.Disabled.OutlineSettings.Width = bBtn_OutlineWidth;
 
         if(bBtn_OutlineRound)
         {
@@ -117,7 +122,6 @@ inline void USP_TextButton::SetButtonColor() const
             if(Btn_CursorType == 1) MainButton->SetCursor(EMouseCursor::Type::Hand);
             else if(Btn_CursorType == 2) MainButton->SetCursor(EMouseCursor::Type::GrabHand);
             else MainButton->SetCursor(EMouseCursor::Type::GrabHandClosed);
-
         }
     }
 }
@@ -136,11 +140,7 @@ void USP_TextButton::ChangeOutlineTextProperty() const
 void USP_TextButton::SetText(FText Content)
 {
     Text_Context = Content;
-	
-    if(TextBlock)
-    {
-        TextBlock->SetText(Text_Context);
-    }
+    if(TextBlock) TextBlock->SetText(Text_Context);
 }
 
 void USP_TextButton::OnButtonClicked()

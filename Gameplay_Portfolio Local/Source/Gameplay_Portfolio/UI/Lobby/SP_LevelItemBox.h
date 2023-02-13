@@ -21,8 +21,6 @@ class GAMEPLAY_PORTFOLIO_API USP_LevelItemBox : public UUserWidget
 public:
     UHorizontalBox* GetLevelItemBox() const;
 
-
-    
 protected:
     
     virtual void NativeConstruct() override;
@@ -31,10 +29,7 @@ protected:
     void LevelOpen();
     
     UPROPERTY(meta = (BindWidget))
-    USP_TextButton* LevelStartupButton;
-    
-    UPROPERTY(meta = (BindWidget))
-    UOverlay* LevelItemsOverlay;
+    UButton* LevelStartupButton;
 
     UPROPERTY(meta = (BindWidget))
     UHorizontalBox* LevelItemsBox;

@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Gameplay_Portfolio/Items/ModularCharacter/SP_ModularData.h"
 #include "Gameplay_Portfolio/System/SP_CoreType.h"
-#include "Save/SP_SaveGame.h"
 #include "SP_GameInstance.generated.h"
 
 /**
@@ -20,7 +19,8 @@ public:
     FLevelData GetMenuLevelData() const { return MenuLevelData; }
     TArray<FLevelData> GetLevelsData() const { return LevelsData; }
     void SetStartupLevelData(const FLevelData& Data) { StartupLevelData = Data;}
-
+    void OpenLevel(const UObject* WorldContextObject, EGameModeType Type);
+    
     USP_DefaultPartsAsset* GetDefaultMeshParts() const;
     
 protected:

@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SP_CoreType.h"
 #include "Save/SP_SaveGame.h"
 #include "SP_SaveGameSubsystem.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSaveGameSignature, class USP_SaveGame*, SaveObject);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveGameSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoadGameSignature);
 /**
  * 
  */
@@ -18,23 +19,31 @@ class GAMEPLAY_PORTFOLIO_API USP_SaveGameSubsystem : public UGameInstanceSubsyst
 
 public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+    virtual void Deinitialize() override;
 
-    void HandleStartingNewPlayer(const AController* NewPlayer) const;
+    void HandleStartingNewPlayer(const AController* NewPlayer, EGameModeType Mode) const;
 
     UFUNCTION(BlueprintCallable)
     bool OverrideSpawnTransform(AController* NewPlayer);
 
     UFUNCTION(BlueprintCallable)
     void SetSlotName(FString NewSlotName);
-	
+    
     UFUNCTION(BlueprintCallable, Category = "SaveGame")
-    void WriteSaveGame();
+    void WriteSaveGame(FString InSlotName, EGameModeType Type = EGameModeType::None);
+
+    UFUNCTION(BlueprintCallable)
+    void DeleteSaveGame(FString InSlotName);
 
     /* Load from disk, optional slot name */
-    void LoadSaveGame(FString InSlotName = "");
+    USP_SaveGame* LoadSaveGame(FString InSlotName = "", EGameModeType Type = EGameModeType::None);
 
-    UPROPERTY(BlueprintAssignable)
-    FOnSaveGameSignature OnSaveGameLoaded;
+    USP_SaveGame* GetCurrentSaveGame() const;
+
+    UPROPERTY()
+    FOnSaveGameSignature OnSaveGameSignature;
+    UPROPERTY()
+    FOnLoadGameSignature OnLoadGameSignature;
     
 protected:
     FString CurrentSlotName;

@@ -8,32 +8,39 @@
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 
+constexpr int32 UserId = 0;
+constexpr int32 UTC_HOUR_KOREA = 9;
+
 void USP_SaveGameSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
 }
 
-void USP_SaveGameSubsystem::HandleStartingNewPlayer(const AController* NewPlayer) const
+void USP_SaveGameSubsystem::Deinitialize()
+{
+    CurrentSaveGame = nullptr;
+    CurrentSlotName = nullptr;
+    OnSaveGameSignature.Clear();
+    OnLoadGameSignature.Clear();
+    
+    Super::Deinitialize();
+}
+
+void USP_SaveGameSubsystem::HandleStartingNewPlayer(const AController* NewPlayer, EGameModeType Mode) const
 {
     ASP_PlayerState* PS = NewPlayer->GetPlayerState<ASP_PlayerState>();
     if (ensure(PS))
     {
-        PS->LoadPlayerState(CurrentSaveGame);
+        PS->LoadPlayerState(CurrentSaveGame, Mode);
     }
 }
 
 bool USP_SaveGameSubsystem::OverrideSpawnTransform(AController* NewPlayer)
 {
-    if (!IsValid(NewPlayer))
-    {
-        return false;
-    }
+    if (!IsValid(NewPlayer) || !CurrentSaveGame) return false;
 
     ASP_PlayerState* PS = NewPlayer->GetPlayerState<ASP_PlayerState>();
-    if (PS == nullptr)
-    {
-        return false;
-    }
+    if (PS == nullptr) return false;
     
     if (APawn* MyPawn = PS->GetPawn())
     {
@@ -56,77 +63,100 @@ bool USP_SaveGameSubsystem::OverrideSpawnTransform(AController* NewPlayer)
 
 void USP_SaveGameSubsystem::SetSlotName(FString NewSlotName)
 {
-    if (NewSlotName.Len() == 0)
-    {
-        return;
-    }
-    
+    if (NewSlotName.Len() == 0) return;
     CurrentSlotName = NewSlotName;
 }
 
-void USP_SaveGameSubsystem::WriteSaveGame()
+void USP_SaveGameSubsystem::WriteSaveGame(FString InSlotName, EGameModeType Type)
 {
-    USP_SaveGame SaveGame;
+    SetSlotName(InSlotName);
+
+    if (UGameplayStatics::DoesSaveGameExist(CurrentSlotName, UserId))
+        UGameplayStatics::DeleteGameInSlot(CurrentSlotName, UserId);
     
-    AGameStateBase* GS = GetWorld()->GetGameState();
-    if (GS == nullptr)
+    if(CurrentSaveGame == nullptr)
     {
-        return;
+        const auto NewSaveGame = UGameplayStatics::CreateSaveGameObject(USP_SaveGame::StaticClass());
+        CurrentSaveGame = Cast<USP_SaveGame>(NewSaveGame);
     }
+
+    // UTC 표준과 한국 시간과의 오차를 처리합니다.
+    FDateTime UTCTime = FDateTime::UtcNow();
+    CurrentSaveGame->DateTime = FDateTime(UTCTime.GetYear(), UTCTime.GetMonth(), UTCTime.GetDay(), UTCTime.GetHour() + UTC_HOUR_KOREA, UTCTime.GetMinute(), UTCTime.GetSecond());
     
-    // 멀티 플레이어별로 플레이어 정보를 저장합니다.
+    // 멀티 플레이어 정보를 저장합니다.
+    AGameStateBase* GS = GetWorld()->GetGameState();
     for (int32 i = 0; i < GS->PlayerArray.Num(); i++)
     {
         ASP_PlayerState* PS = Cast<ASP_PlayerState>(GS->PlayerArray[i]);
         if (PS)
         {
-            PS->SavePlayerState(CurrentSaveGame);
+            PS->SavePlayerState(CurrentSaveGame, Type);
             break;
         }
     }
     
-    // 월드에 존재하는 모든 액터를 순회합니다.
-    for (FActorIterator It(GetWorld()); It; ++It)
+    if(Type == EGameModeType::InGame)
     {
-        AActor* Actor = *It;
+        // 월드에 존재하는 모든 액터를 순회하여 저장합니다.
+        for (FActorIterator It(GetWorld()); It; ++It)
+        {
+            AActor* Actor = *It;
         
-        // 액터가 아니거나 특정 인터페이스를 상속받지 않은 액터는 저장목록에서 제외시킵니다.
-        //if (!IsValid(Actor) || !Actor->Implements<USGameplayInterface>())
-        //{
-        //    continue;
-        //}
-        SaveGame.ActorSaver(Actor);
+            // 액터가 아니거나 특정 인터페이스를 상속받지 않은 액터는 저장목록에서 제외시킵니다.
+            //if (!IsValid(Actor) || !Actor->Implements<USGameplayInterface>())
+            //{
+            //    continue;
+            //}
+            CurrentSaveGame->ActorSaver(Actor);
+        }
+
+        /// 게임 스테이트나 각종 저장할 오브젝트 유형을 저장합니다.
+        /// SaveGame.ForLoopUObjectSaver(MyGameState.Objects)
     }
-
-    /// 게임 스테이트나 각종 저장할 오브젝트 유형을 저장합니다.
-    /// SaveGame.ForLoopUObjectSaver(MyGameState.Objects)
-
-    CurrentSaveGame = &SaveGame;
-    UGameplayStatics::SaveGameToSlot(CurrentSaveGame, CurrentSlotName, 0);
+    
+    if(UGameplayStatics::SaveGameToSlot(CurrentSaveGame, CurrentSlotName, UserId)) OnSaveGameSignature.Broadcast();
 }
 
-void USP_SaveGameSubsystem::LoadSaveGame(FString InSlotName /* = " "  */)
+void USP_SaveGameSubsystem::DeleteSaveGame(FString InSlotName)
+{
+    SetSlotName(InSlotName);
+    UGameplayStatics::DeleteGameInSlot(CurrentSlotName, UserId);
+    CurrentSaveGame = nullptr;
+}
+
+USP_SaveGame* USP_SaveGameSubsystem::LoadSaveGame(FString InSlotName, EGameModeType Type)
 {
     //지정된 문자열이 있다면 슬롯명을 변경하고 아닌 경우, 기본 슬롯명을 유지합니다.
     SetSlotName(InSlotName);
 
     // 해당 슬롯에 저장된 게임이 존재하는지 확인합니다.
-    if (UGameplayStatics::DoesSaveGameExist(CurrentSlotName, 0))
+    if (UGameplayStatics::DoesSaveGameExist(CurrentSlotName, UserId))
     {
-        CurrentSaveGame = Cast<USP_SaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSlotName, 0));
+        CurrentSaveGame = Cast<USP_SaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSlotName, UserId));
         if (CurrentSaveGame == nullptr)
         {
             UE_LOG(LogTemp, Warning, TEXT("Failed to load SaveGame Data."));
-            return;
+            return nullptr;
         }
 
         UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame Data."));
-        CurrentSaveGame->UObjectsPreloader(GetWorld()->GetGameState());
-        CurrentSaveGame->UObjectDataLoader();
+
+        // 게임모드에 따라 데이터를 불러옵니다.
+        if(Type == EGameModeType::InGame)
+        {
+            CurrentSaveGame->UObjectsPreloader(GetWorld()->GetGameState());
+            CurrentSaveGame->UObjectDataLoader();
+        }
+
+        OnLoadGameSignature.Broadcast();
     }
-    else
-    {
-        CurrentSaveGame = Cast<USP_SaveGame>(UGameplayStatics::CreateSaveGameObject(USP_SaveGame::StaticClass()));
-        UE_LOG(LogTemp, Log, TEXT("Created New SaveGame Data."));
-    }
+    else CurrentSaveGame = nullptr;
+    
+    return CurrentSaveGame;
+}
+
+USP_SaveGame* USP_SaveGameSubsystem::GetCurrentSaveGame() const
+{
+    return CurrentSaveGame;
 }

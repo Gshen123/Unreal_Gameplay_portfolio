@@ -10,7 +10,7 @@ void USP_LevelItemBox::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    if(LevelStartupButton) LevelStartupButton->MainButton->OnClicked.AddDynamic(this, &USP_LevelItemBox::LevelOpen);
+    if(LevelStartupButton) LevelStartupButton->OnClicked.AddDynamic(this, &USP_LevelItemBox::LevelOpen);
 }
 
 UHorizontalBox* USP_LevelItemBox::GetLevelItemBox() const

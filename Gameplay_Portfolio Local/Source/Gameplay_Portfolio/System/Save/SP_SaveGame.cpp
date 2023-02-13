@@ -12,22 +12,15 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogSaveGame, All, All);
 
-FPlayerSaveData* USP_SaveGame::GetPlayerData(APlayerState* PlayerState)
+FPlayerSaveData* USP_SaveGame::GetPlayerData(const APlayerState* PlayerState)
 {
-    if (PlayerState == nullptr)
-    {
-        return nullptr;
-    }
-
+    if (PlayerState == nullptr)  return nullptr;
+    
     // PIE에서는 고유 ID를 제공하지 않기때문에 따로 처리하여 데이터를 가져옵니다.
     if (PlayerState->GetWorld()->IsPlayInEditor())
     {
         UE_LOG(LogTemp, Log, TEXT("PIE 모드이므로 플레이어 저장 정보의 첫번째 인덱스만 가져옵니다."));
-
-        if (PlayerSaveDatas.IsValidIndex(0))
-        {
-            return &PlayerSaveDatas[0];
-        }
+        if (PlayerSaveData.IsValidIndex(0)) return &PlayerSaveData[0];
         
         return nullptr;
     }
@@ -35,16 +28,13 @@ FPlayerSaveData* USP_SaveGame::GetPlayerData(APlayerState* PlayerState)
     // Steam이나 EOS 등에서 사용자 ID를 관리하는 방식에 보통 String을 자주 활용합니다.
     FString PlayerID = PlayerState->GetUniqueId().ToString();
     // 배열을 반복해 플레이어별로 ID 값을 대입합니다.
-    return PlayerSaveDatas.FindByPredicate([&](const FPlayerSaveData& Data) { return Data.PlayerID == PlayerID; });
+    return PlayerSaveData.FindByPredicate([&](const FPlayerSaveData& Data) { return Data.PlayerID == PlayerID; });
 }
 
 // 액터들의 정보를 직렬화합니다.
 void USP_SaveGame::ForLoopActorSaver(TArray<AActor*> SaveActors)
 {
-    for (AActor* SaveActor : SaveActors)
-    {
-        ActorSaver(SaveActor);
-    }
+    for (AActor* SaveActor : SaveActors) ActorSaver(SaveActor);
 }
 
 // ObjectRecords 배열에 액터의 정보를 추가합니다. 추가로 안전한 Outer를 확보하여 임시로 TempObjects에 보관합니다.

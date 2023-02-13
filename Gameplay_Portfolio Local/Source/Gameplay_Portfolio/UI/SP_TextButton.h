@@ -9,9 +9,6 @@
 #include "SP_TextButton.generated.h"
 
 
-// 자체 버튼 클래스를 통해 이를 개선했으며, 텍스트의 잦은 수정을 고려해 상위 클래스에서의 접근성을 향상시켰습니다.
-
-
 UCLASS(Blueprintable, BlueprintType)
 class GAMEPLAY_PORTFOLIO_API USP_TextButton : public UUserWidget
 {
@@ -30,10 +27,10 @@ public:
     virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 	
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋",  meta = (DisplayPriority =0))
+    UPROPERTY(meta =(BindWidget))
     class UButton* MainButton;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|에셋",  meta = (DisplayPriority = 1))
+    UPROPERTY(meta =(BindWidget))
     class UTextBlock* TextBlock;
 	
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|텍스트")
@@ -102,6 +99,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
     FVector4 Btn_OutlineConerRad = FVector4(0,0,0,0);
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
+    FColor Btn_OutlineColor = FColor(0,0,0,255);
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼")
+    int32 bBtn_OutlineWidth = 1;
+    
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "기본|버튼", meta = (ToolTip = "0 = default, 1= hands, 2 = Grabhands, 3 = Grabhands closed", ClampMin = 0, ClampMax = 3, UIMin = 0, UIMax = 3))
     int Btn_CursorType = 0;
     

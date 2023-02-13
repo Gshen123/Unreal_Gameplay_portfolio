@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
 #include "SP_VideoSettingsWidget.generated.h"
 
 class USP_TextButton;
@@ -23,10 +24,10 @@ protected:
 	UVerticalBox* VideoSettingsContainer;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-	TSubclassOf<USP_SettingOptionWidget> SettingOptionWidgetClass;
+	TSubclassOf<UUserWidget> SettingOptionWidgetClass;
 
 	UPROPERTY(meta = (BindWidget))
-	USP_TextButton* BenchmarkButton;
+	UButton* BenchmarkButton;
 	
 	virtual void NativeOnInitialized() override;
 

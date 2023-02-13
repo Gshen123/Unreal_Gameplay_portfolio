@@ -43,10 +43,10 @@ protected:
     UButton* ResetButton;
     
     UPROPERTY(meta = (BindWidget))
-    USP_TextButton* TextBlock;
+    UTextBlock* TextBlock;
 
     UPROPERTY(meta = (BindWidget))
-    USP_TextButton* TypeTextBlock;
+    UTextBlock* TypeTextBlock;
     
     virtual void NativeConstruct() override; 
     

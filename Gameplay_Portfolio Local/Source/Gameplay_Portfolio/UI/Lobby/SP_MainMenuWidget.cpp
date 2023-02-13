@@ -4,6 +4,9 @@
 #include "SP_MainMenuWidget.h"
 #include "SP_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/SP_SaveSlotBox.h"
+
+const FString WebSiteURL = TEXT("https://five-buffalo-0d8.notion.site/Scope-s-Diary-c00c6d5211504a239b33b95b040971f5");
 
 DEFINE_LOG_CATEGORY_STATIC(LogMainMenuWidget, All, All);
 
@@ -15,9 +18,7 @@ void USP_MainMenuWidget::NativeConstruct()
     if(LoadButton) LoadButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::LoadGame);
     if(OptionButton) OptionButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::ShowOptionWidget);
     if(ExitButton) ExitButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::ShowExitModal);
-
-
-    InitLevelItems();
+    if(LinkButton) LinkButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::LaunchURL);
 }
 
 void USP_MainMenuWidget::InitLevelItems()
@@ -27,30 +28,21 @@ void USP_MainMenuWidget::InitLevelItems()
 
     checkf(GameInstance->GetLevelsData().Num() != 0, TEXT("Levels data must not be empty!"));
 
-    if(!LevelItemBox) return;
-    LevelItemBox->GetLevelItemBox()->ClearChildren();
-
     for(auto LevelData: GameInstance->GetLevelsData())
     {
-        const auto LevelItemWidget = CreateWidget<USP_LevelItemWidget>(GetWorld(), LevelItemWidgetClass);
-        const auto LevelItemWidgetCasted = Cast<USP_LevelItemWidget>(LevelItemWidget);
-        if(!LevelItemWidgetCasted) return;
+        if(LevelData.Type == EGameModeType::CharacterSetup || LevelData.Type == EGameModeType::InGame)
+        {
+            const auto LevelItemWidget = CreateWidget<USP_LevelItemWidget>(GetWorld(), LevelItemWidgetClass);
+            const auto LevelItemWidgetCasted = Cast<USP_LevelItemWidget>(LevelItemWidget);
+            if(!LevelItemWidgetCasted) return;
 
-        LevelItemWidgetCasted->SetLevelData(LevelData);
-        LevelItemWidgetCasted->OnLevelSelected.AddUObject(this, &ThisClass::OnLevelSelected);
-        LevelItemWidgetCasted->SetPadding(FMargin(15,15,15,15));
+            LevelItemWidgetCasted->SetLevelData(LevelData);
+            LevelItemWidgetCasted->OnLevelSelected.AddUObject(this, &ThisClass::OnLevelSelected);
+            LevelItemWidgetCasted->SetPadding(FMargin(15,15,15,15));
 
-        LevelItemBox->GetLevelItemBox()->AddChild(LevelItemWidget);
-        LevelItemWidgets.Add(LevelItemWidget);
-    }
-
-    if(GameInstance->GetStartupLevelData().LevelName.IsNone())
-    {
-        //OnLevelSelected(GameInstance->GetLevelsData()[0]);
-    }
-    else
-    {
-        //OnLevelSelected(GameInstance->GetStartupLevelData());
+            LevelItemBox->GetLevelItemBox()->AddChild(LevelItemWidget);
+            LevelItemWidgets.Add(LevelItemWidget);
+        }
     }
 }
 
@@ -73,7 +65,14 @@ void USP_MainMenuWidget::OnLevelSelected(const FLevelData& Data)
 
 void USP_MainMenuWidget::LoadGame()
 {
-    
+    if(!SaveSlotBox)
+    {
+        SaveSlotBox = CreateWidget<USP_SaveSlotBox>(GetWorld(), SaveSlotBoxWidgetClass);
+        SaveSlotBox->SetSaveMode(EGameModeType::MainMenu);
+        SaveSlotBox->AddToViewport();
+    }
+    SaveSlotBox->SetVisibility(ESlateVisibility::Visible);
+    GetSP_MenuHUD()->PushWidgetStack(SaveSlotBox);
 }
 
 void USP_MainMenuWidget::ShowOptionWidget()
@@ -88,19 +87,26 @@ void USP_MainMenuWidget::ShowExitModal()
         APlayerController* PC = Cast<APlayerController>(GetOwningPlayer());
         ExitModal = CreateWidget<UUserWidget>( PC, ExitModalClass );
         ExitModal->AddToViewport();
-        GetSP_MenuHUD()->PushWidgetStack(ExitModal);
     }
-    
     GetSP_MenuHUD()->PushWidgetStack(ExitModal);
 }
 
 void USP_MainMenuWidget::ShowSelectedLevel()
 {
-    if(!LevelItemBox) return;
-    if(LevelItemBox->GetVisibility() == ESlateVisibility::Visible) return;
-
+    if(!LevelItemBox)
+    {
+        LevelItemBox = CreateWidget<USP_LevelItemBox>(GetWorld(), LevelItemBoxWidgetClass);
+        LevelItemBox->AddToViewport();
+        LevelItemBox->GetLevelItemBox()->ClearChildren();
+        InitLevelItems();
+    }
     UE_LOG(LogMainMenuWidget, Display, TEXT("Selected Level Please"));
     GetSP_MenuHUD()->PushWidgetStack(LevelItemBox);
+}
+
+void USP_MainMenuWidget::LaunchURL()
+{
+    UKismetSystemLibrary::LaunchURL(WebSiteURL);
 }
 
 USP_GameInstance* USP_MainMenuWidget::GetSP_GameInstance() const

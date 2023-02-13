@@ -31,7 +31,7 @@ void USP_VideoSettingsWidget::NativeOnInitialized()
 		const auto SettingWidget = CreateWidget<USP_SettingOptionWidget>(this, SettingOptionWidgetClass);
 		check(SettingWidget);
 		SettingWidget->Init(Setting);
-		SettingWidget->SetPadding(FMargin(0, 20.0, 0, 20));
+		SettingWidget->SetPadding(FMargin(0, 5.0, 0, 5));
 		VideoSettingsContainer->AddChild(SettingWidget);
 	}
 	
@@ -44,15 +44,12 @@ void USP_VideoSettingsWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	check(BenchmarkButton);
-	BenchmarkButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::OnBenchmark);
+	BenchmarkButton->OnClicked.AddDynamic(this, &ThisClass::OnBenchmark);
 }
 
 void USP_VideoSettingsWidget::OnBenchmark()
 {
-	if(auto* UserSettings = USP_GameUserSettings::Get())
-	{
-		UserSettings->RunBenchmark();
-	}
+	if(auto* UserSettings = USP_GameUserSettings::Get()) UserSettings->RunBenchmark();
 }
 
 void USP_VideoSettingsWidget::OnVideoSettingsUpdated()
@@ -61,9 +58,6 @@ void USP_VideoSettingsWidget::OnVideoSettingsUpdated()
 
 	for(auto* Widget : VideoSettingsContainer->GetAllChildren())
 	{
-		if(auto* SettingOptionWidget = Cast<USP_SettingOptionWidget>(Widget))
-		{
-			SettingOptionWidget->UpdateTexts();
-		}
+	    if(auto* SettingOptionWidget = Cast<USP_SettingOptionWidget>(Widget)) SettingOptionWidget->UpdateTexts();
 	}
 }

@@ -6,7 +6,7 @@
 #include "SP_AssetManager.h"
 #include "SP_PlayerCharacter.h"
 #include "SP_GameInstance.h"
-#include "Gameplay_Portfolio/Items/ModularCharacter/SP_ModularItemBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "Subsystem/SP_LocalPlayerMeshManager.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogPlayerState, All, All);
@@ -32,7 +32,7 @@ int32 ASP_PlayerState::GetLevelNum() const
     return LevelCount;
 }
 
-void ASP_PlayerState::SavePlayerState(USP_SaveGame* SaveObject) const
+void ASP_PlayerState::SavePlayerState(USP_SaveGame* SaveObject, EGameModeType Mode) const
 {
     if (SaveObject)
     {
@@ -40,27 +40,35 @@ void ASP_PlayerState::SavePlayerState(USP_SaveGame* SaveObject) const
         // 플레이어의 저장 정보를 업데이트합니다
 
         SaveData.PlayerID = GetUniqueId().ToString();
-        SaveData.MeshData = GetPlayerController()->GetLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->SaveMeshData();
+        SaveData.PlayTime= UGameplayStatics::GetRealTimeSeconds(GetPlayerController()) * ETimespan::TicksPerSecond;
+
+        if(Mode == EGameModeType::InGame || Mode == EGameModeType::CharacterSetup)
+            SaveData.MeshData = GetPlayerController()->GetLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->SaveMeshData();
         
-        if (APawn* MyPawn = GetPawn())
+        if(Mode == EGameModeType::InGame)
         {
-            SaveData.Location = MyPawn->GetActorLocation();
-            SaveData.Rotation = MyPawn->GetActorRotation();
-            SaveData.bResumeAtTransform = true;
+            if (APawn* MyPawn = GetPawn())
+            {
+                SaveData.Location = MyPawn->GetActorLocation();
+                SaveData.Rotation = MyPawn->GetActorRotation();
+                SaveData.bResumeAtTransform = true;
+            }
         }
-		
-        SaveObject->PlayerSaveDatas.Add(SaveData);
+        
+        SaveObject->PlayerSaveData.Add(SaveData);
     }
 }
 
-void ASP_PlayerState::LoadPlayerState(USP_SaveGame* SaveObject)
+void ASP_PlayerState::LoadPlayerState(USP_SaveGame* SaveObject, EGameModeType Mode)
 {
     if (SaveObject)
     {
-        FPlayerSaveData* FoundData = SaveObject->GetPlayerData(this);
-        if (FoundData)
+        if (const FPlayerSaveData* FoundData = SaveObject->GetPlayerData(this))
         {
-            MeshData = FoundData->MeshData;
+            if(Mode == EGameModeType::InGame || Mode == EGameModeType::CharacterSetup)
+            {
+                MeshData = FoundData->MeshData;
+            }
             //플레이어 스테이트 정보 갱신
         }
         else

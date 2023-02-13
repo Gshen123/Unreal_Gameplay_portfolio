@@ -74,11 +74,14 @@ struct FPlayerMeshData
 public:
     UPROPERTY()
     TArray<USkeletalMesh*> Meshes;
-    
+
+    UPROPERTY()
     TMap<FPrimaryAssetType, FName> MeshItemData;
-    
+
+    UPROPERTY()
     TMap<FName, float> MorphTargetData;
 
+    UPROPERTY()
     TMap<int32, FMaterialData> MaterialData; 
 };
 
@@ -96,6 +99,9 @@ public:
     UPROPERTY()
     int32 Credits;
 
+    UPROPERTY()
+    FTimespan PlayTime;
+    
     /* 최장 생존 시간 */
     UPROPERTY()
     float PersonalRecordTime;
@@ -110,11 +116,13 @@ public:
 
     /* 우리는 항상 위치를 복원하고 싶지는 않으며, 월드의 특정 리스폰 지점에서 플레이어를 재개할 수 있습니다. */
     UPROPERTY()
-    bool bResumeAtTransform;
+    bool bResumeAtTransform = false;
 
     UPROPERTY()
     FPlayerMeshData MeshData;
 
-    UPROPERTY()
-    AGameModeBase* Mode;
+    FString GetPlayTime() const
+    {
+        return FString::Printf(TEXT("%02d:%02d:%02d"), PlayTime.GetHours(), PlayTime.GetMinutes(), PlayTime.GetSeconds());
+    }
 };

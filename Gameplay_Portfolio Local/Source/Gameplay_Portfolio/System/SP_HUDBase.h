@@ -40,7 +40,8 @@ protected:
 private:
     UPROPERTY()
     UUserWidget* OptionMenu;
-    
+
+    //임시용
     UPROPERTY()
     UUserWidget* CurrentVisibleWidget;
     

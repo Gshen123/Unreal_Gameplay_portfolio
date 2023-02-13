@@ -6,7 +6,6 @@
 #include "SP_ModularHUD.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Subsystem/SP_LocalPlayerMeshManager.h"
 
 constexpr FLinearColor ANIM_ACTIVE_NORMAL_COLOR = FLinearColor(0.598958,0.393962, 0.188026,0.800000);
@@ -145,6 +144,8 @@ void USP_CharacterSettingWidget::NativeConstruct()
     if(AnimButton2) AnimButton2->OnClicked.AddDynamic(this, &ThisClass::UpdateAnimOne);
     if(AnimButton3) AnimButton3->OnClicked.AddDynamic(this, &ThisClass::UpdateAnimTwo);
 
+    if(CreateCharacterButton) CreateCharacterButton->OnClicked.AddDynamic(this, &ThisClass::CreateSaveSlotWidget);
+    
     const auto LPM = GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
     LPM->WidgetUpdated.AddUObject(this, &ThisClass::UpdateWidget);
     for (const auto MergeComponent : LPM->GetMergeComponents())
@@ -198,7 +199,7 @@ void USP_CharacterSettingWidget::SwictherToIndexZero()
     if(ModuluarCharacter)
     {
         ModuluarCharacter.Get()->GetCameraBoom()->TargetArmLength = 60.f;
-        ModuluarCharacter.Get()->GetFollowCamera()->SetRelativeLocation(FVector(0,-3,70));
+        ModuluarCharacter.Get()->GetFollowCamera()->SetRelativeLocation(FVector(0,0,70));
     }
 }
 
@@ -241,7 +242,7 @@ void USP_CharacterSettingWidget::UpdateAnimZero()
     if(AnimIndex == 2) AnimButton3->SetStyle(Style);
     
     AnimIndex = 0;
-    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(IdleAnim);
+    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(nullptr);
 }
 
 void USP_CharacterSettingWidget::UpdateAnimOne()
@@ -263,7 +264,7 @@ void USP_CharacterSettingWidget::UpdateAnimOne()
     if(AnimIndex == 2) AnimButton3->SetStyle(Style);
     
     AnimIndex = 1;
-    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(WalkAnim);
+    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(IdleAnim);
 }
 
 void USP_CharacterSettingWidget::UpdateAnimTwo()
@@ -285,7 +286,7 @@ void USP_CharacterSettingWidget::UpdateAnimTwo()
     if(AnimIndex == 1) AnimButton2->SetStyle(Style);
     
     AnimIndex = 2;
-    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(RunAnim);
+    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(WalkAnim);
 }
 
 void USP_CharacterSettingWidget::OnGoToMenu()
@@ -293,8 +294,7 @@ void USP_CharacterSettingWidget::OnGoToMenu()
     const auto GameInstance = GetSP_GameInstance();
     if(!GameInstance) return;
     
-    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->Deinitialize();
-    UGameplayStatics::OpenLevel(this, GameInstance->GetMenuLevelData().LevelName);
+    GetSP_GameInstance()->OpenLevel(this, EGameModeType::MainMenu);
 }
 
 void USP_CharacterSettingWidget::ShowOptionWidget()
@@ -314,8 +314,30 @@ void USP_CharacterSettingWidget::Reset()
     for (USP_MorphSliderWidget* MorphWidget : MorphWidgets) MorphWidget->SetSliderVlaue(0.5);
 }
 
+void USP_CharacterSettingWidget::CreateSaveSlotWidget()
+{
+    if(!SaveSlotBox)
+    {
+        SaveSlotBox = CreateWidget<USP_SaveSlotBox>(GetWorld(), SaveSlotBoxWidgetClass);
+        SaveSlotBox->SetSaveMode(EGameModeType::CharacterSetup);
+        SaveSlotBox->AddToViewport();
+        GetSP_GameInstance()->GetSubsystem<USP_SaveGameSubsystem>()->OnSaveGameSignature.AddDynamic(this, &ThisClass::OpenGameLevel);
+    }
+    GetSP_HUD()->PushWidgetStack(SaveSlotBox);
+}
+
+void USP_CharacterSettingWidget::OpenGameLevel()
+{
+    GetSP_GameInstance()->OpenLevel(this, EGameModeType::InGame);
+}
+
 USP_GameInstance* USP_CharacterSettingWidget::GetSP_GameInstance() const
 {
     if(!GetWorld()) return nullptr;
     return GetWorld()->GetGameInstance<USP_GameInstance>();
+}
+
+ASP_HUDBase* USP_CharacterSettingWidget::GetSP_HUD() const
+{
+    return Cast<ASP_HUDBase>(GetOwningPlayer()->GetHUD());
 }

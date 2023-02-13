@@ -43,6 +43,8 @@ void USP_MergeComponent::ClearMorphTarget()
 
 void USP_MergeComponent::UpdateAnimation(UAnimationAsset* Asset)
 {
+    if(!Asset) { GetOwnerMesh()->Stop(); return;}
+    
     GetOwnerMesh()->SetAnimation(Asset);
     GetOwnerMesh()->Play(true);
 }

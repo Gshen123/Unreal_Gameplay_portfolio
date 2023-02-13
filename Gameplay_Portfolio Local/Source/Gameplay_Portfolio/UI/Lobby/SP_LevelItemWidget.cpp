@@ -24,20 +24,11 @@ void USP_LevelItemWidget::SetLevelData(const FLevelData& Data)
 {
     LevelData = Data;
 
-    if(LevelNameTextBlock)
-    {
-        LevelNameTextBlock->SetText(FText::FromName(Data.LevelDisplayName));
-    }
-    if(LevelImage)
-    {
-        LevelImage->SetBrushFromTexture(Data.LevelThumb);
-    }
+    if(LevelNameTextBlock) LevelNameTextBlock->SetText(FText::FromName(Data.LevelDisplayName));
+    if(LevelImage) LevelImage->SetBrushFromTexture(Data.LevelThumb);
 }
 
 void USP_LevelItemWidget::SetSelected(bool IsSelected)
 {
-    if(FrameImage)
-    {
-        FrameImage->SetVisibility(IsSelected ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
-    }
+    if(FrameImage) FrameImage->SetVisibility(IsSelected ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
