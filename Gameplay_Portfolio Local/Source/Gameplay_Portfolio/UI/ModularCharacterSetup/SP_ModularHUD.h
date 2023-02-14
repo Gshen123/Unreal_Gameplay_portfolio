@@ -16,9 +16,6 @@ class GAMEPLAY_PORTFOLIO_API ASP_ModularHUD : public ASP_HUDBase
 {
     GENERATED_BODY()
 
-public:
-    FPlayerMeshData GetMeshData() const;
-
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UUserWidget> CreateCharacterWidgetClass;

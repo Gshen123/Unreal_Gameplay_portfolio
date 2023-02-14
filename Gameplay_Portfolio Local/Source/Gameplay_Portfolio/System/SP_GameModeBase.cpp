@@ -8,6 +8,7 @@
 DEFINE_LOG_CATEGORY_STATIC(Log_SPGameModeBase, All, All);
 ASP_GameModeBase::ASP_GameModeBase()
 {
+    bUseSeamlessTravel = true;
 }
 
 EGameModeType ASP_GameModeBase::GetPrevMode() const
@@ -15,17 +16,30 @@ EGameModeType ASP_GameModeBase::GetPrevMode() const
     return PrevGameMode;
 }
 
+void ASP_GameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+    Super::InitGame(MapName, Options, ErrorMessage);
+    // (Save/Load logic moved into new SaveGameSubsystem)
+
+    if(CurrentGameMode == EGameModeType::MainMenu)
+    {
+        
+    }
+    // Optional slot name (Falls back to slot specified in SaveGameSettings class/INI otherwise)
+    //GetSaveSubSystem()->LoadSaveGame();
+}
+
 // 플레이어로부터 게임에 참여할 준비가 되었다는 신호를 받으면서 호출됩니다.
 void ASP_GameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
+    UE_LOG(Log_SPGameModeBase, Warning, TEXT("핸들 호출"));
     // Super가 호출되기 전에 게임스테이트의 정보를 갱신합니다.
-    USP_SaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<USP_SaveGameSubsystem>();
-    SG->HandleStartingNewPlayer(NewPlayer, CurrentGameMode);
-
+    GetSaveSubSystem()->HandleStartingNewPlayer(NewPlayer, CurrentGameMode);
+    
     Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 
     // 지정된 스폰 위치를 검사하고 적용합니다.
-    if(CurrentGameMode == EGameModeType::InGame) SG->OverrideSpawnTransform(NewPlayer);
+    if(CurrentGameMode == EGameModeType::InGame) GetSaveSubSystem()->OverrideSpawnTransform(NewPlayer);
 }
 
 void ASP_GameModeBase::SetGameModeType(EGameModeType GameModeType)
@@ -57,4 +71,9 @@ inline bool ASP_GameModeBase::ClearPause()
     }
 
     return PauseCleared;
+}
+
+USP_SaveGameSubsystem* ASP_GameModeBase::GetSaveSubSystem() const
+{
+    return GetGameInstance()->GetSubsystem<USP_SaveGameSubsystem>();
 }

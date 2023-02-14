@@ -5,6 +5,13 @@
 
 #include "Subsystem/SP_LocalPlayerMeshManager.h"
 
+void USP_PresetColorPicker::SetDefaultColor(FLinearColor Color)
+{
+    Loaded = true;
+    DefaultColor = Color;
+    ResetColor();
+}
+
 void USP_PresetColorPicker::NativeConstruct()
 {
     Super::NativeConstruct();
@@ -13,7 +20,7 @@ void USP_PresetColorPicker::NativeConstruct()
     if(ColorButton1) ColorButton1->OnClicked.AddDynamic(this, &ThisClass::SetColor1);
     if(ColorButton2) ColorButton2->OnClicked.AddDynamic(this, &ThisClass::SetColor2);
     if(ColorButton3) ColorButton3->OnClicked.AddDynamic(this, &ThisClass::SetColor3);
-    if(ResetButton) ResetButton->OnClicked.AddDynamic(this, &ThisClass::Reset);
+    if(ResetButton) ResetButton->OnClicked.AddDynamic(this, &ThisClass::ResetColor);
 
     UpdateText();
 }
@@ -22,7 +29,10 @@ void USP_PresetColorPicker::UpdateMaterial(FLinearColor Color) const
 {
     const auto Subsystem = GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
     Subsystem->FindAndAddMaterialData(index, ParamName, Color, MaterialInstance);
-    Subsystem->AllUpdateMaterail();
+    Subsystem->AllUpdateMaterial();
+
+    if(Color != DefaultColor) ResetButton->SetVisibility(ESlateVisibility::Visible);
+    else ResetButton->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void USP_PresetColorPicker::SetColor0()
@@ -51,6 +61,13 @@ void USP_PresetColorPicker::UpdateText() const
     TypeTextBlock->SetText(DisplayName);
 }
 
-void USP_PresetColorPicker::Reset()
+void USP_PresetColorPicker::ResetColor()
 {
+    if(!Loaded)
+    {
+        DefaultColor = ColorButton0->WidgetStyle.Normal.TintColor.GetSpecifiedColor();
+        Loaded = true;
+    }
+
+    UpdateMaterial(DefaultColor);
 }

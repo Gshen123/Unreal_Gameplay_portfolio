@@ -21,8 +21,7 @@ void USP_PauseWidget::NativeConstruct()
 
     if(GetWorld())
     {
-        const auto GameMode = Cast<ASP_PlayGameModeBase>(GetWorld()->GetAuthGameMode());
-        if(GameMode)
+        if(const auto GameMode = Cast<ASP_PlayGameModeBase>(GetWorld()->GetAuthGameMode()))
         {
             GameMode->OnGameModeStateChanged.AddUObject(this, &ThisClass::SetMainMenuButtonVisble);
         }

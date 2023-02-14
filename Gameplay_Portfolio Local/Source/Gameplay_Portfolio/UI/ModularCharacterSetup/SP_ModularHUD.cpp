@@ -18,13 +18,6 @@ void ASP_ModularHUD::BeginPlay()
             CreateCharacterWidget->AddToViewport();
             const auto ModularMenu = Cast<USP_CharacterSettingWidget>(CreateCharacterWidget);
             ModularMenu->OnOptionWidget.AddUniqueDynamic(this, &ASP_ModularHUD::ShowOptionMenu);
-            ModularMenu->LoadData(GetMeshData());
         }
     }
-}
-
-FPlayerMeshData ASP_ModularHUD::GetMeshData() const
-{
-    const auto PS = GetOwningPlayerController()->GetPlayerState<ASP_PlayerState>();
-    return PS->GetMeshData();
 }

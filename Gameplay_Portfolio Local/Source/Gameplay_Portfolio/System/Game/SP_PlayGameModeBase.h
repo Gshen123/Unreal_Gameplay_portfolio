@@ -15,6 +15,8 @@ class ASP_PlayGameModeBase : public ASP_GameModeBase
 
 public:
     ASP_PlayGameModeBase();
+
+    virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 };
 
 

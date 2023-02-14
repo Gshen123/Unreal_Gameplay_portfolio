@@ -14,7 +14,7 @@ void USP_CharacterItemWidget::NativeConstruct()
     
     if(NextItemButton) NextItemButton->OnClicked.AddDynamic(this, &ThisClass::OnNextItem);
     if(PrevItemButton) PrevItemButton->OnClicked.AddDynamic(this, &ThisClass::OnPrevItem);
-    if(ResetButton) ResetButton->OnClicked.AddDynamic(this, &ThisClass::Reset);
+    if(ResetButton) ResetButton->OnClicked.AddDynamic(this, &ThisClass::ResetItem);
 }
 
 void USP_CharacterItemWidget::Init(bool Loaded, FName ItemName)
@@ -44,17 +44,14 @@ void USP_CharacterItemWidget::Init(bool Loaded, FName ItemName)
     for(int i = 0; i < Assets.Num(); i++)
     {
         if(!Assets[i].Get()) AssetManager.GetAsset(Assets[i]);
-        if(Assets[i].Get()->Data.DisplayName.EqualTo(FText::FromString(TEXT("None"))))
+        if(Assets[i].Get()->Data.DisplayName.EqualTo(FText::FromString(TEXT("None"))) && !Loaded)
         {
-            NoneIndex = i;
-            if(!Loaded)
-            {
-                index = NoneIndex;
-                UpdateItem();
-                break;
-            }
+            DefaultIndex = i;
+            index = DefaultIndex;
+            UpdateItem();
+            break;
         }
-        else if(Assets[i].Get()->Data.DisplayName.EqualTo(FText::FromName(ItemName)))
+        if(Assets[i].Get()->Data.DisplayName.EqualTo(FText::FromName(ItemName)))
         {
             index = i;
             UpdateItem();
@@ -63,9 +60,7 @@ void USP_CharacterItemWidget::Init(bool Loaded, FName ItemName)
     }
 
     for(auto Asset : Assets)
-    {
         UE_LOG(LogCharacterItemWidget, Display, TEXT("%s : %s"), *AssetType.GetName().ToString(), *Asset.Get()->Data.DisplayName.ToString());
-    }
 }
 
 
@@ -96,11 +91,13 @@ void USP_CharacterItemWidget::OnPrevItem()
 
 void USP_CharacterItemWidget::UpdateItem(bool NoUpdate)
 {
+    if(index != DefaultIndex) ResetButton->SetVisibility(ESlateVisibility::Visible);
+    else ResetButton->SetVisibility(ESlateVisibility::Hidden);
+
     CurrentItem = USP_AssetManager::GetAsset(Assets[index]);
     GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->FindAndAddMeshItemData(AssetType, FName(*CurrentItem->Data.DisplayName.ToString()));
     UpdateTexts();
-
-    if(!NoUpdate) UpdateMesh();
+    UpdateMesh();
 }
 
 void USP_CharacterItemWidget::UpdateMesh() const
@@ -109,13 +106,8 @@ void USP_CharacterItemWidget::UpdateMesh() const
     LPM->ReplaceItemInSlot(CurrentItem);
 }
 
-void USP_CharacterItemWidget::Reset()
+void USP_CharacterItemWidget::ResetItem()
 {
-    
-}
-
-void USP_CharacterItemWidget::SetNoneItem()
-{
-    index =  NoneIndex;
+    index = DefaultIndex;
     UpdateItem();
 }

@@ -16,6 +16,12 @@ class GAMEPLAY_PORTFOLIO_API USP_PresetColorPicker : public UUserWidget
     GENERATED_BODY()
 
 public:
+    UFUNCTION()
+    void SetDefaultColor(FLinearColor Color);
+
+    UFUNCTION()
+    void ResetColor();
+    
     UPROPERTY()
     FText DisplayName;
 
@@ -42,11 +48,8 @@ protected:
     void SetColor2();
     UFUNCTION()
     void SetColor3();
-
-    void UpdateText() const;
-
     UFUNCTION()
-    void Reset();
+    void UpdateText() const;
     
     UPROPERTY(meta = (BindWidget))
     UTextBlock* TypeTextBlock;
@@ -65,4 +68,10 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
     UButton* ColorButton3;
+
+    UPROPERTY()
+    bool Loaded = false;
+    
+    UPROPERTY()
+    FLinearColor DefaultColor;
 };

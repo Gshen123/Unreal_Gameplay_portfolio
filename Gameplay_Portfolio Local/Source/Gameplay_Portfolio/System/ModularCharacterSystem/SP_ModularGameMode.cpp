@@ -5,10 +5,10 @@
 
 ASP_ModularGameMode::ASP_ModularGameMode()
 {
+    CurrentGameMode = EGameModeType::CharacterSetup;
 }
 
-void ASP_ModularGameMode::StartPlay()
+void ASP_ModularGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-    Super::StartPlay();
-    
+    Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }

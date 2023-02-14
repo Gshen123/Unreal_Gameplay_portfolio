@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SP_CoreType.h"
 #include "GameFramework/GameModeBase.h"
+#include "Subsystem/SP_SaveGameSubsystem.h"
 #include "SP_GameModeBase.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeTypeChanged, EGameModeType);
@@ -23,9 +24,11 @@ public:
     FOnGameModeTypeChanged OnGameModeStateChanged;
 
 protected:
+
+    virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
     
     virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
-    
+
     void SetGameModeType(EGameModeType GameModeType);
 
     virtual bool SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate) override;
@@ -37,5 +40,6 @@ protected:
     EGameModeType PrevGameMode = EGameModeType::None;
 private:
 
+    USP_SaveGameSubsystem* GetSaveSubSystem() const;
 };
 

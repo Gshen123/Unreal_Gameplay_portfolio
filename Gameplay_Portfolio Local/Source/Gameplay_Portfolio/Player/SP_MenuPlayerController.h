@@ -12,14 +12,11 @@ UCLASS()
 class GAMEPLAY_PORTFOLIO_API ASP_MenuPlayerController : public ASP_BasePlayerController
 {
     GENERATED_BODY()
-
-protected:
     
-    virtual void BeginPlay() override;
+protected:
+    ASP_MenuPlayerController(const FObjectInitializer& ObjectInitializer);
 
     virtual void SetupInputComponent() override;
-
-private:
-
-    void PopWidgetStack();
+    
+    virtual void BeginPlay() override;
 };

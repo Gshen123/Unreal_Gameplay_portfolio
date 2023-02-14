@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "SP_MergeComponent.h"
-#include "Gameplay_Portfolio/Items/ModularCharacter/SP_ModularItemBase.h"
 #include "ModularCharacterSetup/SP_CharacterItemWidget.h"
 #include "Save/SP_SaveData.h"
 #include "SP_LocalPlayerMeshManager.generated.h"
@@ -19,10 +18,13 @@ class GAMEPLAY_PORTFOLIO_API USP_LocalPlayerMeshManager : public ULocalPlayerSub
     GENERATED_BODY()
 
 public:
+    virtual void Deinitialize() override;
+
+    UFUNCTION()
+    void LoadMeshData(FPlayerMeshData LoadData);
+    
     UFUNCTION(BlueprintCallable)
     void AddMergeComponent(USP_MergeComponent* Component);
-
-    virtual void Deinitialize() override;
     
     UFUNCTION(BlueprintCallable)
     TArray<USP_MergeComponent*> GetMergeComponents();
@@ -34,7 +36,10 @@ public:
     void UpdateMesh(USP_MergeComponent* MergeComponent);
 
     UFUNCTION()
-    void AllUpdateMaterail();
+    void AllUpdateMesh();
+        
+    UFUNCTION()
+    void AllUpdateMaterial();
     
     UFUNCTION()
     void UpdateMaterial(USP_MergeComponent* MergeComponent);
@@ -53,9 +58,7 @@ public:
 
     void UpdateAnimation(UAnimationAsset* Asset);
 
-    FModularPartsSlotData* GetPartsSlot();
-
-    FPlayerMeshData SaveMeshData() const;
+    FPlayerMeshData* GetMeshData();
     
     FMeshWidgetUpdated WidgetUpdated;
 
@@ -71,23 +74,16 @@ private:
     void UpdateWidget(FPrimaryAssetType Type) const;
 
     USP_DefaultPartsAsset* GetDefaultParts() const;
-    
-    UPROPERTY()
-    TArray<USP_MergeComponent*> MergeComponents;
-    
-    UPROPERTY()
-    TArray<USkeletalMesh*> Meshes;
 
     UPROPERTY()
     USP_DefaultPartsAsset* DefaultPartAsset;
 
     UPROPERTY()
-    FModularPartsSlotData ModularPartsSlot;
+    TArray<USP_MergeComponent*> MergeComponents;
 
     UPROPERTY()
-    TMap<FName, float> MorphTargetData;
-
-    TMap<FPrimaryAssetType, FName> MeshItemData;
-
-    TMap<int32, FMaterialData> MaterialData; 
+    TArray<USkeletalMesh*> Meshes;
+    
+    UPROPERTY()
+    FPlayerMeshData MeshData;
 };

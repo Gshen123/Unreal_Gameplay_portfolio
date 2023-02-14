@@ -2,8 +2,19 @@
 
 
 #include "SP_MenuPlayerController.h"
-#include "Gameplay_Portfolio/UI/Lobby/SP_MenuHUD.h"
 
+ASP_MenuPlayerController::ASP_MenuPlayerController(const FObjectInitializer& ObjectInitializer)
+    :Super(ObjectInitializer)
+{
+    Type = EGameModeType::MainMenu;
+}
+
+void ASP_MenuPlayerController::SetupInputComponent()
+{
+    Super::SetupInputComponent();
+
+    InputComponent->BindAction("PauseAndUndo", IE_Pressed, this, &ThisClass::PopWidgetStack);
+}
 
 void ASP_MenuPlayerController::BeginPlay()
 {
@@ -13,15 +24,3 @@ void ASP_MenuPlayerController::BeginPlay()
     bShowMouseCursor = true;
 }
 
-void ASP_MenuPlayerController::SetupInputComponent()
-{
-    Super::SetupInputComponent();
-
-    InputComponent->BindAction("GamePause", IE_Pressed, this, &ThisClass::PopWidgetStack);
-}
-
-void ASP_MenuPlayerController::PopWidgetStack()
-{
-    const auto HUD = Cast<ASP_MenuHUD>(GetHUD());
-    HUD->PopWidgetStack();
-}

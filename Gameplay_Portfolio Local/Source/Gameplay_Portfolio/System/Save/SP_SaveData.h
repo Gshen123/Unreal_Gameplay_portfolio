@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Gameplay_Portfolio/Items/ModularCharacter/SP_ModularData.h"
 #include "UObject/Object.h"
 #include "SP_SaveData.generated.h"
 
@@ -48,7 +49,8 @@ public:
     UPROPERTY(BlueprintReadWrite)
     FTransform Transform;
 
-    FSP_ObjectRecord()
+    FSP_ObjectRecord():
+        OuterID(0), bActor(false)
     {
         Class = nullptr;
         Outer = nullptr;
@@ -62,7 +64,7 @@ struct FMaterialData
     GENERATED_BODY()
 public:
     UPROPERTY()
-    UMaterialInstance* MaterialInstance;
+    UMaterialInstance* MaterialInstance = nullptr;
 
     TMap<FName, FLinearColor> ParamData;
 };
@@ -73,7 +75,7 @@ struct FPlayerMeshData
     GENERATED_BODY()
 public:
     UPROPERTY()
-    TArray<USkeletalMesh*> Meshes;
+    FModularPartsSlotData ModularPartsSlot;
 
     UPROPERTY()
     TMap<FPrimaryAssetType, FName> MeshItemData;
@@ -82,7 +84,21 @@ public:
     TMap<FName, float> MorphTargetData;
 
     UPROPERTY()
-    TMap<int32, FMaterialData> MaterialData; 
+    TMap<int32, FMaterialData> MaterialData;
+
+    void Empty()
+    {
+        ModularPartsSlot.Empty();
+        MeshItemData.Empty();
+        MorphTargetData.Empty();
+        MaterialData.Empty();
+    }
+
+    bool IsEmpty() const
+    {
+        if(ModularPartsSlot.IsEmpty() && MeshItemData.IsEmpty() && MorphTargetData.IsEmpty() && MaterialData.IsEmpty()) return true;
+        return false;
+    }
 };
 
 USTRUCT()
@@ -97,22 +113,22 @@ public:
     FString PlayerID;
 
     UPROPERTY()
-    int32 Credits;
+    int32 Credits = 0;
 
     UPROPERTY()
     FTimespan PlayTime;
     
     /* 최장 생존 시간 */
     UPROPERTY()
-    float PersonalRecordTime;
+    float PersonalRecordTime = 0.f;
 
     /* 저장하는 동안 플레이어가 살아있는 경우 위치 */
     UPROPERTY()
-    FVector Location;
+    FVector Location = FVector::Zero();
 
     /* 저장하는 동안 플레이어가 살아있는 경우 방향 */ 
     UPROPERTY()
-    FRotator Rotation;
+    FRotator Rotation= FRotator::ZeroRotator;
 
     /* 우리는 항상 위치를 복원하고 싶지는 않으며, 월드의 특정 리스폰 지점에서 플레이어를 재개할 수 있습니다. */
     UPROPERTY()

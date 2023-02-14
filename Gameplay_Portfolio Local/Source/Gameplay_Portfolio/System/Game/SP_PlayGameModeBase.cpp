@@ -12,3 +12,8 @@ ASP_PlayGameModeBase::ASP_PlayGameModeBase()
     HUDClass = ASP_GameHUD::StaticClass();
     CurrentGameMode = EGameModeType::InGame;
 }
+
+void ASP_PlayGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+    Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+}

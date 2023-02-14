@@ -26,7 +26,7 @@ void USP_SaveSlotWidget::NativeConstruct()
 
     if(SelectButton) SelectButton->OnClicked.AddDynamic(this, &ThisClass::OnSlotClicked);
     if(DeleteSaveButton) DeleteSaveButton->OnClicked.AddDynamic(this, &ThisClass::DeleteSaveGame);
-    InitData(GetSaveGameSubsystem()->LoadSaveGame(SlotName, NowSaveMode));
+    InitData(GetSaveGameSubsystem()->LoadSaveGame(SlotName, NowSaveMode, false));
 }
 
 void USP_SaveSlotWidget::InitData(USP_SaveGame* Data) const
@@ -37,7 +37,9 @@ void USP_SaveSlotWidget::InitData(USP_SaveGame* Data) const
         DeleteSaveButton->SetVisibility(ESlateVisibility::Hidden);
         return;
     }
-    GameModeText->SetText(UEnum::GetDisplayValueAsText(NowSaveMode));
+    if(Data->PlayerSaveData.IsEmpty()) return;
+    
+    GameModeText->SetText(UEnum::GetDisplayValueAsText(Data->SaveModeType));
     SaveTimeText->SetText(FText::FromString(Data->DateTime.ToString()));
     SaveSlotText->SetText(FText::FromString(SlotName));
     PlayTimeText->SetText(FText::FromString(Data->GetPlayerData(GetOwningPlayerState())->GetPlayTime()));

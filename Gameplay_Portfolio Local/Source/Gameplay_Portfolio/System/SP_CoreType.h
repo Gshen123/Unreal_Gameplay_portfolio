@@ -31,10 +31,10 @@ struct FLevelData
     FName LevelDisplayName = NAME_None;
     
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
-    UTexture2D* LevelThumb;
+    UTexture2D* LevelThumb = nullptr;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
-    EGameModeType Type;
+    EGameModeType Type = EGameModeType::None;
 };
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelSelectedSignature, const FLevelData&);

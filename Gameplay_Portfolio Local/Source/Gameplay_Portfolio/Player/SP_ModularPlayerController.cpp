@@ -2,9 +2,20 @@
 
 
 #include "SP_ModularPlayerController.h"
-
 #include "SP_PlayerCharacter.h"
-#include "Kismet/GameplayStatics.h"
+
+ASP_ModularPlayerController::ASP_ModularPlayerController(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer)
+{
+    Type = EGameModeType::CharacterSetup;
+}
+
+void ASP_ModularPlayerController::SetupInputComponent()
+{
+    Super::SetupInputComponent();
+
+    InputComponent->BindAction("PauseAndUndo", IE_Pressed, this, &ThisClass::PopWidgetStack);
+}
 
 void ASP_ModularPlayerController::BeginPlay()
 {
@@ -12,19 +23,4 @@ void ASP_ModularPlayerController::BeginPlay()
     SetInputMode(FInputModeGameAndUI());
     bShowMouseCursor = true;
     Cast<ASP_PlayerCharacter>(GetCharacter())->ToggleCameraMode();
-}
-
-void ASP_ModularPlayerController::GotoOnMenu() const
-{
-    const auto GameInstance = GetSP_GameInstance();
-    if(!GameInstance) return;
-    
-    UGameplayStatics::OpenLevel(this, GameInstance->GetMenuLevelData().LevelName);
-}
-
-
-USP_GameInstance* ASP_ModularPlayerController::GetSP_GameInstance() const
-{
-    if(!GetWorld()) return nullptr;
-    return GetWorld()->GetGameInstance<USP_GameInstance>();
 }

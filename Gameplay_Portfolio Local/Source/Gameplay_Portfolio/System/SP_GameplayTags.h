@@ -21,6 +21,7 @@ public:
     FGameplayTag Input_MouseAndKeyboard_Look;
     FGameplayTag Input_MouseAndKeyboard_Jump;
     FGameplayTag Input_MouseAndKeyboard_Zoom;
+    FGameplayTag Input_MouseAndKeyboard_PauseAndUndo;
     
 protected:
 

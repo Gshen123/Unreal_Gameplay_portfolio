@@ -3,18 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "SP_GameModeBase.h"
 #include "SP_ModularGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GAMEPLAY_PORTFOLIO_API ASP_ModularGameMode : public AGameModeBase
+class GAMEPLAY_PORTFOLIO_API ASP_ModularGameMode : public ASP_GameModeBase
 {
     GENERATED_BODY()
 
     ASP_ModularGameMode();
 
-    virtual void StartPlay() override;
+    virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 };

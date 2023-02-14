@@ -16,6 +16,11 @@ void ASP_PlayerState::BeginPlay()
     Super::BeginPlay();
 }
 
+USP_LocalPlayerMeshManager* ASP_PlayerState::GetLocalPlayerMeshManager() const
+{
+    return GetPlayerController()->GetLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
+}
+
 
 int32 ASP_PlayerState::GetKillsNum() const
 {
@@ -43,7 +48,7 @@ void ASP_PlayerState::SavePlayerState(USP_SaveGame* SaveObject, EGameModeType Mo
         SaveData.PlayTime= UGameplayStatics::GetRealTimeSeconds(GetPlayerController()) * ETimespan::TicksPerSecond;
 
         if(Mode == EGameModeType::InGame || Mode == EGameModeType::CharacterSetup)
-            SaveData.MeshData = GetPlayerController()->GetLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->SaveMeshData();
+            SaveData.MeshData = *GetLocalPlayerMeshManager()->GetMeshData();
         
         if(Mode == EGameModeType::InGame)
         {
@@ -68,9 +73,16 @@ void ASP_PlayerState::LoadPlayerState(USP_SaveGame* SaveObject, EGameModeType Mo
             if(Mode == EGameModeType::InGame || Mode == EGameModeType::CharacterSetup)
             {
                 MeshData = FoundData->MeshData;
+                GetLocalPlayerMeshManager()->LoadMeshData(MeshData);
+
+                if(Mode == EGameModeType::InGame)
+                {
+                    
+                }
             }
             //플레이어 스테이트 정보 갱신
         }
+        
         else
         {
             UE_LOG(LogTemp, Warning, TEXT("Could not find SaveGame data for player id '%i'."), GetPlayerId());

@@ -2,7 +2,6 @@
 
 
 #include "SP_GameInstance.h"
-
 #include "SP_AssetManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsystem/SP_LocalPlayerMeshManager.h"
@@ -13,7 +12,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogGameInstance, All, All);
 void USP_GameInstance::OpenLevel(const UObject* WorldContextObject, EGameModeType Type)
 {
     const FLevelData* OpenLevelData = nullptr;
-    for (FLevelData& Data : LevelsData)
+    for (const FLevelData& Data : LevelsData)
     {
         if(Data.Type == Type)
         {
@@ -25,7 +24,7 @@ void USP_GameInstance::OpenLevel(const UObject* WorldContextObject, EGameModeTyp
     SetStartupLevelData(*OpenLevelData);
 
     // 수명주기가 유지되는 서브시스템의 일부 데이터를 초기화합니다.
-    for(auto LocalPlayer : GetLocalPlayers()) LocalPlayer->GetSubsystem<USP_LocalPlayerMeshManager>()->Deinitialize();
+    for(const auto LocalPlayer : GetLocalPlayers()) LocalPlayer->GetSubsystem<USP_LocalPlayerMeshManager>()->Deinitialize();
     GetSubsystem<USP_SaveGameSubsystem>()->Deinitialize();
     
     UGameplayStatics::OpenLevel(WorldContextObject, OpenLevelData->LevelName);

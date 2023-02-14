@@ -33,8 +33,8 @@ class ASP_PlayerCharacter : public ACharacter
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
     class USP_MergeComponent* MergeComponent;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
-    class USkeletalMeshComponent* ClothMesh;
+    //UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+    //class USkeletalMeshComponent* ClothMesh;
     
 public:
     ASP_PlayerCharacter();
@@ -44,11 +44,6 @@ public:
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-    USkeletalMeshComponent* GetClothMesh() const;
-
-    UFUNCTION()
-    void UpdateMesh(USkeletalMesh* NewMesh) const;
 
     void ToggleCameraMode();
     

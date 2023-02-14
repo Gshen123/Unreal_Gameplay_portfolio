@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SP_CoreType.h"
 #include "SP_SaveData.h"
 #include "GameFramework/SaveGame.h"
 #include "SP_SaveGame.generated.h"
@@ -63,6 +64,9 @@ public:
 
     UPROPERTY()
     FDateTime DateTime;
+
+    UPROPERTY()
+    EGameModeType SaveModeType;
 
 public:
 

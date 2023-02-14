@@ -52,7 +52,7 @@ public:
     UFUNCTION()
     void UpdateWidget(FPrimaryAssetType Type) const;
     
-    void LoadData(FPlayerMeshData Data);
+    void LoadData();
     
 protected:
 
@@ -167,7 +167,7 @@ private:
     void UpdateAnimTwo();
     
     UFUNCTION()
-    void OnGoToMenu();
+    void GoToLobby();
 
     UFUNCTION()
     void ShowOptionWidget();
@@ -195,6 +195,9 @@ private:
     
     UPROPERTY()
     TArray<USP_MorphSliderWidget*> MorphWidgets;
+
+    UPROPERTY()
+    TArray<USP_PresetColorPicker*> ColorPickerWidgets;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
     UAnimationAsset* IdleAnim;

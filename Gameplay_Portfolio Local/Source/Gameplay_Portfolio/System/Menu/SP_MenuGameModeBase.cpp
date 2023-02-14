@@ -10,3 +10,8 @@ ASP_MenuGameModeBase::ASP_MenuGameModeBase()
     PlayerControllerClass = ASP_MenuPlayerController::StaticClass();
     HUDClass = ASP_MenuHUD::StaticClass();
 }
+
+void ASP_MenuGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+    Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+}

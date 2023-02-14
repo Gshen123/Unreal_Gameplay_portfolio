@@ -14,11 +14,10 @@ class GAMEPLAY_PORTFOLIO_API ASP_ModularPlayerController : public ASP_BasePlayer
 {
     GENERATED_BODY()
 
+protected:
+    ASP_ModularPlayerController(const FObjectInitializer& ObjectInitializer);
+
+    virtual void SetupInputComponent() override;
+    
     virtual void BeginPlay() override;
-
-private:
-
-    void GotoOnMenu() const;
-
-    USP_GameInstance* GetSP_GameInstance() const;
 };

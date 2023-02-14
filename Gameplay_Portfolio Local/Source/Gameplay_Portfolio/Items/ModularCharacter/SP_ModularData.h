@@ -74,5 +74,18 @@ public:
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "전신 슈트", meta = (AllowedClasses = "/Script/Gameplay_Portfolio.SP_ItemModule_Suit"))
     TSoftObjectPtr<USP_ModularItemBase> Suit = nullptr;
-    
+
+    void Empty()
+    {
+        Head = nullptr; Body = nullptr; Arm = nullptr; Leg = nullptr; Suit = nullptr;
+        HeadShare.Empty(); BodyShare.Empty(); ArmShare.Empty(); LegShare.Empty();
+    }
+
+    bool IsEmpty() const
+    {
+        if(Head == nullptr && Body == nullptr && Arm == nullptr && Leg == nullptr && Suit == nullptr
+            && HeadShare.IsEmpty() && BodyShare.IsEmpty() && ArmShare.IsEmpty() && LegShare.IsEmpty())
+                return true;
+        return false;
+    }
 };

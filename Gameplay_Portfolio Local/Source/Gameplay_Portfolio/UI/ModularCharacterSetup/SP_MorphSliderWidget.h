@@ -30,6 +30,12 @@ public:
 
     UFUNCTION()
     void UpdateMaterial(float Value);
+
+    UFUNCTION()
+    void SetDefaultVlaue(float Value);
+
+    UFUNCTION()
+    void SetMorphTargetDefalutOrValue(float Value);
     
 protected:
     UPROPERTY(meta = (BindWidget))
@@ -54,11 +60,14 @@ private:
     void UpdateTexts() const;
 
     UFUNCTION()
-    float LerpMorphValue(float Value);
+    void ResetMorphTarget();
 
-    UFUNCTION()
-    void Reset();
-
+    UPROPERTY()
+    bool Loaded = false;
+    
+    UPROPERTY()
+    float DefaultValue = 0.f;
+    
     UPROPERTY()
     UMaterialInstanceDynamic* MaterialInstanceDynamic;
 };

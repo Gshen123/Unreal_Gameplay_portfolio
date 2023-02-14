@@ -6,8 +6,8 @@
 #include "SP_CoreType.h"
 #include "GameFramework/PlayerState.h"
 #include "Save/SP_SaveGame.h"
+#include "Subsystem/SP_LocalPlayerMeshManager.h"
 #include "SP_PlayerState.generated.h"
-
 
 /**
  * 
@@ -38,6 +38,9 @@ protected:
     
 private:
 
+    UFUNCTION()
+    USP_LocalPlayerMeshManager* GetLocalPlayerMeshManager() const;
+    
     int32 KillCount = 0;
 
     int32 CoinCount = 0;

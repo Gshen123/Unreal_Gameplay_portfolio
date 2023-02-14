@@ -8,6 +8,8 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogMorphSliderWidget, All, All);
 
+FORCEINLINE float LerpMorphValue(float Value) {return Value * 2 - 1;}
+
 void USP_MorphSliderWidget::NativeOnInitialized()
 {
     MaterialInstanceDynamic = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, Material);
@@ -39,7 +41,7 @@ void USP_MorphSliderWidget::NativeConstruct()
     Super::NativeConstruct();
     
     Slider->OnValueChanged.AddDynamic(this, &ThisClass::UpdateMaterial);
-    if(ResetButton) ResetButton->OnClicked.AddDynamic(this, &ThisClass::Reset);
+    if(ResetButton) ResetButton->OnClicked.AddDynamic(this, &ThisClass::ResetMorphTarget);
     UpdateTexts();
 }
 
@@ -58,18 +60,31 @@ void USP_MorphSliderWidget::SetSliderVlaue(float Value)
 void USP_MorphSliderWidget::UpdateMaterial(float Value)
 {
     SetSliderVlaue(Value);
+    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->SetMorphTarget(MorphTargetName, LerpMorphValue(Value));
 
-    const auto LPM = GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
-    if(LPM == nullptr) return;
-
-    LPM->SetMorphTarget(MorphTargetName, LerpMorphValue(Value));
+    if(Value != DefaultValue) ResetButton->SetVisibility(ESlateVisibility::Visible);
+    else ResetButton->SetVisibility(ESlateVisibility::Hidden);
 }
 
-float USP_MorphSliderWidget::LerpMorphValue(float Value)
+void USP_MorphSliderWidget::SetDefaultVlaue(float Value)
 {
-    return Value*2-1;
+    Loaded = true;
+    DefaultValue = Value;
+    UpdateMaterial(Value);
 }
 
-void USP_MorphSliderWidget::Reset()
+void USP_MorphSliderWidget::ResetMorphTarget()
 {
+    UpdateMaterial(DefaultValue);
+}
+
+void USP_MorphSliderWidget::SetMorphTargetDefalutOrValue(float Value)
+{
+    if(Loaded)
+    {
+        ResetMorphTarget();
+        return;
+    }
+
+    SetSliderVlaue(Value);
 }

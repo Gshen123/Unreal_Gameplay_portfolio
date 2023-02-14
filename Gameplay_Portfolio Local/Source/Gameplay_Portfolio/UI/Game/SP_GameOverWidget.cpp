@@ -14,23 +14,11 @@ void USP_GameOverWidget::NativeConstruct()
     Super::NativeConstruct();
 
     if(GetWorld())
-    {
-        const auto GameMode = Cast<ASP_PlayGameModeBase>(GetWorld()->GetAuthGameMode());
-        if(GameMode)
-        {
+        if(const auto GameMode = Cast<ASP_PlayGameModeBase>(GetWorld()->GetAuthGameMode()))
             GameMode->OnGameModeStateChanged.AddUObject(this, &ThisClass::OnGameStateTypeChanged);
-        }
-    }
 
-    if(ContinueButton)
-    {
-        ContinueButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::OnResetLevel);
-    }
-
-    if(ExitGameButton)
-    {
-        ExitGameButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::ShowExitModal);
-    }
+    if(ContinueButton) ContinueButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::OnResetLevel);
+    if(ExitGameButton) ExitGameButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::ShowExitModal);
 }
 
 void USP_GameOverWidget::OnGameStateTypeChanged(EGameModeType State)

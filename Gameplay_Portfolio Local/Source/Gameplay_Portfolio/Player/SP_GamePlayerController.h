@@ -16,11 +16,13 @@ class GAMEPLAY_PORTFOLIO_API ASP_GamePlayerController : public ASP_BasePlayerCon
     
 protected:
 
+    ASP_GamePlayerController(const FObjectInitializer& ObjectInitializer);
+    
     virtual void SetupInputComponent() override;
 	
     virtual void BeginPlay() override;
 
 private:
     void OnPauseGame();
-    void OnGameModeTypeChanged(EGameModeType State);
+    void OnGameModeTypeChanged(EGameModeType ChangeType);
 };

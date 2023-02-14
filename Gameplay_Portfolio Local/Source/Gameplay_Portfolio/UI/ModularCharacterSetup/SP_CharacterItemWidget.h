@@ -28,7 +28,7 @@ public:
     TShaderRef<int32> test;
 
     UFUNCTION()
-    void SetNoneItem();
+    void ResetItem();
     
     void Init(bool Loaded = false, FName ItemName = NAME_None);
     
@@ -66,16 +66,19 @@ private:
 
     UFUNCTION()
     void UpdateMesh() const;
-
-    UFUNCTION()
-    void Reset();
     
     UPROPERTY()
     USP_ModularItemBase* CurrentItem = nullptr;
 
     UPROPERTY()
-    int NoneIndex = 0;
+    int DefaultIndex = 0;
     
     UPROPERTY()
     int index= 0;
+
+    UPROPERTY()
+    bool LoadedSave = false;
+
+    UPROPERTY()
+    int LoadIndex = 0; 
 };

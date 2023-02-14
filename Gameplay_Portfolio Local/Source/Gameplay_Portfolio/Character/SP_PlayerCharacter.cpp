@@ -10,7 +10,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "MathUtil.h"
-#include "SP_BasePlayerController.h"
 #include "SP_GameplayTags.h"
 #include "SP_MergeComponent.h"
 #include "Gameplay_Portfolio/EnhancedInput/SP_InputComponent.h"
@@ -26,7 +25,7 @@ ASP_PlayerCharacter::ASP_PlayerCharacter()
 {
     // Set size for collision capsule
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-		
+
     // Don't rotate when the controller rotates. Let that just affect the camera.
     bUseControllerRotationPitch = false;
     bUseControllerRotationYaw = false;
@@ -57,8 +56,7 @@ ASP_PlayerCharacter::ASP_PlayerCharacter()
       // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
       // are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
     MergeComponent = CreateDefaultSubobject<USP_MergeComponent>(TEXT("MeshComponent"));
-    ClothMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ClothMesh"));
-    ClothMesh->SetupAttachment(GetMesh());
+    MergeComponent->SetupAttachment(GetMesh());
 }
 
 void ASP_PlayerCharacter::BeginPlay()
@@ -78,7 +76,7 @@ void ASP_PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
     const APlayerController* PlayerController = Cast<APlayerController>(GetController());
     check(PlayerController);
     
-    //Add Input Mapping Context
+    // //Add Input Mapping Context
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
     {
         Subsystem->ClearAllMappings();
@@ -93,16 +91,6 @@ void ASP_PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
     EnhancedInputComponent->BindActionNativeAction(InputConfig, GameplayTags.Input_MouseAndKeyboard_Look, ETriggerEvent::Triggered, this, &ASP_PlayerCharacter::Input_Look);
     EnhancedInputComponent->BindActionNativeAction(InputConfig, GameplayTags.Input_MouseAndKeyboard_Jump, ETriggerEvent::Triggered, this, &ASP_PlayerCharacter::Input_Jump);
     EnhancedInputComponent->BindActionNativeAction(InputConfig, GameplayTags.Input_MouseAndKeyboard_Zoom, ETriggerEvent::Triggered, this, &ASP_PlayerCharacter::Input_Zoom);
-}
-
-USkeletalMeshComponent* ASP_PlayerCharacter::GetClothMesh() const
-{
-    return  ClothMesh;
-}
-
-void ASP_PlayerCharacter::UpdateMesh(USkeletalMesh* NewMesh) const
-{
-    MergeComponent->UpdateMesh(NewMesh);
 }
 
 void ASP_PlayerCharacter::Input_Move(const FInputActionValue& Value)

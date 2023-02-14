@@ -36,7 +36,7 @@ public:
     void DeleteSaveGame(FString InSlotName);
 
     /* Load from disk, optional slot name */
-    USP_SaveGame* LoadSaveGame(FString InSlotName = "", EGameModeType Type = EGameModeType::None);
+    USP_SaveGame* LoadSaveGame(FString InSlotName = "", EGameModeType Type = EGameModeType::None, bool OpenLevel = true);
 
     USP_SaveGame* GetCurrentSaveGame() const;
 
