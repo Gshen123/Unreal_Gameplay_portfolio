@@ -7,7 +7,7 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogHUDBase, All, All);
 
-void ASP_HUDBase::ShowOptionMenu()
+void ASP_HUDBase::ShowOptionMenu(bool HideOther)
 {
     if(!OptionMenu)
     {
@@ -15,40 +15,31 @@ void ASP_HUDBase::ShowOptionMenu()
         OptionMenu = CreateWidget<UUserWidget>( PC, OptionMenuClass );
         OptionMenu->AddToViewport();
 
-        auto OptionWidget = Cast<USP_MainOptionWidget>(OptionMenu);
+        const auto OptionWidget = Cast<USP_MainOptionWidget>(OptionMenu);
         OptionWidget->GraphicTabBtn->SetFocus();
         OptionWidget->ExitBtn->OnClicked.AddUniqueDynamic(this, &ASP_HUDBase::HideOptionMenu);
     }
     
-    PushWidgetStack(OptionMenu);
+    PushWidgetStack(OptionMenu, HideOther);
 }
 
 void ASP_HUDBase::HideOptionMenu()
 {
-    if (OptionMenu)
-    {
-        OptionMenu->RemoveFromParent();
-        RemoveWidgetInStack(OptionMenu);
-        OptionMenu = nullptr;
-    }
+    if (OptionMenu) RemoveWidgetInStack(OptionMenu);
 }
 
 void ASP_HUDBase::AllHideWidget()
 {
     if(WidgetStack.Num() > 0)
         for(const auto Widget : WidgetStack)
-        {
             Widget->SetVisibility(ESlateVisibility::Hidden);
-        }
-    CurrentVisibleWidget = nullptr;
 }
 
-void ASP_HUDBase::PushWidgetStack(UUserWidget* Widget)
+void ASP_HUDBase::PushWidgetStack(UUserWidget* Widget, bool HideOther)
 {
-    AllHideWidget();
+    if(HideOther) AllHideWidget();
     
     if(!WidgetStack.Contains(Widget)) WidgetStack.Add(Widget);
-    CurrentVisibleWidget = Widget;
     
     Widget->SetVisibility(ESlateVisibility::Visible);
     UE_LOG(LogHUDBase, Warning, TEXT("Widget Name : %s "), *Widget->GetName());

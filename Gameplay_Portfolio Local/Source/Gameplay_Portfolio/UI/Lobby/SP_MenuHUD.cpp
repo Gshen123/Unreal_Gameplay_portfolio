@@ -12,13 +12,17 @@ void ASP_MenuHUD::BeginPlay()
 
     if(MenuWidgetClass)
     {
-        const auto MenuWidget = CreateWidget<UUserWidget>(GetWorld(), MenuWidgetClass);
-        if(MenuWidget)
+        if(const auto MenuWidget = CreateWidget<UUserWidget>(GetWorld(), MenuWidgetClass))
         {
             MenuWidget->AddToViewport();
             const auto LobbyMenu = Cast<USP_MainMenuWidget>(MenuWidget);
-            LobbyMenu->MainMenuOptionDelegate.AddUniqueDynamic(this, &ASP_MenuHUD::ShowOptionMenu);
+            LobbyMenu->OptionButton->MainButton->OnClicked.AddDynamic(this, &ASP_MenuHUD::OpenOptionMenu);
             //GameWidgets.Add(EGameModeType::MainMenu, MainMenu);
         }
     }
+}
+
+void ASP_MenuHUD::OpenOptionMenu()
+{
+    ShowOptionMenu(true);
 }

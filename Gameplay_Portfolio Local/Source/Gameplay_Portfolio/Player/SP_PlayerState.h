@@ -30,7 +30,7 @@ public:
     void LoadPlayerState(USP_SaveGame* SaveObject, EGameModeType Mode);
 
     UFUNCTION()
-    FPlayerMeshData GetMeshData();
+    void UpdateMergeComponent(USP_MergeComponent* Component, EMergePawnType PawnType) const;
 
 protected:
     
@@ -48,5 +48,8 @@ private:
     int32 LevelCount = 0;
 
     UPROPERTY()
-    FPlayerMeshData MeshData;
+    FSaveMeshData PlayerMeshData;
+
+    UPROPERTY()
+    TMap<EMergePawnType, FSaveMeshData> NPCMeshData;
 };

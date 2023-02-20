@@ -12,8 +12,6 @@
 #include "System/SP_SaveSlotBox.h"
 #include "SP_MainMenuWidget.generated.h"
 
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMainMenuOption);
 /**
  * 
  */
@@ -43,10 +41,7 @@ public:
     
     UFUNCTION()
     void LoadGame();
-	
-    UFUNCTION()
-    void ShowOptionWidget();
-
+    
     UFUNCTION()
     void ShowExitModal();
 
@@ -55,9 +50,6 @@ public:
 
     UFUNCTION()
     void LaunchURL();
-
-    UPROPERTY()
-    FMainMenuOption MainMenuOptionDelegate;
     
 protected:
     UPROPERTY(EditDefaultsOnly)

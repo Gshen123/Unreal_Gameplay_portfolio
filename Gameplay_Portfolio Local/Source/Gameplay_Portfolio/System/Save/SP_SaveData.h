@@ -66,11 +66,12 @@ public:
     UPROPERTY()
     UMaterialInstance* MaterialInstance = nullptr;
 
+    UPROPERTY()
     TMap<FName, FLinearColor> ParamData;
 };
 
 USTRUCT()
-struct FPlayerMeshData
+struct FSaveMeshData
 {
     GENERATED_BODY()
 public:
@@ -78,7 +79,7 @@ public:
     FModularPartsSlotData ModularPartsSlot;
 
     UPROPERTY()
-    TMap<FPrimaryAssetType, FName> MeshItemData;
+    TMap<FPrimaryAssetType, FString> MeshItemData;
 
     UPROPERTY()
     TMap<FName, float> MorphTargetData;
@@ -98,6 +99,14 @@ public:
     {
         if(ModularPartsSlot.IsEmpty() && MeshItemData.IsEmpty() && MorphTargetData.IsEmpty() && MaterialData.IsEmpty()) return true;
         return false;
+    }
+
+    void AddMaterialData(int32 Index, FName ParamName, FLinearColor Value, UMaterialInstance* MaterialInstance)
+    {
+        FMaterialData NewData;
+        NewData.MaterialInstance = MaterialInstance;
+        NewData.ParamData.Add(ParamName, Value);
+        MaterialData.Add(Index, NewData);
     }
 };
 
@@ -135,7 +144,7 @@ public:
     bool bResumeAtTransform = false;
 
     UPROPERTY()
-    FPlayerMeshData MeshData;
+    FSaveMeshData PlayerMeshData;
 
     FString GetPlayTime() const
     {

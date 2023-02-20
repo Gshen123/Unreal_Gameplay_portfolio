@@ -18,59 +18,36 @@ class GAMEPLAY_PORTFOLIO_API USP_LocalPlayerMeshManager : public ULocalPlayerSub
     GENERATED_BODY()
 
 public:
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
     virtual void Deinitialize() override;
-
-    UFUNCTION()
-    void LoadMeshData(FPlayerMeshData LoadData);
+    void MeshDataInit(FSaveMeshData LoadPlayerMeshData, TMap<EMergePawnType, FSaveMeshData> LoadNPCMeshData);
+    bool IsInit() const;
+    FSaveMeshData GetMeshData(EMergePawnType PawnType);
     
-    UFUNCTION(BlueprintCallable)
-    void AddMergeComponent(USP_MergeComponent* Component);
+    void AddMergeComponent(USP_MergeComponent* Component, EMergePawnType PawnType);
+    TArray<USP_MergeComponent*> FindMergeComponent(EMergePawnType Key) const;
     
-    UFUNCTION(BlueprintCallable)
-    TArray<USP_MergeComponent*> GetMergeComponents();
+    FSaveMeshData* GetPlayerMeshData();
+    void WearItem(const USP_ModularItemBase* Item, EMergePawnType PawnType, FName DefaultItemName);
+    void ReplaceItemInSlot(const USP_ModularItemBase* Item, EMergePawnType PawnType, FName DefaultItemName);
+    void FindAndAddMeshItemData(FPrimaryAssetType Type, FString Name, EMergePawnType PawnType);
 
-    UFUNCTION(BlueprintCallable)
-    void ReplaceItemInSlot(USP_ModularItemBase* Item);
+    void AllUpdateMaterial(EMergePawnType PawnType);
+    void UpdateMaterial(const USP_MergeComponent* MergeComponent);
+    void FindAndAddMaterialData(int32 Index, FName ParamName, FLinearColor Value, UMaterialInstance* MaterialInstance, EMergePawnType PawnType);
+
+    void LoadMorphTarget(EMergePawnType PawnType, bool Reset = false);
+    void UpdateMorphTarget(const USP_MergeComponent* Component, EMergePawnType PawnType, bool Reset = false);
+    void FindAndAddMorphTarget(FString MorphTargetName, float Value, EMergePawnType PawnType);
     
-    UFUNCTION(BlueprintCallable)
-    void UpdateMesh(USP_MergeComponent* MergeComponent);
-
-    UFUNCTION()
-    void AllUpdateMesh();
-        
-    UFUNCTION()
-    void AllUpdateMaterial();
-    
-    UFUNCTION()
-    void UpdateMaterial(USP_MergeComponent* MergeComponent);
-    
-    UFUNCTION()
-    void FindAndAddMeshItemData(FPrimaryAssetType Type, FName Name);
-
-    UFUNCTION()
-    void FindAndAddMaterialData(int32 Index, FName ParamName, FLinearColor Value, UMaterialInstance* MaterialInstance);
-    
-    void SetMorphTarget(FString MorphTargetName, float Value);
-
-    void AllUpdateMorphTarget();
-
-    void ResetMorphTargetData();
-
-    void UpdateAnimation(UAnimationAsset* Asset);
-
-    FPlayerMeshData* GetMeshData();
+    void UpdateAnimation(UAnimationAsset* Asset, EMergePawnType PawnType) const;
     
     FMeshWidgetUpdated WidgetUpdated;
 
 protected:
-
-    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-
-    UFUNCTION()
-    void WearItem(USP_ModularItemBase* Item);
+    void UpdateMesh(USP_MergeComponent* MergeComponent);
     
 private:
-    UFUNCTION()
     void UpdateWidget(FPrimaryAssetType Type) const;
 
     USP_DefaultPartsAsset* GetDefaultParts() const;
@@ -78,12 +55,18 @@ private:
     UPROPERTY()
     USP_DefaultPartsAsset* DefaultPartAsset;
 
-    UPROPERTY()
-    TArray<USP_MergeComponent*> MergeComponents;
+    TMultiMap<EMergePawnType, USP_MergeComponent*> MergeComponents;
 
     UPROPERTY()
     TArray<USkeletalMesh*> Meshes;
     
     UPROPERTY()
-    FPlayerMeshData MeshData;
+    FSaveMeshData PlayerMeshData;
+    
+    UPROPERTY()
+    TMap<EMergePawnType, FSaveMeshData> NPCMeshData;
+
+    UPROPERTY()
+    bool bIsInit = false;
 };
+

@@ -5,7 +5,6 @@
 #include "SP_GameInstance.h"
 #include "Game/SP_PlayGameModeBase.h"
 #include "GameFramework/GameModeBase.h"
-#include "Gameplay_Portfolio/UI/SP_TextButton.h"
 #include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogPauseWidget, All, All);
@@ -14,30 +13,21 @@ void USP_PauseWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    if(ClearPauseButton) { ClearPauseButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::OnClearPause);}
-    if(MainMenuButton) { MainMenuButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::OnGoToMenu);}
-    if(SettingsButton) { SettingsButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::ShowOptionWidget);}
-    if(ExitGameButton) { ExitGameButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::ExitGame);}
+    if(ClearPauseButton) { ClearPauseButton->OnClicked.AddDynamic(this, &ThisClass::OnClearPause);}
+    if(MainMenuButton) { MainMenuButton->OnClicked.AddDynamic(this, &ThisClass::OnGoToMenu);}
+    if(ExitGameButton) { ExitGameButton->OnClicked.AddDynamic(this, &ThisClass::ExitGame);}
 
     if(GetWorld())
-    {
         if(const auto GameMode = Cast<ASP_PlayGameModeBase>(GetWorld()->GetAuthGameMode()))
-        {
-            GameMode->OnGameModeStateChanged.AddUObject(this, &ThisClass::SetMainMenuButtonVisble);
-        }
-    }
+            GameMode->OnGameModeStateChanged.AddUObject(this, &ThisClass::SetVisblilityMainMenu);
 }
 
-void USP_PauseWidget::SetMainMenuButtonVisble(EGameModeType Type) const
+void USP_PauseWidget::SetVisblilityMainMenu(EGameModeType Type) const
 {
     if(Type == EGameModeType::MainMenu)
-    {
         MainMenuButton->SetVisibility(ESlateVisibility::Hidden);
-    }
     else if(!(Type == EGameModeType::None))
-    {
         MainMenuButton->SetVisibility(ESlateVisibility::Visible);
-    }
 }
 
 void USP_PauseWidget::OnClearPause()
@@ -58,11 +48,6 @@ void USP_PauseWidget::OnGoToMenu()
 void USP_PauseWidget::ExitGame()
 {
     UKismetSystemLibrary::QuitGame(this, GetOwningPlayer(), EQuitPreference::Quit, true);
-}
-
-void USP_PauseWidget::ShowOptionWidget()
-{
-    PauseWidgetOptionDelegate.Broadcast();
 }
 
 USP_GameInstance* USP_PauseWidget::GetSP_GameInstance() const

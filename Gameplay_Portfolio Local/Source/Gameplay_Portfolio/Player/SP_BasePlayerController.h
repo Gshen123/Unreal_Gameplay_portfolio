@@ -26,4 +26,7 @@ protected:
   
     UPROPERTY()
     EGameModeType Type = EGameModeType::None;
+
+    UPROPERTY()
+    UUserWidget* PopWidget = nullptr;
 };

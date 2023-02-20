@@ -28,11 +28,8 @@ void USP_CharacterItemWidget::Init(bool Loaded, FName ItemName)
     {
         FAssetData AssetDataToParse;
         AssetManager.GetPrimaryAssetData(ID, AssetDataToParse);
-        auto NameFilter = AssetDataToParse.AssetName.ToString();
-        if(NameFilter != "Default")
-        {
+        if(auto NameFilter = AssetDataToParse.AssetName.ToString(); NameFilter != "Default")
             if(const USP_ModularItemBase* Asset = CastChecked<USP_ModularItemBase>(AssetDataToParse.GetAsset())) Assets.Add(Asset);
-        }
     }
 
     if(Assets.Num() < 1)
@@ -46,6 +43,7 @@ void USP_CharacterItemWidget::Init(bool Loaded, FName ItemName)
         if(!Assets[i].Get()) AssetManager.GetAsset(Assets[i]);
         if(Assets[i].Get()->Data.DisplayName.EqualTo(FText::FromString(TEXT("None"))) && !Loaded)
         {
+            DefaultItemName = TEXT("None");
             DefaultIndex = i;
             index = DefaultIndex;
             UpdateItem();
@@ -53,7 +51,9 @@ void USP_CharacterItemWidget::Init(bool Loaded, FName ItemName)
         }
         if(Assets[i].Get()->Data.DisplayName.EqualTo(FText::FromName(ItemName)))
         {
-            index = i;
+            DefaultItemName = ItemName;
+            DefaultIndex = i;
+            index = DefaultIndex;
             UpdateItem();
             break;
         }
@@ -64,11 +64,11 @@ void USP_CharacterItemWidget::Init(bool Loaded, FName ItemName)
 }
 
 
-void USP_CharacterItemWidget::UpdateTexts() const
+void USP_CharacterItemWidget::UpdateText() const
 {
     if(CurrentItem)
     {
-        TextBlock->SetText( CurrentItem->GetDisplayName());
+        TextBlock->SetText(CurrentItem->GetDisplayName());
         TypeTextBlock->SetText(FText::FromString(AssetType.ToString()));
     }
 }
@@ -89,21 +89,16 @@ void USP_CharacterItemWidget::OnPrevItem()
     UpdateItem();
 }
 
-void USP_CharacterItemWidget::UpdateItem(bool NoUpdate)
+void USP_CharacterItemWidget::UpdateItem()
 {
     if(index != DefaultIndex) ResetButton->SetVisibility(ESlateVisibility::Visible);
     else ResetButton->SetVisibility(ESlateVisibility::Hidden);
-
+    
     CurrentItem = USP_AssetManager::GetAsset(Assets[index]);
-    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->FindAndAddMeshItemData(AssetType, FName(*CurrentItem->Data.DisplayName.ToString()));
-    UpdateTexts();
-    UpdateMesh();
-}
-
-void USP_CharacterItemWidget::UpdateMesh() const
-{
-    const auto LPM = GetOwningPlayer()->GetLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
-    LPM->ReplaceItemInSlot(CurrentItem);
+    UpdateText();
+    const auto MeshManager =GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
+    MeshManager->FindAndAddMeshItemData(AssetType, CurrentItem->Data.DisplayName.ToString(), MakePawnType);
+    MeshManager->ReplaceItemInSlot(CurrentItem, MakePawnType, DefaultItemName);
 }
 
 void USP_CharacterItemWidget::ResetItem()

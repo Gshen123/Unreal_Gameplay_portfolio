@@ -46,9 +46,13 @@ class GAMEPLAY_PORTFOLIO_API USP_SaveGame : public USaveGame
     GENERATED_BODY()
 
 public:
-
+    // 로컬 플레이어별로 각종 정보를 저장합니다.
     UPROPERTY()
     TArray<FPlayerSaveData> PlayerSaveData;
+
+    // 시스템에 의해 제어되는 메시 정보를 저장합니다.
+    UPROPERTY()
+    TMap<EMergePawnType, FSaveMeshData> NPCMeshData;
     
     // 모든 오브젝트들의 정보를 보관하는 배열
     UPROPERTY()
@@ -62,11 +66,14 @@ public:
     UPROPERTY()
     TArray<UObject*> PersistentOuters;
 
+    // 저장 시점을 저장합니다.
     UPROPERTY()
     FDateTime DateTime;
 
+    // 현재 레벨 또는 게임모드를 저장합니다.
     UPROPERTY()
     EGameModeType SaveModeType;
+
 
 public:
 

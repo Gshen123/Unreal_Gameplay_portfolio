@@ -29,7 +29,7 @@ void USP_SaveGameSubsystem::Deinitialize()
 void USP_SaveGameSubsystem::HandleStartingNewPlayer(const AController* NewPlayer, EGameModeType Mode) const
 {
     ASP_PlayerState* PS = NewPlayer->GetPlayerState<ASP_PlayerState>();
-    if (ensure(PS)) PS->LoadPlayerState(CurrentSaveGame, Mode);
+    if (PS && CurrentSaveGame) PS->LoadPlayerState(CurrentSaveGame, Mode);
 }
 
 bool USP_SaveGameSubsystem::OverrideSpawnTransform(AController* NewPlayer)
@@ -81,8 +81,8 @@ void USP_SaveGameSubsystem::WriteSaveGame(FString InSlotName, EGameModeType Type
     CurrentSaveGame->SaveModeType = Type;
     
     // UTC 표준과 한국 시간과의 오차를 처리합니다.
-    FDateTime UTCTime = FDateTime::UtcNow();
-    CurrentSaveGame->DateTime = FDateTime(UTCTime.Validate() + FTimespan(0,0,0, UTC_HOUR_KOREA));
+    const FDateTime UTCTime = FDateTime::Now();
+    CurrentSaveGame->DateTime = FDateTime(UTCTime);
     
     // 멀티 플레이어 정보를 저장합니다.
     AGameStateBase* GS = GetWorld()->GetGameState();
@@ -125,7 +125,7 @@ void USP_SaveGameSubsystem::DeleteSaveGame(FString InSlotName)
     CurrentSaveGame = nullptr;
 }
 
-USP_SaveGame* USP_SaveGameSubsystem::LoadSaveGame(FString InSlotName, EGameModeType Type, bool OpenLevel)
+USP_SaveGame* USP_SaveGameSubsystem::LoadSaveGame(FString InSlotName, bool OpenLevel, int LocalPlayerIndex)
 {
     //지정된 문자열이 있다면 슬롯명을 변경하고 아닌 경우, 기본 슬롯명을 유지합니다.
     SetSlotName(InSlotName);
@@ -142,8 +142,9 @@ USP_SaveGame* USP_SaveGameSubsystem::LoadSaveGame(FString InSlotName, EGameModeT
 
         UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame Data."));
 
+        if(OpenLevel && CurrentSaveGame) Cast<USP_GameInstance>(GetGameInstance())->OpenLevel(GetWorld(), CurrentSaveGame->SaveModeType, LocalPlayerIndex);
         // 게임모드에 따라 데이터를 불러옵니다.
-        if(Type == EGameModeType::InGame)
+        if(CurrentSaveGame->SaveModeType == EGameModeType::InGame)
         {
             CurrentSaveGame->UObjectsPreloader(GetWorld()->GetGameState());
             CurrentSaveGame->UObjectDataLoader();
@@ -152,8 +153,7 @@ USP_SaveGame* USP_SaveGameSubsystem::LoadSaveGame(FString InSlotName, EGameModeT
         OnLoadGameSignature.Broadcast();
     }
     else CurrentSaveGame = nullptr;
-
-    if(OpenLevel && CurrentSaveGame) Cast<USP_GameInstance>(GetGameInstance())->OpenLevel(GetWorld(), CurrentSaveGame->SaveModeType);
+    
     return CurrentSaveGame;
 }
 

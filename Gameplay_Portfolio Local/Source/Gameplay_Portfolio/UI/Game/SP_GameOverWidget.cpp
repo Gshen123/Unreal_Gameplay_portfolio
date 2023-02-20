@@ -21,9 +21,9 @@ void USP_GameOverWidget::NativeConstruct()
     if(ExitGameButton) ExitGameButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::ShowExitModal);
 }
 
-void USP_GameOverWidget::OnGameStateTypeChanged(EGameModeType State)
+void USP_GameOverWidget::OnGameStateTypeChanged(EGameModeType ChangeType)
 {
-    if(State == EGameModeType::GameOver)
+    if(ChangeType == EGameModeType::GameOver)
     {
         UpdatePlayerStat();
     }

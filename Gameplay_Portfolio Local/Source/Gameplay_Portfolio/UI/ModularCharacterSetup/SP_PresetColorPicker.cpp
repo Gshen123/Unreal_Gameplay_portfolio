@@ -28,8 +28,8 @@ void USP_PresetColorPicker::NativeConstruct()
 void USP_PresetColorPicker::UpdateMaterial(FLinearColor Color) const
 {
     const auto Subsystem = GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
-    Subsystem->FindAndAddMaterialData(index, ParamName, Color, MaterialInstance);
-    Subsystem->AllUpdateMaterial();
+    Subsystem->FindAndAddMaterialData(index, ParamName, Color, MaterialInstance, MakePawnType);
+    Subsystem->AllUpdateMaterial(MakePawnType);
 
     if(Color != DefaultColor) ResetButton->SetVisibility(ESlateVisibility::Visible);
     else ResetButton->SetVisibility(ESlateVisibility::Hidden);

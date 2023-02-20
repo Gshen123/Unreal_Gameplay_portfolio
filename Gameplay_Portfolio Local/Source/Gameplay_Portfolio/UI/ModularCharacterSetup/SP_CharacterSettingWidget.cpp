@@ -4,7 +4,6 @@
 #include "SP_CharacterSettingWidget.h"
 #include "SP_AssetManager.h"
 #include "SP_ModularHUD.h"
-#include "SP_PlayerState.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Subsystem/SP_LocalPlayerMeshManager.h"
@@ -16,9 +15,10 @@ constexpr FLinearColor ANIM_DEACTIVE_NORMAL_COLOR = FLinearColor(0.162396,0.3736
 constexpr FLinearColor ANIM_DEACTIVE_HOVERED_COLOR = FLinearColor(0.245798,0.410574,0.598958,0.800000);
 constexpr FLinearColor ANIM_DEACTIVE_PRESSED_COLOR = FLinearColor(0.366765,0.480153,0.598958,0.800000);
 
-void USP_CharacterSettingWidget::NativeOnInitialized()
+
+void USP_CharacterSettingWidget::NativeConstruct()
 {
-    Super::NativeOnInitialized();
+    Super::NativeConstruct();
 
     // 플레이어 스테이트의 저장된 정보를 불러옵니다.
     LoadData();
@@ -50,7 +50,8 @@ void USP_CharacterSettingWidget::NativeOnInitialized()
         check(ItemWidget);
         ItemWidget->SetPadding(FMargin(0,0,0,10));
         ItemWidget->AssetType = Types[i];
-        if(LoadedData.MeshItemData.IsEmpty()) ItemWidget->Init();
+        ItemWidget->MakePawnType = MakePawnType;
+        if(LoadedData.MeshItemData.IsEmpty()) ItemWidget->Init(false);
 
         if(Types[i] == USP_AssetManager::Module_SuitType)
         {
@@ -58,7 +59,7 @@ void USP_CharacterSettingWidget::NativeOnInitialized()
             SuitItemWidget = ItemWidget;
             if(const auto Name = LoadedData.MeshItemData.Find(USP_AssetManager::Module_SuitType))
             {
-                ItemWidget->Init(true, *Name);
+                ItemWidget->Init(true, FName(*Name));
             }
         }
         else
@@ -70,7 +71,7 @@ void USP_CharacterSettingWidget::NativeOnInitialized()
                 BodyItemWidget = ItemWidget;
                 if(const auto Name = LoadedData.MeshItemData.Find(USP_AssetManager::Module_BodyType))
                 {
-                    ItemWidget->Init(true, *Name);
+                    ItemWidget->Init(true, FName(*Name));
                 }
                 continue;
             }
@@ -79,14 +80,17 @@ void USP_CharacterSettingWidget::NativeOnInitialized()
                 HeadItemWidget = ItemWidget;
                 if(const auto Name = LoadedData.MeshItemData.Find(USP_AssetManager::Module_HeadType))
                 {
-                    ItemWidget->Init(true, *Name);
+                    ItemWidget->Init(true, FName(*Name));
                 }
                 continue;
             }
             if(Types[i] == USP_AssetManager::Module_FeetAndLegsType)
             {
                 LegItemWidget = ItemWidget;
-                if(const auto Name = LoadedData.MeshItemData.Find(USP_AssetManager::Module_FeetAndLegsType)) ItemWidget->Init(true, *Name);
+                if(const auto Name = LoadedData.MeshItemData.Find(USP_AssetManager::Module_FeetAndLegsType))
+                {
+                    ItemWidget->Init(true, FName(*Name));
+                }
                 continue;
             }
             if(Types[i] == USP_AssetManager::Module_HandAndArmType)
@@ -94,7 +98,7 @@ void USP_CharacterSettingWidget::NativeOnInitialized()
                 ArmItemWidget = ItemWidget;
                 if(const auto Name = LoadedData.MeshItemData.Find(USP_AssetManager::Module_HandAndArmType))
                 {
-                    ItemWidget->Init(true, *Name);
+                    ItemWidget->Init(true, FName(*Name));
                 }
             }
         }
@@ -124,18 +128,12 @@ void USP_CharacterSettingWidget::NativeOnInitialized()
     MorphMouseContainer->AddChild(CreateMorphWidget("Wide", TEXT("입 넓이")));
     MorphMouseContainer->AddChild(CreateMorphWidget("Mouth_Frown", TEXT("입 꼬리")));
     MorphMouseContainer->AddChild(CreateMorphWidget("Mouth_Up", TEXT("입 높이")));
-}
-
-
-void USP_CharacterSettingWidget::NativeConstruct()
-{
-    Super::NativeConstruct();
 
     if(WidgetSwitcher)
     {
-        if(SwitcherButton1) SwitcherButton1->MainButton->OnClicked.AddDynamic(this, &ThisClass::SwictherToIndexZero);
-        if(SwitcherButton2) SwitcherButton2->MainButton->OnClicked.AddDynamic(this, &ThisClass::SwictherToIndexOne);
-        if(SwitcherButton3) SwitcherButton3->MainButton->OnClicked.AddDynamic(this, &ThisClass::SwictherToIndexTwo);
+        if(SwitcherButton1) SwitcherButton1->MainButton->OnClicked.AddDynamic(this, &ThisClass::WidgetSwictherIndexZero);
+        if(SwitcherButton2) SwitcherButton2->MainButton->OnClicked.AddDynamic(this, &ThisClass::WidgetSwictherIndexOne);
+        if(SwitcherButton3) SwitcherButton3->MainButton->OnClicked.AddDynamic(this, &ThisClass::WidgetSwictherIndexTwo);
     }
 
     if(ReturnButton) ReturnButton->MainButton->OnClicked.AddDynamic(this, &ThisClass::GoToLobby);
@@ -148,14 +146,14 @@ void USP_CharacterSettingWidget::NativeConstruct()
 
     if(CreateCharacterButton) CreateCharacterButton->OnClicked.AddDynamic(this, &ThisClass::CreateSaveSlotWidget);
     
-    const auto LPM = GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
-    LPM->WidgetUpdated.AddUObject(this, &ThisClass::UpdateWidget);
+    const auto MeshManager = GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
+    MeshManager->WidgetUpdated.AddUObject(this, &ThisClass::ResetItemWidget);
 
-    for (const auto MergeComponent : LPM->GetMergeComponents())
+    for (const auto MergeComponent : MeshManager->FindMergeComponent(MakePawnType))
         ModuluarCharacter = Cast<ASP_PlayerCharacter>(MergeComponent->GetOwner());
 }
 
-void USP_CharacterSettingWidget::UpdateWidget(FPrimaryAssetType Type) const
+void USP_CharacterSettingWidget::ResetItemWidget(FPrimaryAssetType Type) const
 {
     if(Type == USP_AssetManager::Module_BodyType) { BodyItemWidget->ResetItem(); return; }
     if(Type == USP_AssetManager::Module_HeadType) { HeadItemWidget->ResetItem(); return;}
@@ -166,7 +164,7 @@ void USP_CharacterSettingWidget::UpdateWidget(FPrimaryAssetType Type) const
 
 void USP_CharacterSettingWidget::LoadData()
 {
-    LoadedData = Cast<ASP_PlayerState>(GetOwningPlayerState())->GetMeshData();
+    LoadedData = GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->GetMeshData(MakePawnType);
 }
 
 USP_MorphSliderWidget* USP_CharacterSettingWidget::CreateMorphWidget(FString MorphName, FString DisplayName)
@@ -175,6 +173,7 @@ USP_MorphSliderWidget* USP_CharacterSettingWidget::CreateMorphWidget(FString Mor
     ItemWidget->SetPadding(FMargin(0,0,0,10));
     ItemWidget->MorphTargetName = MorphName;
     ItemWidget->DisplayName = FText::FromString(*DisplayName);
+    ItemWidget->MakePawnType = MakePawnType;
     MorphWidgets.Add(ItemWidget);
     
     if(const auto Value = LoadedData.MorphTargetData.Find(FName(*MorphName))) ItemWidget->SetDefaultVlaue(*Value);
@@ -192,6 +191,7 @@ USP_PresetColorPicker* USP_CharacterSettingWidget::CreateColorPickerWidget(int32
     ItemWidget->ParamName = FName(*ParamName);
     ItemWidget->DisplayName = FText::FromString(*DisplayName);
     ItemWidget->MaterialInstance = MaterialInstance;
+    ItemWidget->MakePawnType = MakePawnType;
     ColorPickerWidgets.Add(ItemWidget);
     
     if(FMaterialData* MaterialData = LoadedData.MaterialData.Find(Index))
@@ -200,7 +200,7 @@ USP_PresetColorPicker* USP_CharacterSettingWidget::CreateColorPickerWidget(int32
     return ItemWidget;
 }
 
-void USP_CharacterSettingWidget::SwictherToIndexZero()
+void USP_CharacterSettingWidget::WidgetSwictherIndexZero()
 {
     WidgetSwitcher->SetActiveWidgetIndex(0);
     if(ModuluarCharacter)
@@ -210,7 +210,7 @@ void USP_CharacterSettingWidget::SwictherToIndexZero()
     }
 }
 
-void USP_CharacterSettingWidget::SwictherToIndexOne()
+void USP_CharacterSettingWidget::WidgetSwictherIndexOne()
 {
     WidgetSwitcher->SetActiveWidgetIndex(1);
     if(ModuluarCharacter)
@@ -220,7 +220,7 @@ void USP_CharacterSettingWidget::SwictherToIndexOne()
     }
 }
 
-void USP_CharacterSettingWidget::SwictherToIndexTwo()
+void USP_CharacterSettingWidget::WidgetSwictherIndexTwo()
 {
     WidgetSwitcher->SetActiveWidgetIndex(2);
     if(ModuluarCharacter)
@@ -249,7 +249,7 @@ void USP_CharacterSettingWidget::UpdateAnimZero()
     if(AnimIndex == 2) AnimButton3->SetStyle(Style);
     
     AnimIndex = 0;
-    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(nullptr);
+    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(nullptr, MakePawnType);
 }
 
 void USP_CharacterSettingWidget::UpdateAnimOne()
@@ -271,7 +271,7 @@ void USP_CharacterSettingWidget::UpdateAnimOne()
     if(AnimIndex == 2) AnimButton3->SetStyle(Style);
     
     AnimIndex = 1;
-    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(IdleAnim);
+    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(IdleAnim, MakePawnType);
 }
 
 void USP_CharacterSettingWidget::UpdateAnimTwo()
@@ -293,7 +293,7 @@ void USP_CharacterSettingWidget::UpdateAnimTwo()
     if(AnimIndex == 1) AnimButton2->SetStyle(Style);
     
     AnimIndex = 2;
-    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(WalkAnim);
+    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->UpdateAnimation(WalkAnim, MakePawnType);
 }
 
 void USP_CharacterSettingWidget::GoToLobby()
@@ -301,23 +301,23 @@ void USP_CharacterSettingWidget::GoToLobby()
     const auto GameInstance = GetSP_GameInstance();
     if(!GameInstance) return;
     
-    GetSP_GameInstance()->OpenLevel(this, EGameModeType::MainMenu);
+    GetSP_GameInstance()->OpenLevel(this, EGameModeType::MainMenu, GetOwningLocalPlayer()->GetLocalPlayerIndex());
 }
 
 void USP_CharacterSettingWidget::ShowOptionWidget()
 {
-    OnOptionWidget.Broadcast();
+    OnOptionWidget.Broadcast(true);
 }
 
 void USP_CharacterSettingWidget::Reset()
 {
-    UpdateWidget(USP_AssetManager::Module_BodyType);
-    UpdateWidget(USP_AssetManager::Module_HeadType);
-    UpdateWidget(USP_AssetManager::Module_SuitType);
-    UpdateWidget(USP_AssetManager::Module_FeetAndLegsType);
-    UpdateWidget(USP_AssetManager::Module_HandAndArmType);
+    ResetItemWidget(USP_AssetManager::Module_BodyType);
+    ResetItemWidget(USP_AssetManager::Module_HeadType);
+    ResetItemWidget(USP_AssetManager::Module_SuitType);
+    ResetItemWidget(USP_AssetManager::Module_FeetAndLegsType);
+    ResetItemWidget(USP_AssetManager::Module_HandAndArmType);
 
-    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->ResetMorphTargetData();
+    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->LoadMorphTarget(MakePawnType,true);
     for (const auto MorphWidget : MorphWidgets) MorphWidget->SetMorphTargetDefalutOrValue(0.5f);
     for (const auto ColorPickerWidget : ColorPickerWidgets) ColorPickerWidget->ResetColor(); 
 }
@@ -336,7 +336,7 @@ void USP_CharacterSettingWidget::CreateSaveSlotWidget()
 
 void USP_CharacterSettingWidget::OpenGameLevel()
 {
-    GetSP_GameInstance()->OpenLevel(this, EGameModeType::InGame);
+    GetSP_GameInstance()->OpenLevel(this, EGameModeType::InGame, GetOwningLocalPlayer()->GetLocalPlayerIndex());
 }
 
 USP_GameInstance* USP_CharacterSettingWidget::GetSP_GameInstance() const

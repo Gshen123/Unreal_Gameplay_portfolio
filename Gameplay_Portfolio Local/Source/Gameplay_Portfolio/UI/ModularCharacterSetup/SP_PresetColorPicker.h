@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SP_CoreType.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "SP_PresetColorPicker.generated.h"
@@ -33,6 +34,9 @@ public:
 
     UPROPERTY()
     UMaterialInstance* MaterialInstance;
+
+    UPROPERTY()
+    EMergePawnType MakePawnType;
     
 protected:
 

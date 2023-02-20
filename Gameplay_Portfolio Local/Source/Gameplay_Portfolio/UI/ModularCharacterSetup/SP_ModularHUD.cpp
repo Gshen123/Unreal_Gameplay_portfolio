@@ -15,8 +15,9 @@ void ASP_ModularHUD::BeginPlay()
     {
         if(const auto CreateCharacterWidget = CreateWidget<UUserWidget>(GetWorld(), CreateCharacterWidgetClass))
         {
-            CreateCharacterWidget->AddToViewport();
             const auto ModularMenu = Cast<USP_CharacterSettingWidget>(CreateCharacterWidget);
+            ModularMenu->MakePawnType = EMergePawnType::Player;
+            ModularMenu->AddToViewport();
             ModularMenu->OnOptionWidget.AddUniqueDynamic(this, &ASP_ModularHUD::ShowOptionMenu);
         }
     }

@@ -48,17 +48,15 @@ void ASP_PlayerState::SavePlayerState(USP_SaveGame* SaveObject, EGameModeType Mo
         SaveData.PlayTime= UGameplayStatics::GetRealTimeSeconds(GetPlayerController()) * ETimespan::TicksPerSecond;
 
         if(Mode == EGameModeType::InGame || Mode == EGameModeType::CharacterSetup)
-            SaveData.MeshData = *GetLocalPlayerMeshManager()->GetMeshData();
+            SaveData.PlayerMeshData = *GetLocalPlayerMeshManager()->GetPlayerMeshData();
         
         if(Mode == EGameModeType::InGame)
-        {
-            if (APawn* MyPawn = GetPawn())
+            if (const APawn* MyPawn = GetPawn())
             {
                 SaveData.Location = MyPawn->GetActorLocation();
                 SaveData.Rotation = MyPawn->GetActorRotation();
                 SaveData.bResumeAtTransform = true;
             }
-        }
         
         SaveObject->PlayerSaveData.Add(SaveData);
     }
@@ -68,19 +66,13 @@ void ASP_PlayerState::LoadPlayerState(USP_SaveGame* SaveObject, EGameModeType Mo
 {
     if (SaveObject)
     {
+        if(Mode == EGameModeType::InGame)
+            NPCMeshData = SaveObject->NPCMeshData;
+        
         if (const FPlayerSaveData* FoundData = SaveObject->GetPlayerData(this))
         {
             if(Mode == EGameModeType::InGame || Mode == EGameModeType::CharacterSetup)
-            {
-                MeshData = FoundData->MeshData;
-                GetLocalPlayerMeshManager()->LoadMeshData(MeshData);
-
-                if(Mode == EGameModeType::InGame)
-                {
-                    
-                }
-            }
-            //플레이어 스테이트 정보 갱신
+                PlayerMeshData = FoundData->PlayerMeshData;
         }
         
         else
@@ -90,7 +82,9 @@ void ASP_PlayerState::LoadPlayerState(USP_SaveGame* SaveObject, EGameModeType Mo
     }
 }
 
-FPlayerMeshData ASP_PlayerState::GetMeshData()
+void ASP_PlayerState::UpdateMergeComponent(USP_MergeComponent* Component, EMergePawnType PawnType) const
 {
-    return MeshData;
+    const auto MeshManager = GetLocalPlayerMeshManager();
+    MeshManager->IsInit() ? nullptr : MeshManager->MeshDataInit(PlayerMeshData, NPCMeshData);
+    MeshManager->AddMergeComponent(Component, PawnType);
 }

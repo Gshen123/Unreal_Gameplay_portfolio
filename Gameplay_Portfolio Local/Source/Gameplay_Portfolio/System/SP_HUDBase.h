@@ -16,15 +16,8 @@ class GAMEPLAY_PORTFOLIO_API ASP_HUDBase : public AHUD
 
 public:
     
-    UFUNCTION(BlueprintCallable)
-    void ShowOptionMenu();
-	
-    UFUNCTION(BlueprintCallable)
-    void HideOptionMenu();
-
-    
     UFUNCTION()
-    void PushWidgetStack(UUserWidget* Widget);
+    void PushWidgetStack(UUserWidget* Widget, bool HideOther = true);
 
     UFUNCTION()
     UUserWidget* PopWidgetStack();
@@ -34,16 +27,18 @@ public:
     
 protected:
 
+    UFUNCTION()
+    void ShowOptionMenu(bool HideOther);
+
+    UFUNCTION()
+    void HideOptionMenu();
+    
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<class UUserWidget> OptionMenuClass;
 
 private:
     UPROPERTY()
     UUserWidget* OptionMenu;
-
-    //임시용
-    UPROPERTY()
-    UUserWidget* CurrentVisibleWidget;
     
     TArray<UUserWidget*> WidgetStack;
     

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SP_CoreType.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
 #include "SP_PauseWidget.generated.h"
 
 class USP_GameInstance;
@@ -12,8 +13,6 @@ class USP_TextButton;
 /**
  * 
  */
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPauseWidgetOption);
 
 UCLASS()
 class GAMEPLAY_PORTFOLIO_API USP_PauseWidget : public UUserWidget
@@ -25,22 +24,21 @@ public:
     virtual void NativeConstruct() override;
 
     UFUNCTION()
-    void SetMainMenuButtonVisble(EGameModeType Type) const;
+    void SetVisblilityMainMenu(EGameModeType Type) const;
 
-    UPROPERTY()
-    FPauseWidgetOption PauseWidgetOptionDelegate;
-protected:
     UPROPERTY(meta = (BindWidget))
-    USP_TextButton* ClearPauseButton;
+    UButton* ClearPauseButton;
     
     UPROPERTY(meta = (BindWidget))
-    USP_TextButton* MainMenuButton;
+    UButton* MainMenuButton;
 
     UPROPERTY(meta = (BindWidget))
-    USP_TextButton* SettingsButton;
+    UButton* OptionButton;
 
     UPROPERTY(meta = (BindWidget))
-    USP_TextButton* ExitGameButton;
+    UButton* ExitGameButton;
+    
+protected:
 
 private:
     UFUNCTION()
@@ -51,9 +49,6 @@ private:
 
     UFUNCTION()
     void ExitGame();
-
-    UFUNCTION()
-    void ShowOptionWidget();
 
     USP_GameInstance* GetSP_GameInstance() const;
 };

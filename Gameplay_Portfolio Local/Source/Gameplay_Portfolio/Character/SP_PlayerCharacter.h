@@ -22,19 +22,13 @@ class ASP_PlayerCharacter : public ACharacter
     /** Follow camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
     class UCameraComponent* FollowCamera;
-
+    
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     class UInputConfig* InputConfig;
     
     /** MappingContext */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     class UInputMappingContext* DefaultMappingContext;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
-    class USP_MergeComponent* MergeComponent;
-
-    //UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
-    //class USkeletalMeshComponent* ClothMesh;
     
 public:
     ASP_PlayerCharacter();
@@ -55,17 +49,31 @@ protected:
     // To add mapping context
     virtual void BeginPlay() override;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+    class USP_MergeComponent* MergeComponent;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
+    float ZOOM_MIN_VALUE = 60.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
+    float ZOOM_MAX_VALUE = 320.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
+    float ZOOM_MULTIPLE = 16.f;
+    
 protected:
 
     /** Called for movement input */
     void Input_Move(const FInputActionValue& Value);
-
-    /** Called for looking input */
+    void Input_Jump();
+    void Input_Zoom(const FInputActionValue& Value);
     void Input_Look(const FInputActionValue& Value);
 
-    void Input_Jump(const FInputActionValue& Value);
+    void TurnAtRate(float Rate);
+    void LookUpAtRate(float Rate);
 
-    void Input_Zoom(const FInputActionValue& Value);
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+    float TurnRateGamepad = 45.f;
     
 private:
 

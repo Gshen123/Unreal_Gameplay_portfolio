@@ -18,7 +18,7 @@
 #include "SP_CharacterSettingWidget.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FModularWidgetOption);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FModularWidgetOption, bool, OtherHide);
 /**
  * 
  */
@@ -48,16 +48,16 @@ public:
 
     UPROPERTY()
     TObjectPtr<ASP_PlayerCharacter> ModuluarCharacter;
+
+    UPROPERTY()
+    EMergePawnType MakePawnType;
     
     UFUNCTION()
-    void UpdateWidget(FPrimaryAssetType Type) const;
+    void ResetItemWidget(FPrimaryAssetType Type) const;
     
     void LoadData();
     
 protected:
-
-    virtual void NativeOnInitialized() override;
-    
     virtual void NativeConstruct() override;
     
     UPROPERTY(meta = (BindWidget))
@@ -149,13 +149,13 @@ private:
     USP_PresetColorPicker* CreateColorPickerWidget(int32 Index, FString DisplayName, FString ParamName, UMaterialInstance* MaterialInstance);
     
     UFUNCTION()
-    void SwictherToIndexZero();
+    void WidgetSwictherIndexZero();
     
     UFUNCTION()
-    void SwictherToIndexOne();
+    void WidgetSwictherIndexOne();
     
     UFUNCTION()
-    void SwictherToIndexTwo();
+    void WidgetSwictherIndexTwo();
 
     UFUNCTION()
     void UpdateAnimZero();
@@ -188,10 +188,13 @@ private:
     ASP_HUDBase* GetSP_HUD() const;
 
     UPROPERTY()
-    FPlayerMeshData LoadedData;
+    FSaveMeshData LoadedData;
 
     UPROPERTY()
     USP_SaveSlotBox* SaveSlotBox;
+
+    UPROPERTY()
+    TArray<USP_CharacterItemWidget*> CharacterItemWidgets;
     
     UPROPERTY()
     TArray<USP_MorphSliderWidget*> MorphWidgets;

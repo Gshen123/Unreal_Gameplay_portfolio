@@ -19,4 +19,7 @@ protected:
     TSubclassOf<UUserWidget> MenuWidgetClass;
     
     virtual void BeginPlay() override;
+
+    UFUNCTION()
+    virtual void OpenOptionMenu();
 };

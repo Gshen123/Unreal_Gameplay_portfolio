@@ -20,18 +20,29 @@ void USP_LocalPlayerMeshManager::Initialize(FSubsystemCollectionBase& Collection
 
 void USP_LocalPlayerMeshManager::Deinitialize()
 {
-    MeshData.Empty();
+    PlayerMeshData.Empty();
+    NPCMeshData.Empty();
+    MergeComponents.Empty();
+    bIsInit = false;
     Super::Deinitialize();
 }
 
-void USP_LocalPlayerMeshManager::LoadMeshData(FPlayerMeshData LoadData)
+void USP_LocalPlayerMeshManager::MeshDataInit(FSaveMeshData LoadPlayerMeshData, TMap<EMergePawnType, FSaveMeshData> LoadNPCMeshData)
 {
-    MeshData = LoadData;
-    if(MeshData.IsEmpty()) return;
+    PlayerMeshData = LoadPlayerMeshData;
+    NPCMeshData = LoadNPCMeshData;
+    bIsInit = true;
+}
 
-    AllUpdateMesh();
-    AllUpdateMaterial();
-    AllUpdateMorphTarget();
+FSaveMeshData USP_LocalPlayerMeshManager::GetMeshData(EMergePawnType PawnType)
+{
+    if(PawnType >= EMergePawnType::NPC1) return *NPCMeshData.Find(PawnType);
+    return PlayerMeshData;
+}
+
+bool USP_LocalPlayerMeshManager::IsInit() const
+{
+    return bIsInit;
 }
 
 void USP_LocalPlayerMeshManager::UpdateWidget(FPrimaryAssetType Type) const
@@ -41,26 +52,42 @@ void USP_LocalPlayerMeshManager::UpdateWidget(FPrimaryAssetType Type) const
 
 USP_DefaultPartsAsset* USP_LocalPlayerMeshManager::GetDefaultParts() const
 {
-    auto GI = GetWorld()->GetGameInstance<USP_GameInstance>();
+    const auto GI = GetWorld()->GetGameInstance<USP_GameInstance>();
     check(GI != nullptr);
     return GI->GetDefaultMeshParts();
 }
 
-void USP_LocalPlayerMeshManager::AddMergeComponent(USP_MergeComponent* Component)
+void USP_LocalPlayerMeshManager::AddMergeComponent(USP_MergeComponent* Component, EMergePawnType PawnType)
 {
-    MergeComponents.AddUnique(Component);
+    MergeComponents.Add(PawnType, Component);
+    
+    TArray<USP_MergeComponent*> FindComponents;
+    MergeComponents.MultiFind(PawnType, FindComponents);
+
+    if(FindComponents.IsEmpty()) return;
+    if(PawnType >= EMergePawnType::NPC1 && NPCMeshData.IsEmpty()) return;
+    
+    for (const auto FindComponent : FindComponents)
+    {
+        UpdateMesh(FindComponent);
+        UpdateMaterial(FindComponent);
+        LoadMorphTarget(FindComponent->GetPawnType());
+    }
 }
 
-TArray<USP_MergeComponent*> USP_LocalPlayerMeshManager::GetMergeComponents()
+TArray<USP_MergeComponent*> USP_LocalPlayerMeshManager::FindMergeComponent(EMergePawnType Key) const
 {
-    return MergeComponents;
+    TArray<USP_MergeComponent*> FindComponents;
+    MergeComponents.MultiFind(Key, FindComponents);
+    return FindComponents;
 }
 
 void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
 {
+    auto MeshData = MergeComponent->GetPawnType() >= EMergePawnType::NPC1 ? NPCMeshData.Find(MergeComponent->GetPawnType()) : &PlayerMeshData;
     Meshes.Reset();
     {
-        USP_ModularItemBase* Item = USP_AssetManager::GetAsset(MeshData.ModularPartsSlot.Body);    
+        USP_ModularItemBase* Item = USP_AssetManager::GetAsset(MeshData->ModularPartsSlot.Body);    
         if(Item == nullptr) return;
         if(Item->Data.Meshes.Num() > 0)
         {
@@ -71,7 +98,7 @@ void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
                 Meshes.Add(SKMesh);
             }
         }
-        if(MeshData.ModularPartsSlot.BodyShare.Num() == 0)
+        if(MeshData->ModularPartsSlot.BodyShare.Num() == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Body);  
             Meshes.Add(SKMesh);
@@ -79,7 +106,7 @@ void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
     }
 
     {
-        USP_ModularItemBase* Item = USP_AssetManager::GetAsset(MeshData.ModularPartsSlot.Arm);    
+        USP_ModularItemBase* Item = USP_AssetManager::GetAsset(MeshData->ModularPartsSlot.Arm);    
         if(Item == nullptr) return;
         if(Item->Data.Meshes.Num() > 0)
         {
@@ -90,7 +117,7 @@ void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
                 Meshes.Add(SKMesh);
             }
         }
-        if(MeshData.ModularPartsSlot.ArmShare.Num() == 0)
+        if(MeshData->ModularPartsSlot.ArmShare.Num() == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Arm);  
             Meshes.Add(SKMesh);
@@ -100,7 +127,7 @@ void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
     }
 
     {
-        USP_ModularItemBase* Item = USP_AssetManager::GetAsset(MeshData.ModularPartsSlot.Leg);    
+        USP_ModularItemBase* Item = USP_AssetManager::GetAsset(MeshData->ModularPartsSlot.Leg);    
         if(Item == nullptr) return;
         if(Item->Data.Meshes.Num() > 0)
         {
@@ -111,7 +138,7 @@ void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
                 Meshes.Add(SKMesh);
             }
         }
-        if(MeshData.ModularPartsSlot.LegShare.Num() == 0)
+        if(MeshData->ModularPartsSlot.LegShare.Num() == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Leg);  
             Meshes.Add(SKMesh);
@@ -121,7 +148,7 @@ void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
     }
 
     {
-        USP_ModularItemBase* Item = USP_AssetManager::GetAsset(MeshData.ModularPartsSlot.Suit);    
+        USP_ModularItemBase* Item = USP_AssetManager::GetAsset(MeshData->ModularPartsSlot.Suit);    
         if(Item == nullptr) return;
         if(Item->Data.Meshes.Num() > 0)
         {
@@ -135,7 +162,7 @@ void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
     }
 
     {
-        USP_ModularItemBase* Item = USP_AssetManager::GetAsset(MeshData.ModularPartsSlot.Head);    
+        USP_ModularItemBase* Item = USP_AssetManager::GetAsset(MeshData->ModularPartsSlot.Head);    
         if(Item == nullptr) return;
         if(Item->Data.Meshes.Num() > 0)
         {
@@ -157,7 +184,7 @@ void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
 
     if(MergedMesh != nullptr || Meshes.Num() == 1)
     {
-        if(MeshData.ModularPartsSlot.HeadShare.Num() == 0)
+        if(MeshData->ModularPartsSlot.HeadShare.Num() == 0)
         {
             USkeletalMesh* SKMesh = USP_AssetManager::GetAsset(DefaultPartAsset->Head);
             MergeComponent->GetOwnerMesh()->SetSkeletalMesh(SKMesh, false);
@@ -166,7 +193,7 @@ void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
             else MergeComponent->SetSkeletalMeshAsset(Meshes[0]);
             
             MergeComponent->SetLeaderPoseComponent(MergeComponent->GetOwnerMesh());
-            AllUpdateMorphTarget();
+            LoadMorphTarget(MergeComponent->GetPawnType());
             UpdateMaterial(MergeComponent);
         }
         else
@@ -178,138 +205,85 @@ void USP_LocalPlayerMeshManager::UpdateMesh(USP_MergeComponent* MergeComponent)
     }
 }
 
-void USP_LocalPlayerMeshManager::AllUpdateMesh()
+void USP_LocalPlayerMeshManager::WearItem(const USP_ModularItemBase* Item, EMergePawnType PawnType, FName DefaultItemName)
 {
-    for (const auto MergeComponent : MergeComponents) UpdateMesh(MergeComponent);
-}
-
-
-void USP_LocalPlayerMeshManager::AllUpdateMaterial()
-{
-    for (const auto MergeComponent : MergeComponents) UpdateMaterial(MergeComponent);
-}
-
-void USP_LocalPlayerMeshManager::UpdateMaterial(USP_MergeComponent* MergeComponent)
-{
-    for (auto iter = MeshData.MaterialData.CreateConstIterator(); iter; ++iter)
-    {
-        FMaterialData* Data = MeshData.MaterialData.Find(iter.Key());
-        UMaterialInstanceDynamic* HeadDynamicMesh =  MergeComponent->GetOwnerMesh()->CreateDynamicMaterialInstance(iter.Key(), Data->MaterialInstance);
-        for (auto it= Data->ParamData.CreateConstIterator(); it; ++it)
-        {
-            HeadDynamicMesh->SetVectorParameterValue(it.Key(), it.Value());
-        }
-    }
-}
-
-void USP_LocalPlayerMeshManager::FindAndAddMeshItemData(FPrimaryAssetType Type, FName Name)
-{
-    if(MeshData.MeshItemData.Find(Type))
-    {
-        MeshData.MeshItemData.Remove(Type);
-        MeshData.MeshItemData.Compact();
-        MeshData.MeshItemData.Shrink();
-        MeshData.MeshItemData.Add(Type, Name);
-    }
-    else MeshData.MeshItemData.Add(Type, Name);
-}
-
-void USP_LocalPlayerMeshManager::FindAndAddMaterialData(int32 Index, FName ParamName, FLinearColor Value, UMaterialInstance* MaterialInstance)
-{
-    if(const auto PrevData = MeshData.MaterialData.Find(Index))
-    {
-        PrevData->ParamData.Add(ParamName, Value);
-    }
-    else
-    {
-        FMaterialData NewData;
-        NewData.MaterialInstance = MaterialInstance;
-        NewData.ParamData.Add(ParamName, Value);
-        MeshData.MaterialData.Add(Index, NewData);
-    }
-}
-
-void USP_LocalPlayerMeshManager::WearItem(USP_ModularItemBase* Item)
-{
+    const auto MeshData = PawnType >= EMergePawnType::NPC1 ? NPCMeshData.Find(PawnType) : &PlayerMeshData;
+    
     if(Item->Data.ItemType == USP_AssetManager::Module_BodyType)
     {
-        MeshData.ModularPartsSlot.Body = Item;
+        MeshData->ModularPartsSlot.Body = Item;
         if(Item->Data.DisplayName.EqualTo(FText::FromString("None")) || !Item->Data.OverlapBody)
         {
-            if(MeshData.ModularPartsSlot.BodyShare.Num() > 0)
-            {
-                if(MeshData.ModularPartsSlot.BodyShare.Contains(USP_AssetManager::Module_BodyType)) MeshData.ModularPartsSlot.BodyShare.Remove(USP_AssetManager::Module_BodyType);
-            }
+            if(MeshData->ModularPartsSlot.BodyShare.Num() > 0)
+                if(MeshData->ModularPartsSlot.BodyShare.Contains(USP_AssetManager::Module_BodyType))
+                    MeshData->ModularPartsSlot.BodyShare.Remove(USP_AssetManager::Module_BodyType);
         }
-        else MeshData.ModularPartsSlot.BodyShare.AddUnique(USP_AssetManager::Module_BodyType);
-        if(!Item->Data.DisplayName.EqualTo(FText::FromString("None"))) UpdateWidget(USP_AssetManager::Module_SuitType);
+        else MeshData->ModularPartsSlot.BodyShare.AddUnique(USP_AssetManager::Module_BodyType);
+        if(!Item->Data.DisplayName.EqualTo(FText::FromName(DefaultItemName))) UpdateWidget(USP_AssetManager::Module_SuitType);
         return;
     }
 
-    if(Item->Data.ItemType  == USP_AssetManager::Module_HeadType)
+    if(Item->Data.ItemType == USP_AssetManager::Module_HeadType)
     {
-        MeshData.ModularPartsSlot.Head = Item;
+        MeshData->ModularPartsSlot.Head = Item;
         if(Item->Data.DisplayName.EqualTo(FText::FromString("None")) || !Item->Data.OverlapBody)
         {
-            if(MeshData.ModularPartsSlot.HeadShare.Num() > 0)
-            {
-                if(MeshData.ModularPartsSlot.HeadShare.Contains(USP_AssetManager::Module_HeadType)) MeshData.ModularPartsSlot.HeadShare.Remove(USP_AssetManager::Module_HeadType);
-            }
+            if(MeshData->ModularPartsSlot.HeadShare.Num() > 0)
+                if(MeshData->ModularPartsSlot.HeadShare.Contains(USP_AssetManager::Module_HeadType))
+                    MeshData->ModularPartsSlot.HeadShare.Remove(USP_AssetManager::Module_HeadType);
         }
-        else MeshData.ModularPartsSlot.HeadShare.AddUnique(USP_AssetManager::Module_HeadType);
+        else MeshData->ModularPartsSlot.HeadShare.AddUnique(USP_AssetManager::Module_HeadType);
         return;
     }
     
-    if(Item->Data.ItemType  == USP_AssetManager::Module_FeetAndLegsType)
+    if(Item->Data.ItemType == USP_AssetManager::Module_FeetAndLegsType)
     {
-        MeshData.ModularPartsSlot.Leg = Item;
+        MeshData->ModularPartsSlot.Leg = Item;
         if(Item->Data.DisplayName.EqualTo(FText::FromString("None")) || !Item->Data.OverlapBody)
         {
-            if(MeshData.ModularPartsSlot.LegShare.Num() > 0)
-            {
-                if(MeshData.ModularPartsSlot.LegShare.Contains(USP_AssetManager::Module_FeetAndLegsType)) MeshData.ModularPartsSlot.LegShare.Remove(USP_AssetManager::Module_FeetAndLegsType);
-            }
+            if(MeshData->ModularPartsSlot.LegShare.Num() > 0)
+                if(MeshData->ModularPartsSlot.LegShare.Contains(USP_AssetManager::Module_FeetAndLegsType))
+                    MeshData->ModularPartsSlot.LegShare.Remove(USP_AssetManager::Module_FeetAndLegsType);
         }
-        else MeshData.ModularPartsSlot.LegShare.AddUnique(USP_AssetManager::Module_FeetAndLegsType);
-        if(!Item->Data.DisplayName.EqualTo(FText::FromString("None"))) UpdateWidget(USP_AssetManager::Module_SuitType);
+        else MeshData->ModularPartsSlot.LegShare.AddUnique(USP_AssetManager::Module_FeetAndLegsType);
+        if(!Item->Data.DisplayName.EqualTo(FText::FromName(DefaultItemName))) UpdateWidget(USP_AssetManager::Module_SuitType);
         return;
     }
 
-    if(Item->Data.ItemType  == USP_AssetManager::Module_HandAndArmType)
+    if(Item->Data.ItemType == USP_AssetManager::Module_HandAndArmType)
     {
-        MeshData.ModularPartsSlot.Arm = Item;
+        MeshData->ModularPartsSlot.Arm = Item;
         if(Item->Data.DisplayName.EqualTo(FText::FromString("None")) || !Item->Data.OverlapBody)
         {
-            if(MeshData.ModularPartsSlot.ArmShare.Num() > 0)
-            {
-                if(MeshData.ModularPartsSlot.ArmShare.Contains(USP_AssetManager::Module_HandAndArmType)) MeshData.ModularPartsSlot.ArmShare.Remove(USP_AssetManager::Module_HandAndArmType);
-            }
+            if(MeshData->ModularPartsSlot.ArmShare.Num() > 0)
+                if(MeshData->ModularPartsSlot.ArmShare.Contains(USP_AssetManager::Module_HandAndArmType))
+                    MeshData->ModularPartsSlot.ArmShare.Remove(USP_AssetManager::Module_HandAndArmType);
         }
-        else MeshData.ModularPartsSlot.ArmShare.AddUnique(USP_AssetManager::Module_HandAndArmType);
-        if(!Item->Data.DisplayName.EqualTo(FText::FromString("None"))) UpdateWidget(USP_AssetManager::Module_SuitType);
+        else MeshData->ModularPartsSlot.ArmShare.AddUnique(USP_AssetManager::Module_HandAndArmType);
+        if(!Item->Data.DisplayName.EqualTo(FText::FromName(DefaultItemName))) UpdateWidget(USP_AssetManager::Module_SuitType);
         return;
     }
 
-    if(Item->Data.ItemType  == USP_AssetManager::Module_SuitType)
+    if(Item->Data.ItemType == USP_AssetManager::Module_SuitType)
     {
-        MeshData.ModularPartsSlot.Suit = Item;
+        MeshData->ModularPartsSlot.Suit = Item;
         if(Item->Data.DisplayName.EqualTo(FText::FromString("None")) || !Item->Data.OverlapBody)
         {
-            if(MeshData.ModularPartsSlot.BodyShare.Num() > 0)
-                if(MeshData.ModularPartsSlot.BodyShare.Contains(USP_AssetManager::Module_SuitType))
-                    MeshData.ModularPartsSlot.BodyShare.Remove(USP_AssetManager::Module_SuitType);
-            if(MeshData.ModularPartsSlot.ArmShare.Num() > 0)
-                if(MeshData.ModularPartsSlot.ArmShare.Contains(USP_AssetManager::Module_SuitType))
-                    MeshData.ModularPartsSlot.ArmShare.Remove(USP_AssetManager::Module_SuitType);
-            if(MeshData.ModularPartsSlot.LegShare.Num() > 0)
-                if(MeshData.ModularPartsSlot.LegShare.Contains(USP_AssetManager::Module_SuitType))
-                    MeshData.ModularPartsSlot.LegShare.Remove(USP_AssetManager::Module_SuitType);
+            if(MeshData->ModularPartsSlot.BodyShare.Num() > 0)
+                if(MeshData->ModularPartsSlot.BodyShare.Contains(USP_AssetManager::Module_SuitType))
+                    MeshData->ModularPartsSlot.BodyShare.Remove(USP_AssetManager::Module_SuitType);
+            if(MeshData->ModularPartsSlot.ArmShare.Num() > 0)
+                if(MeshData->ModularPartsSlot.ArmShare.Contains(USP_AssetManager::Module_SuitType))
+                    MeshData->ModularPartsSlot.ArmShare.Remove(USP_AssetManager::Module_SuitType);
+            if(MeshData->ModularPartsSlot.LegShare.Num() > 0)
+                if(MeshData->ModularPartsSlot.LegShare.Contains(USP_AssetManager::Module_SuitType))
+                    MeshData->ModularPartsSlot.LegShare.Remove(USP_AssetManager::Module_SuitType);
         }
         else
         {
-            MeshData.ModularPartsSlot.BodyShare.AddUnique(USP_AssetManager::Module_SuitType);
-            MeshData.ModularPartsSlot.ArmShare.AddUnique(USP_AssetManager::Module_SuitType);
-            MeshData.ModularPartsSlot.LegShare.AddUnique(USP_AssetManager::Module_SuitType);
+            MeshData->ModularPartsSlot.BodyShare.AddUnique(USP_AssetManager::Module_SuitType);
+            MeshData->ModularPartsSlot.ArmShare.AddUnique(USP_AssetManager::Module_SuitType);
+            MeshData->ModularPartsSlot.LegShare.AddUnique(USP_AssetManager::Module_SuitType);
             UpdateWidget(USP_AssetManager::Module_BodyType);
             UpdateWidget(USP_AssetManager::Module_HandAndArmType);
             UpdateWidget(USP_AssetManager::Module_FeetAndLegsType);
@@ -317,73 +291,110 @@ void USP_LocalPlayerMeshManager::WearItem(USP_ModularItemBase* Item)
     }
 }
 
-void USP_LocalPlayerMeshManager::ReplaceItemInSlot(USP_ModularItemBase* Item)
+void USP_LocalPlayerMeshManager::ReplaceItemInSlot(const USP_ModularItemBase* Item, EMergePawnType PawnType, FName DefaultItemName)
 {
-    WearItem(Item);
+    const auto MeshData = PawnType >= EMergePawnType::NPC1 ? NPCMeshData.Find(PawnType) : &PlayerMeshData;
+    WearItem(Item, PawnType, DefaultItemName);
 
-    if(MeshData.ModularPartsSlot.Head == nullptr || MeshData.ModularPartsSlot.Arm == nullptr || MeshData.ModularPartsSlot.Body == nullptr ||
-       MeshData.ModularPartsSlot.Leg == nullptr || MeshData.ModularPartsSlot.Suit == nullptr) return;
+    if(MeshData->ModularPartsSlot.Head == nullptr || MeshData->ModularPartsSlot.Arm == nullptr || MeshData->ModularPartsSlot.Body == nullptr ||
+       MeshData->ModularPartsSlot.Leg == nullptr || MeshData->ModularPartsSlot.Suit == nullptr) return;
     
-    for(const auto Component : MergeComponents) UpdateMesh(Component);
+    for(const auto FindComponent : FindMergeComponent(PawnType)) UpdateMesh(FindComponent);
 }
 
-void USP_LocalPlayerMeshManager::SetMorphTarget(FString MorphTargetName, float Value)
+void USP_LocalPlayerMeshManager::FindAndAddMeshItemData(FPrimaryAssetType Type, FString Name, EMergePawnType PawnType)
+{
+    const auto MeshData = PawnType >= EMergePawnType::NPC1 ? NPCMeshData.Find(PawnType) : &PlayerMeshData;
+    
+    if(MeshData->MeshItemData.Find(Type))
+    {
+        MeshData->MeshItemData.Remove(Type);
+        MeshData->MeshItemData.Compact();
+        MeshData->MeshItemData.Shrink();
+        MeshData->MeshItemData.Add(Type, Name);
+    }
+    else MeshData->MeshItemData.Add(Type, Name);
+}
+
+void USP_LocalPlayerMeshManager::AllUpdateMaterial(EMergePawnType PawnType)
+{
+    for (const auto Component : FindMergeComponent(PawnType)) UpdateMaterial(Component);
+}
+
+void USP_LocalPlayerMeshManager::UpdateMaterial(const USP_MergeComponent* MergeComponent)
+{
+    const auto MeshData = MergeComponent->GetPawnType() >= EMergePawnType::NPC1 ? NPCMeshData.Find(MergeComponent->GetPawnType()) : &PlayerMeshData;
+    
+    for (auto iter = MeshData->MaterialData.CreateConstIterator(); iter; ++iter)
+    {
+        const FMaterialData* Data = MeshData->MaterialData.Find(iter.Key());
+        UMaterialInstanceDynamic* HeadDynamicMesh =  MergeComponent->GetOwnerMesh()->CreateDynamicMaterialInstance(iter.Key(), Data->MaterialInstance);
+
+        for (auto it= Data->ParamData.CreateConstIterator(); it; ++it)
+            HeadDynamicMesh->SetVectorParameterValue(it.Key(), it.Value());
+    }
+}
+
+void USP_LocalPlayerMeshManager::FindAndAddMaterialData(int32 Index, FName ParamName, FLinearColor Value, UMaterialInstance* MaterialInstance, EMergePawnType PawnType)
+{
+    const auto MeshData = PawnType >= EMergePawnType::NPC1 ? NPCMeshData.Find(PawnType) : &PlayerMeshData;
+    
+    if(const auto PrevData = MeshData->MaterialData.Find(Index))
+    {
+        PrevData->ParamData.Remove(ParamName);
+        PrevData->ParamData.Compact();
+        PrevData->ParamData.Shrink();
+        PrevData->ParamData.Add(ParamName, Value);
+    }
+    else MeshData->AddMaterialData(Index, ParamName, Value, MaterialInstance);
+}
+
+void USP_LocalPlayerMeshManager::FindAndAddMorphTarget(FString MorphTargetName, float Value, EMergePawnType PawnType)
 {
     const FName TargetName = FName(*MorphTargetName);
-    for (const auto Component : MergeComponents)
-    {
+    const auto MeshData = PawnType >= EMergePawnType::NPC1 ? NPCMeshData.Find(PawnType) : &PlayerMeshData;
+
+    for (const auto Component : FindMergeComponent(PawnType))
         Component->SetOwnerMorphTarget(TargetName, Value, false);
-    }
     
-    if(MeshData.MorphTargetData.RemoveAndCopyValue(TargetName, Value))
+    if (MeshData->MorphTargetData.Find(TargetName))
     {
-        MeshData.MorphTargetData.Compact();
-        MeshData.MorphTargetData.Shrink();
-        MeshData.MorphTargetData.Add(TargetName, Value);
-        UE_LOG(LogLocalPlayerMeshManager, Log, TEXT("RemoveAndAdd : %s"), *MorphTargetName);
+        MeshData->MorphTargetData.Remove(TargetName);
+        MeshData->MorphTargetData.Compact();
+        MeshData->MorphTargetData.Shrink();
     }
-    else
-    {
-        MeshData.MorphTargetData.Add(TargetName, Value);
-        UE_LOG(LogLocalPlayerMeshManager, Log, TEXT("Add : %s"), *MorphTargetName);
-    }
+    MeshData->MorphTargetData.Add(TargetName, Value);
 }
 
-void USP_LocalPlayerMeshManager::AllUpdateMorphTarget()
+void USP_LocalPlayerMeshManager::UpdateMorphTarget(const USP_MergeComponent* Component, EMergePawnType PawnType, bool Reset)
 {
-    if(MeshData.MorphTargetData.Num() == 0) return;
+    Component->ClearMorphTarget();
+
+    const auto MeshData = PawnType >= EMergePawnType::NPC1 ? NPCMeshData.Find(PawnType) : &PlayerMeshData;
+    for (const auto Data : MeshData->MorphTargetData)
+    {
+        if(Reset) Component->SetOwnerMorphTarget(Data.Key, 0.5f, false);
+        else Component->SetOwnerMorphTarget(Data.Key, Data.Value, false); 
+    }
+
+    if(Reset) MeshData->MorphTargetData.Empty();
+}
+
+void USP_LocalPlayerMeshManager::LoadMorphTarget(EMergePawnType PawnType, bool Reset)
+{
+    const auto MeshData = PawnType >= EMergePawnType::NPC1 ? NPCMeshData.Find(PawnType) : &PlayerMeshData;
+    if(MeshData->MorphTargetData.Num() == 0) return;
     
-    for (const auto Component : MergeComponents)
-    {
-        Component->ClearMorphTarget();
-        for (const auto Data : MeshData.MorphTargetData)
-        {
-            Component->SetOwnerMorphTarget(Data.Key, Data.Value, false);
-        }
-    }
+    for (const auto Component : FindMergeComponent(PawnType))
+        UpdateMorphTarget(Component, PawnType, Reset);
 }
 
-void USP_LocalPlayerMeshManager::ResetMorphTargetData()
+void USP_LocalPlayerMeshManager::UpdateAnimation(UAnimationAsset* Asset, EMergePawnType PawnType) const
 {
-    for (const auto Component : MergeComponents)
-    {
-        for (const auto Data : MeshData.MorphTargetData)
-        {
-            Component->ClearMorphTarget();
-            Component->SetOwnerMorphTarget(Data.Key, 0, false);
-            UE_LOG(LogLocalPlayerMeshManager, Log, TEXT("Reset : %s"), *Data.Key.ToString());
-        }
-    }
-    
-    MeshData.MorphTargetData.Empty();
+    for (const auto Component : FindMergeComponent(PawnType)) Component->UpdateAnimation(Asset);
 }
 
-void USP_LocalPlayerMeshManager::UpdateAnimation(UAnimationAsset* Asset)
+FSaveMeshData* USP_LocalPlayerMeshManager::GetPlayerMeshData()
 {
-    for (const auto Component : MergeComponents) Component->UpdateAnimation(Asset);
-}
-
-FPlayerMeshData* USP_LocalPlayerMeshManager::GetMeshData()
-{
-    return &MeshData;
+    return &PlayerMeshData;
 }

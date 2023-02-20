@@ -60,7 +60,7 @@ void USP_MorphSliderWidget::SetSliderVlaue(float Value)
 void USP_MorphSliderWidget::UpdateMaterial(float Value)
 {
     SetSliderVlaue(Value);
-    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->SetMorphTarget(MorphTargetName, LerpMorphValue(Value));
+    GetOwningLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>()->FindAndAddMorphTarget(MorphTargetName, LerpMorphValue(Value), MakePawnType);
 
     if(Value != DefaultValue) ResetButton->SetVisibility(ESlateVisibility::Visible);
     else ResetButton->SetVisibility(ESlateVisibility::Hidden);
@@ -70,7 +70,7 @@ void USP_MorphSliderWidget::SetDefaultVlaue(float Value)
 {
     Loaded = true;
     DefaultValue = Value;
-    UpdateMaterial(Value);
+    SetSliderVlaue(Value);
 }
 
 void USP_MorphSliderWidget::ResetMorphTarget()

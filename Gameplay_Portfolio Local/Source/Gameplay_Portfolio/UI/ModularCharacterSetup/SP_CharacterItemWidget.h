@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SP_CoreType.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Gameplay_Portfolio/Items/ModularCharacter/SP_ModularItemBase.h"
@@ -19,18 +20,19 @@ class GAMEPLAY_PORTFOLIO_API USP_CharacterItemWidget : public UUserWidget
     GENERATED_BODY()
 
 public:
+    UFUNCTION()
+    void ResetItem();
+    
+    void Init(bool Loaded = false, FName ItemName = NAME_None);
+    
     UPROPERTY(EditAnywhere)
     FPrimaryAssetType AssetType;
 
     UPROPERTY()
     TArray<TSoftObjectPtr<USP_ModularItemBase>> Assets;
-    
-    TShaderRef<int32> test;
 
-    UFUNCTION()
-    void ResetItem();
-    
-    void Init(bool Loaded = false, FName ItemName = NAME_None);
+    UPROPERTY()
+    EMergePawnType MakePawnType;
     
 protected:
     UPROPERTY(meta = (BindWidget))
@@ -53,7 +55,7 @@ protected:
 private:
     
     UFUNCTION()
-    void UpdateTexts() const;
+    void UpdateText() const;
     
     UFUNCTION()
     void OnNextItem();
@@ -62,10 +64,7 @@ private:
     void OnPrevItem();
 
     UFUNCTION()
-    void UpdateItem(bool NoUpdate = false);
-
-    UFUNCTION()
-    void UpdateMesh() const;
+    void UpdateItem();
     
     UPROPERTY()
     USP_ModularItemBase* CurrentItem = nullptr;
@@ -80,5 +79,8 @@ private:
     bool LoadedSave = false;
 
     UPROPERTY()
-    int LoadIndex = 0; 
+    int LoadIndex = 0;
+
+    UPROPERTY()
+    FName DefaultItemName = NAME_None;
 };

@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "SP_CoreType.h"
+#include "SP_GameOverWidget.h"
 #include "SP_HUDBase.h"
+#include "System/SP_PauseWidget.h"
 #include "SP_GameHUD.generated.h"
 
 /**
@@ -21,7 +23,12 @@ public:
     void OnGameModeTypeChanged(EGameModeType Type);
 
 protected:
+    UFUNCTION()
+    void HidePauseWidget();
 
+    UFUNCTION()
+    void OpenOptionMenu();
+    
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<class UUserWidget> PauseMenuClass;
     
@@ -29,15 +36,10 @@ protected:
     TSubclassOf<class UUserWidget> GameOverWidgetClass;
 
 private:
-    UPROPERTY()
-    UUserWidget* CurrentWidget = nullptr;
     
     UPROPERTY()
-    TMap<EGameModeType, UUserWidget*> GameWidgets;
-
-    UPROPERTY()
-    UUserWidget* PauseMenu;
+    USP_PauseWidget* PauseMenu;
     
     UPROPERTY()
-    UUserWidget* GameOverWidget;
+    USP_GameOverWidget* GameOverWidget;
 };

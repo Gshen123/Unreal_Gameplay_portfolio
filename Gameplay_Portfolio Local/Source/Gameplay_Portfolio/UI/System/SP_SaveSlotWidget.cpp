@@ -2,9 +2,6 @@
 
 
 #include "SP_SaveSlotWidget.h"
-
-#include <string>
-
 #include "SP_PlayerState.h"
 #include "Subsystem/SP_SaveGameSubsystem.h"
 
@@ -26,7 +23,7 @@ void USP_SaveSlotWidget::NativeConstruct()
 
     if(SelectButton) SelectButton->OnClicked.AddDynamic(this, &ThisClass::OnSlotClicked);
     if(DeleteSaveButton) DeleteSaveButton->OnClicked.AddDynamic(this, &ThisClass::DeleteSaveGame);
-    InitData(GetSaveGameSubsystem()->LoadSaveGame(SlotName, NowSaveMode, false));
+    InitData(GetSaveGameSubsystem()->LoadSaveGame(SlotName, false));
 }
 
 void USP_SaveSlotWidget::InitData(USP_SaveGame* Data) const
@@ -55,7 +52,7 @@ void USP_SaveSlotWidget::SaveData() const
 
 void USP_SaveSlotWidget::LoadData() const
 {
-    GetSaveGameSubsystem()->LoadSaveGame(SlotName, NowSaveMode);
+    GetSaveGameSubsystem()->LoadSaveGame(SlotName, true, GetOwningLocalPlayer()->GetLocalPlayerIndex());
 }
 
 void USP_SaveSlotWidget::DeleteSaveGame()

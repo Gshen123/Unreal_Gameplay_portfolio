@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SP_CoreType.h"
 #include "SP_GameModeBase.h"
 #include "SP_PlayGameModeBase.generated.h"
 

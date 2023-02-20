@@ -2,23 +2,27 @@
 
 
 #include "SP_MergeComponent.h"
-
 #include "SP_AssetManager.h"
 #include "SP_PlayerCharacter.h"
-#include "Subsystem/SP_LocalPlayerMeshManager.h"
+#include "SP_PlayerState.h"
 
 
 void USP_MergeComponent::BeginPlay()
 {
     Super::BeginPlay();
-    
-    const auto LocalPlayerMeshManager = GetOwner()->GetNetOwningPlayer()->GetPlayerController(GetWorld())->GetLocalPlayer()->GetSubsystem<USP_LocalPlayerMeshManager>();
-    LocalPlayerMeshManager->AddMergeComponent(this);
+
+    // 시스템이 설정하는 NPC의 메시 정보라도 LocalPlayerSubsystem을 통해 메시를 생성합니다.
+    GetOwner()->GetNetOwningPlayer()->GetPlayerController(GetWorld())->GetPlayerState<ASP_PlayerState>()->UpdateMergeComponent(this, PawnType);
 }
 
 USkeletalMeshComponent* USP_MergeComponent::GetOwnerMesh() const
 {
     return Cast<ACharacter>(GetOwner())->GetMesh();
+}
+
+EMergePawnType USP_MergeComponent::GetPawnType() const
+{
+    return PawnType;
 }
 
 void USP_MergeComponent::SetOwnerMorphTarget(FName MorphTargetName, float Value, bool RemoveWeight) const

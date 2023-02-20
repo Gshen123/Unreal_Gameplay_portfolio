@@ -19,9 +19,7 @@ FPlayerSaveData* USP_SaveGame::GetPlayerData(const APlayerState* PlayerState)
     // PIE에서는 고유 ID를 제공하지 않기때문에 따로 처리하여 데이터를 가져옵니다.
     if (PlayerState->GetWorld()->IsPlayInEditor())
     {
-        UE_LOG(LogTemp, Log, TEXT("PIE 모드이므로 플레이어 저장 정보의 첫번째 인덱스만 가져옵니다."));
         if (PlayerSaveData.IsValidIndex(0)) return &PlayerSaveData[0];
-        
         return nullptr;
     }
 

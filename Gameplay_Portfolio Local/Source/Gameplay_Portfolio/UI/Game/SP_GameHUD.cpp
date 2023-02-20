@@ -6,53 +6,43 @@
 #include "Game/SP_PlayGameModeBase.h"
 #include "Gameplay_Portfolio/UI/System/SP_PauseWidget.h"
 
-DEFINE_LOG_CATEGORY_STATIC(Log_SPHUD, All, All);
+DEFINE_LOG_CATEGORY_STATIC(Log_SPGameHUD, All, All);
 
 void ASP_GameHUD::BeginPlay()
 {
     Super::BeginPlay();
 
-    PauseMenu = CreateWidget<UUserWidget>(GetWorld(), PauseMenuClass);
-    const auto PauseWidget = Cast<USP_PauseWidget>(PauseMenu);
-    GameWidgets.Add(EGameModeType::Pause, PauseMenu);
-    PauseWidget->PauseWidgetOptionDelegate.AddUniqueDynamic(this, &ASP_GameHUD::ShowOptionMenu);
-    
-    GameWidgets.Add(EGameModeType::GameOver, CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass));
-    
-    for(auto GameWidgetPair : GameWidgets)
-    {
-        const auto GameWidget = GameWidgetPair.Value;
-        if(!GameWidget) continue;
+    PauseMenu = CreateWidget<USP_PauseWidget>(GetWorld(), PauseMenuClass);
+    PauseMenu->SetVisibility(ESlateVisibility::Hidden);
+    PauseMenu->AddToViewport();
+    PauseMenu->OptionButton->OnClicked.AddDynamic(this, &ASP_GameHUD::OpenOptionMenu);
+    PauseMenu->ClearPauseButton->OnClicked.AddDynamic(this, &ASP_GameHUD::HidePauseWidget);
 
-        GameWidget->AddToViewport();
-        GameWidget->SetVisibility(ESlateVisibility::Hidden);
-    }
+    GameOverWidget = CreateWidget<USP_GameOverWidget>(GetWorld(), GameOverWidgetClass);
+    GameOverWidget->SetVisibility(ESlateVisibility::Hidden);
+    GameOverWidget->AddToViewport();
+    RemoveWidgetInStack(GameOverWidget);
     
     if(GetWorld())
-    {
         if(const auto GameMode = Cast<ASP_PlayGameModeBase>(GetWorld()->GetAuthGameMode()))
-        {
             GameMode->OnGameModeStateChanged.AddUObject(this, &ThisClass::OnGameModeTypeChanged);
-        }
-    }
 }
 
 void ASP_GameHUD::OnGameModeTypeChanged(EGameModeType Type)
 {
-    if(CurrentWidget)
-    {
-        CurrentWidget->SetVisibility(ESlateVisibility::Hidden);
-    }
+    if(Type == EGameModeType::Pause)
+        PushWidgetStack(PauseMenu);
+    else if(Type == EGameModeType::GameOver)
+        PushWidgetStack(GameOverWidget);
+    else PopWidgetStack();
+}
 
-    if(GameWidgets.Contains(Type))
-    {
-        CurrentWidget = GameWidgets[Type];
-    }
+void ASP_GameHUD::HidePauseWidget()
+{
+    RemoveWidgetInStack(PauseMenu);
+}
 
-    if(CurrentWidget)
-    {
-        CurrentWidget->SetVisibility(ESlateVisibility::Visible);
-    }
-    
-    UE_LOG(Log_SPHUD, Display, TEXT("Game Mode State Changed : %s"), *UEnum::GetValueAsString(Type));
+void ASP_GameHUD::OpenOptionMenu()
+{
+    ShowOptionMenu(false);
 }

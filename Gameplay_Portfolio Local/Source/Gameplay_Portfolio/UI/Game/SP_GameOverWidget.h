@@ -42,7 +42,7 @@ protected:
 
 private:
     void UpdatePlayerStat();
-    void OnGameStateTypeChanged(EGameModeType State);
+    void OnGameStateTypeChanged(EGameModeType ChangeType);
 
     UFUNCTION()
     void OnResetLevel();

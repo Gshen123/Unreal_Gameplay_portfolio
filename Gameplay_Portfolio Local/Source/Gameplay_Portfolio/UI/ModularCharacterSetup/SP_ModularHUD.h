@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "SP_HUDBase.h"
-#include "SP_PlayerCharacter.h"
-#include "Save/SP_SaveData.h"
 #include "SP_ModularHUD.generated.h"
 
 /**
@@ -21,5 +19,4 @@ protected:
     TSubclassOf<UUserWidget> CreateCharacterWidgetClass;
     
     virtual void BeginPlay() override;
-
 };

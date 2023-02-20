@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SP_CoreType.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Slider.h"
 #include "Gameplay_Portfolio/UI/SP_TextButton.h"
@@ -19,12 +20,6 @@ class GAMEPLAY_PORTFOLIO_API USP_MorphSliderWidget : public UUserWidget
 
 public:
 
-    UPROPERTY()
-    FString MorphTargetName;
-
-    UPROPERTY()
-    FText DisplayName;
-
     UFUNCTION()
     void SetSliderVlaue(float Value);
 
@@ -36,6 +31,15 @@ public:
 
     UFUNCTION()
     void SetMorphTargetDefalutOrValue(float Value);
+    
+    UPROPERTY()
+    FString MorphTargetName;
+
+    UPROPERTY()
+    FText DisplayName;
+
+    UPROPERTY()
+    EMergePawnType MakePawnType;
     
 protected:
     UPROPERTY(meta = (BindWidget))

@@ -18,7 +18,7 @@ ASP_BasePlayerController::ASP_BasePlayerController(const FObjectInitializer& Obj
 
 void ASP_BasePlayerController::PopWidgetStack()
 {
-    UE_LOG(LogPlayerControllerBase, Log, TEXT("Pop"));
+    PopWidget = nullptr;
     const auto HUD = Cast<ASP_HUDBase>(GetHUD());
-    HUD->PopWidgetStack();
+    PopWidget = HUD->PopWidgetStack();
 }

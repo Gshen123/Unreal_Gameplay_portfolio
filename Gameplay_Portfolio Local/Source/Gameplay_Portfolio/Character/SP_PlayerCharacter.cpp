@@ -17,9 +17,6 @@
 
 //////////////////////////////////////////////////////////////////////////
 // AGameplay_PortfolioCharacter
-constexpr float ZOOM_MIN_VALUE = 60.f;
-constexpr float ZOOM_MAX_VALUE = 320.f;
-constexpr float ZOOM_MULTIPLE = 16.f;
 
 ASP_PlayerCharacter::ASP_PlayerCharacter()
 {
@@ -96,7 +93,7 @@ void ASP_PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 void ASP_PlayerCharacter::Input_Move(const FInputActionValue& Value)
 {
     // input is a Vector2D
-    FVector2D MovementVector = Value.Get<FVector2D>();
+    const FVector2D MovementVector = Value.Get<FVector2D>();
 
     if (Controller != nullptr && bCanMove)
     {
@@ -116,20 +113,7 @@ void ASP_PlayerCharacter::Input_Move(const FInputActionValue& Value)
     }
 }
 
-void ASP_PlayerCharacter::Input_Look(const FInputActionValue& Value)
-{
-    // input is a Vector2D
-    FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-    if (Controller != nullptr)
-    {
-        // add yaw and pitch input to controller
-        AddControllerYawInput(LookAxisVector.X);
-        if(bCanMove) AddControllerPitchInput(LookAxisVector.Y);
-    }
-}
-
-void ASP_PlayerCharacter::Input_Jump(const FInputActionValue& Value)
+void ASP_PlayerCharacter::Input_Jump()
 {
     if(bCanMove) Jump();
 }
@@ -138,8 +122,33 @@ void ASP_PlayerCharacter::Input_Zoom(const FInputActionValue& Value)
 {
     const float MultiValue = Value.GetMagnitude() * ZOOM_MULTIPLE;
     CameraBoom->TargetArmLength += MultiValue;
+    
     if(CameraBoom->TargetArmLength < ZOOM_MIN_VALUE) CameraBoom->TargetArmLength = ZOOM_MIN_VALUE;
     if(CameraBoom->TargetArmLength > ZOOM_MAX_VALUE) CameraBoom->TargetArmLength = ZOOM_MAX_VALUE;
+}
+
+void ASP_PlayerCharacter::Input_Look(const FInputActionValue& Value)
+{
+    if (Controller != nullptr)
+    {
+        // input is a Vector2D
+        const FVector2D LookValue = Value.Get<FVector2D>();
+        
+        if (LookValue.X != 0.0f) TurnAtRate(LookValue.X);
+        if (LookValue.Y != 0.0f && bCanMove) LookUpAtRate(LookValue.Y);
+    }
+}
+
+void ASP_PlayerCharacter::TurnAtRate(float Rate)
+{
+    // calculate delta for this frame from the rate information
+    AddControllerYawInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
+}
+
+void ASP_PlayerCharacter::LookUpAtRate(float Rate)
+{
+    // calculate delta for this frame from the rate information
+    AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
 
 void ASP_PlayerCharacter::ToggleCameraMode()

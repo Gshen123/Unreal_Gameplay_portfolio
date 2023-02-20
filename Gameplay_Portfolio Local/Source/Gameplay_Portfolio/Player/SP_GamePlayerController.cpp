@@ -4,6 +4,7 @@
 #include "SP_GamePlayerController.h"
 #include "Game/SP_PlayGameModeBase.h"
 #include "Gameplay_Portfolio/EnhancedInput/SP_InputComponent.h"
+#include "System/SP_PauseWidget.h"
 
 DEFINE_LOG_CATEGORY_STATIC(Log_SPPlayerController, All, All);
 
@@ -16,7 +17,7 @@ ASP_GamePlayerController::ASP_GamePlayerController(const FObjectInitializer& Obj
 void ASP_GamePlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
-    InputComponent->BindAction("PauseAndUndo", IE_Pressed, this, &ThisClass::PopWidgetStack).bExecuteWhenPaused = true;
+    InputComponent->BindAction("PauseAndUndo", IE_Pressed, this, &ThisClass::OnPauseGame).bExecuteWhenPaused = true;
 }
 
 void ASP_GamePlayerController::BeginPlay()
@@ -32,24 +33,38 @@ void ASP_GamePlayerController::OnPauseGame()
 {
     const auto GameMode = GetWorld()->GetAuthGameMode();
     if(!GetWorld() || !GameMode) return;
-
+    
     IsPaused()
-        ? GameMode->ClearPause()
-        : GameMode->SetPause(this);;
+        ? PopWidgetStack()
+        : GameMode->SetPause(this);
 
+    if(Type == EGameModeType::Pause && PopWidget)
+        if(Cast<USP_PauseWidget>(PopWidget))
+        {
+            GameMode->ClearPause();
+            PopWidget = nullptr;
+        }
+    
     UE_LOG(Log_SPPlayerController, Display, TEXT("OnPauseGame !"));
 }
 
 void ASP_GamePlayerController::OnGameModeTypeChanged(EGameModeType ChangeType)
 {
+    Type = ChangeType;
+    
     if(ChangeType == EGameModeType::InGame)
     {
         SetInputMode(FInputModeGameOnly());
         bShowMouseCursor = false;
     }
-    else if(ChangeType == EGameModeType::MainMenu)
+    else if(ChangeType == EGameModeType::CharacterSetup || ChangeType == EGameModeType::Pause)
     {
         SetInputMode(FInputModeGameAndUI());
+        bShowMouseCursor = true;
+    }
+    else if(ChangeType == EGameModeType::GameOver)
+    {
+        SetInputMode(FInputModeUIOnly());
         bShowMouseCursor = true;
     }
     else

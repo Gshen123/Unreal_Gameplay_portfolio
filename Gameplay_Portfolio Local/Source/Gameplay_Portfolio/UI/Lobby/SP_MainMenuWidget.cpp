@@ -16,7 +16,6 @@ void USP_MainMenuWidget::NativeConstruct()
 
     if(StartButton) StartButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::ShowSelectedLevel);
     if(LoadButton) LoadButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::LoadGame);
-    if(OptionButton) OptionButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::ShowOptionWidget);
     if(ExitButton) ExitButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::ShowExitModal);
     if(LinkButton) LinkButton->MainButton->OnClicked.AddDynamic(this, &USP_MainMenuWidget::LaunchURL);
 }
@@ -73,11 +72,6 @@ void USP_MainMenuWidget::LoadGame()
     }
     SaveSlotBox->SetVisibility(ESlateVisibility::Visible);
     GetSP_MenuHUD()->PushWidgetStack(SaveSlotBox);
-}
-
-void USP_MainMenuWidget::ShowOptionWidget()
-{
-    MainMenuOptionDelegate.Broadcast();
 }
 
 void USP_MainMenuWidget::ShowExitModal()
