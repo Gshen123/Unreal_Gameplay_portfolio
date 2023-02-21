@@ -22,5 +22,4 @@ void ASP_ModularPlayerController::BeginPlay()
     Super::BeginPlay();
     SetInputMode(FInputModeGameAndUI());
     bShowMouseCursor = true;
-    Cast<ASP_PlayerCharacter>(GetCharacter())->ToggleCameraMode();
 }

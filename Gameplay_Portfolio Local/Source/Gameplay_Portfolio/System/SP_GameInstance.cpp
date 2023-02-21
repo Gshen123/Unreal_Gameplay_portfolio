@@ -48,7 +48,7 @@ USP_DefaultPartsAsset* USP_GameInstance::GetDefaultMeshParts() const
 #if WITH_EDITOR
 void USP_GameInstance::TestLoadSaveFile()
 {
-    if(!Test_LoadSaveSlotName.IsEmpty())
+    if(!Test_LoadSaveSlotName.IsEmpty() && Test_OpenLevelType != EGameModeType::None)
         GetSubsystem<USP_SaveGameSubsystem>()->LoadSaveGame(Test_LoadSaveSlotName, false,0);
     OpenLevel(GetWorld(), Test_OpenLevelType, 0);
 }

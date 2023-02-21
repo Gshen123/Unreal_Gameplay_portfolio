@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SP_MergeComponent.h"
+#include "Components/SP_MergeComponent.h"
 #include "ModularCharacterSetup/SP_CharacterItemWidget.h"
 #include "Save/SP_SaveData.h"
 #include "SP_LocalPlayerMeshManager.generated.h"

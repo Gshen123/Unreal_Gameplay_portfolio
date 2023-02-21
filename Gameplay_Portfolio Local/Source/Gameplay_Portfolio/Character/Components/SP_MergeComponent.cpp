@@ -1,6 +1,5 @@
 ﻿// Scope Portfolio. All rights reserved
 
-
 #include "SP_MergeComponent.h"
 #include "SP_AssetManager.h"
 #include "SP_PlayerCharacter.h"

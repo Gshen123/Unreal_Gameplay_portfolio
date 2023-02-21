@@ -64,6 +64,8 @@ void ASP_PlayerState::SavePlayerState(USP_SaveGame* SaveObject, EGameModeType Mo
 
 void ASP_PlayerState::LoadPlayerState(USP_SaveGame* SaveObject, EGameModeType Mode)
 {
+    CurrentModeType = Mode;
+    
     if (SaveObject)
     {
         if(Mode == EGameModeType::InGame)

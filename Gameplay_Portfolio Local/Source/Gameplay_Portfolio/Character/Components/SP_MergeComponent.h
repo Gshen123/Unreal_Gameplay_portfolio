@@ -29,6 +29,6 @@ public:
     
 private:
     // 타입별 메시에 대한 관리방식 지정
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
     EMergePawnType PawnType = EMergePawnType::None;
 };

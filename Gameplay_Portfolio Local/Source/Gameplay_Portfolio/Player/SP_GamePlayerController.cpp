@@ -24,6 +24,9 @@ void ASP_GamePlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
+    SetInputMode(FInputModeGameOnly());
+    bShowMouseCursor = false;
+    
     if(GetWorld())
         if(const auto GameMode = Cast<ASP_PlayGameModeBase>(GetWorld()->GetAuthGameMode()))
             GameMode->OnGameModeStateChanged.AddUObject(this, &ThisClass::OnGameModeTypeChanged);
@@ -59,17 +62,17 @@ void ASP_GamePlayerController::OnGameModeTypeChanged(EGameModeType ChangeType)
     }
     else if(ChangeType == EGameModeType::CharacterSetup || ChangeType == EGameModeType::Pause)
     {
-        SetInputMode(FInputModeGameAndUI());
+        SetInputMode(FInputModeGameAndUI().SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen));
         bShowMouseCursor = true;
     }
     else if(ChangeType == EGameModeType::GameOver)
     {
-        SetInputMode(FInputModeUIOnly());
+        SetInputMode(FInputModeUIOnly().SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen));
         bShowMouseCursor = true;
     }
     else
     {
-        SetInputMode(FInputModeUIOnly());
+        SetInputMode(FInputModeUIOnly().SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen));
         bShowMouseCursor = true;
     }
 }

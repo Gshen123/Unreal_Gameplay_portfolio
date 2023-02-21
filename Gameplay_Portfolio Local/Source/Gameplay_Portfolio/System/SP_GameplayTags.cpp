@@ -21,7 +21,7 @@ void FSP_GameplayTags::AddAllTags(UGameplayTagsManager& Manager)
     AddTag(Input_MouseAndKeyboard_Look, "Input.MouseAndKeyboard.Look", "Look input.");
     AddTag(Input_MouseAndKeyboard_Jump, "Input.MouseAndKeyboard.Jump", "Jump input.");
     AddTag(Input_MouseAndKeyboard_Zoom, "Input.MouseAndKeyboard.Zoom", "Zoom input.");
-    AddTag(Input_MouseAndKeyboard_PauseAndUndo, "Input.MouseAndKeyboard.PauseAndUndo", "PauseAndUndo input.");
+    AddTag(Input_MouseAndKeyboard_Sprint, "Input.MouseAndKeyboard.Sprint", "Sprint input.");
 }
 
 void FSP_GameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, const ANSICHAR* TagComment)

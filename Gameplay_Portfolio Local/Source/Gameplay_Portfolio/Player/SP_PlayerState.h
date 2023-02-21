@@ -32,6 +32,9 @@ public:
     UFUNCTION()
     void UpdateMergeComponent(USP_MergeComponent* Component, EMergePawnType PawnType) const;
 
+    UFUNCTION()
+    EGameModeType GetCurrentGameModeType() const { return CurrentModeType;}
+
 protected:
     
     virtual void BeginPlay() override;
@@ -52,4 +55,7 @@ private:
 
     UPROPERTY()
     TMap<EMergePawnType, FSaveMeshData> NPCMeshData;
+
+    UPROPERTY()
+    EGameModeType CurrentModeType = EGameModeType::None;
 };

@@ -7,8 +7,8 @@
 
 
 #define SCOPE_CAMERA_DEFAULT_FOV		(80.0f)
-#define SCOPE_CAMERA_DEFAULT_PITCH_MIN	(-89.0f)
-#define SCOPE_CAMERA_DEFAULT_PITCH_MAX	(89.0f)
+#define SCOPE_CAMERA_DEFAULT_PITCH_MIN	(-35.0f)
+#define SCOPE_CAMERA_DEFAULT_PITCH_MAX	(10.0f)
 
 /**
  * 
@@ -24,6 +24,4 @@ public:
 protected:
 
     virtual void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime) override;
-
-    virtual void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos) override;
 };
