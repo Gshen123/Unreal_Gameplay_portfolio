@@ -30,7 +30,7 @@ public:
     FSaveMeshData* GetPlayerMeshData();
     void WearItem(const USP_ModularItemBase* Item, EMergePawnType PawnType, FName DefaultItemName);
     void ReplaceItemInSlot(const USP_ModularItemBase* Item, EMergePawnType PawnType, FName DefaultItemName);
-    void FindAndAddMeshItemData(FPrimaryAssetType Type, FString Name, EMergePawnType PawnType);
+    void FindAndAddMeshItemData(FPrimaryAssetType Type, FString ItemName, EMergePawnType PawnType);
 
     void AllUpdateMaterial(EMergePawnType PawnType);
     void UpdateMaterial(const USP_MergeComponent* MergeComponent);

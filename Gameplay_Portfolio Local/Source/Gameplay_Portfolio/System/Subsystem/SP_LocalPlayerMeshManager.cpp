@@ -302,18 +302,19 @@ void USP_LocalPlayerMeshManager::ReplaceItemInSlot(const USP_ModularItemBase* It
     for(const auto FindComponent : FindMergeComponent(PawnType)) UpdateMesh(FindComponent);
 }
 
-void USP_LocalPlayerMeshManager::FindAndAddMeshItemData(FPrimaryAssetType Type, FString Name, EMergePawnType PawnType)
+void USP_LocalPlayerMeshManager::FindAndAddMeshItemData(FPrimaryAssetType Type, FString ItemName, EMergePawnType PawnType)
 {
+    if(ItemName == "None") return;
+
     const auto MeshData = PawnType >= EMergePawnType::NPC1 ? NPCMeshData.Find(PawnType) : &PlayerMeshData;
-    
     if(MeshData->MeshItemData.Find(Type))
     {
         MeshData->MeshItemData.Remove(Type);
         MeshData->MeshItemData.Compact();
         MeshData->MeshItemData.Shrink();
-        MeshData->MeshItemData.Add(Type, Name);
+        MeshData->MeshItemData.Add(Type, ItemName);
     }
-    else MeshData->MeshItemData.Add(Type, Name);
+    else MeshData->MeshItemData.Add(Type, ItemName);
 }
 
 void USP_LocalPlayerMeshManager::AllUpdateMaterial(EMergePawnType PawnType)
